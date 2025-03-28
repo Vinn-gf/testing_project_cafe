@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 const TestingPage = () => {
   const [cafes, setCafes] = useState([]);
   const [UserLocation, setUserLocation] = useState(null);
-  const [DistanceFetched, setDistanceFetched] = useState(false);
+  // const [DistanceFetched, setDistanceFetched] = useState(false);
 
-  // Fetch data cafe dari API Flask
+  // Fetch data cafe dari API Flask python
   useEffect(() => {
     fetch('http://127.0.0.1:5000/api/data')
       .then((response) => response.json())
@@ -25,7 +25,6 @@ const TestingPage = () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          // Tidak mencetak UserLocation di sini karena update state bersifat asinkron.
         },
         (error) => console.error('Error getting user location:', error)
       );
@@ -41,51 +40,51 @@ const TestingPage = () => {
     }
   }, [UserLocation]);
 
-  // Hitung jarak untuk setiap cafe menggunakan API GoMaps Distance Matrix
-  // Fetch hanya dilakukan satu kali setelah UserLocation dan data cafes tersedia
-  useEffect(() => {
-    if (UserLocation && cafes.length > 0 && !DistanceFetched) {
-      const apiKey = 'AlzaSyBxzR3buUPQhlzQiYGQyQM7vUhQdUVI3JA';
+
+  // Perhitungan jarak user dan lokasi cafe
+  // useEffect(() => {
+  //   if (UserLocation && cafes.length > 0 && !DistanceFetched) {
+  //     const apiKey = 'AlzaSyD-4uTkREKJUnRgRBfkdifFMYkQ-mVVIsH';
       
-      const updateCafesWithDistance = cafes.map((cafe) => {
-        const cafeLat = parseFloat(cafe.latitude);
-        const cafeLong = parseFloat(cafe.longitude);
-        const userLat = UserLocation.latitude;
-        const userLong = UserLocation.longitude;
+  //     const updateCafesWithDistance = cafes.map((cafe) => {
+  //       const cafeLat = parseFloat(cafe.latitude);
+  //       const cafeLong = parseFloat(cafe.longitude);
+  //       const userLat = UserLocation.latitude;
+  //       const userLong = UserLocation.longitude;
   
-        const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
+  //       const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
   
-        return fetch(url)
-          .then(response => response.json())
-          .then((distanceData) => {
-            let distanceText = "N/A";
-            let durationText = "N/A";
-            if (
-              distanceData.rows &&
-              distanceData.rows[0] &&
-              distanceData.rows[0].elements &&
-              distanceData.rows[0].elements[0]
-            ) {
-              distanceText = distanceData.rows[0].elements[0].distance.text;
-              durationText = distanceData.rows[0].elements[0].duration.text;
-            }
-            return { ...cafe, distance: distanceText, duration: durationText };
-          })
-          .catch((error) => {
-            console.error(`Error fetching distance for ${cafe.nama_kafe}:`, error);
-            return { ...cafe, distance: "N/A", duration: "N/A" };
-          });
-      });
+  //       return fetch(url)
+  //         .then(response => response.json())
+  //         .then((distanceData) => {
+  //           let distanceText = "N/A";
+  //           let durationText = "N/A";
+  //           if (
+  //             distanceData.rows &&
+  //             distanceData.rows[0] &&
+  //             distanceData.rows[0].elements &&
+  //             distanceData.rows[0].elements[0]
+  //           ) {
+  //             distanceText = distanceData.rows[0].elements[0].distance.text;
+  //             durationText = distanceData.rows[0].elements[0].duration.text;
+  //           }
+  //           return { ...cafe, distance: distanceText, duration: durationText };
+  //         })
+  //         .catch((error) => {
+  //           console.error(`Error fetching distance for ${cafe.nama_kafe}:`, error);
+  //           return { ...cafe, distance: "N/A", duration: "N/A" };
+  //         });
+  //     });
       
-      Promise.all(updateCafesWithDistance).then((updatedCafes) => {
-        setCafes(updatedCafes);
-        setDistanceFetched(true);
-      });
-    }
-  }, [UserLocation, cafes, DistanceFetched]);
+  //     Promise.all(updateCafesWithDistance).then((updatedCafes) => {
+  //       setCafes(updatedCafes);
+  //       setDistanceFetched(true);
+  //     });
+  //   }
+  // }, [UserLocation, cafes, DistanceFetched]);
 
   return (
-    <div>
+    <div className='bg-slate-500 text-black p-4 rounded-lg m-4 font-semibold'>
       <h1>Data Cafe</h1>
       {cafes.map((cafe, index) => (
         <div key={index}>
@@ -101,25 +100,25 @@ const TestingPage = () => {
           <p><strong>Harga Minuman:</strong> {cafe.harga_minuman}</p>
           <p><strong>Rating:</strong> {cafe.rating}</p>
           {/* Tampilkan jarak dan durasi jika sudah dihitung */}
-          {cafe.distance && cafe.duration ? (
+          {/* {cafe.distance && cafe.duration ? (
             <>
               <p><strong>Jarak:</strong> {cafe.distance}</p>
               <p><strong>Durasi:</strong> {cafe.duration}</p>
             </>
           ) : (
             <p>Menghitung jarak...</p>
-          )}
+          )} */}
           <hr />
         </div>
       ))}
 
       {/* Opsional: Tampilkan lokasi user */}
-      {UserLocation && (
+      {/* {UserLocation && (
         <div>
           <p><strong>Latitude User:</strong> {UserLocation.latitude}</p>
           <p><strong>Longitude User:</strong> {UserLocation.longitude}</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+.hero-section {
+    background-image: url('../image/hero-bg2.jpg');
+}
+
+.card-img-section{
+    background-image: url('../image/card-cafe.jpg');
+}

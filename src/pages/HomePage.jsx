@@ -98,13 +98,7 @@ const HomePage = () => {
               Home
             </Link>
             <Link to="/about" className="hover:text-gray-200">
-              About
-            </Link>
-            <Link to="/services" className="hover:text-gray-200">
-              Services
-            </Link>
-            <Link to="/contact" className="hover:text-gray-200">
-              Contact
+              Profile
             </Link>
           </div>
           <div className="md:hidden">
@@ -122,13 +116,7 @@ const HomePage = () => {
               Home
             </Link>
             <Link to="/about" className="block p-2">
-              About
-            </Link>
-            <Link to="/services" className="block p-2">
-              Services
-            </Link>
-            <Link to="/contact" className="block p-2">
-              Contact
+              Profile
             </Link>
           </div>
         )}
@@ -155,9 +143,11 @@ const HomePage = () => {
               Search
             </button>
           </div>
-          <button className="check-cafe-btn mt-[5rem] w-[10em] text-[#E3DCC2] p-2 bg-[#1B2021] rounded-md hover:bg-[#51513D]">
-            Show All Cafes
-          </button>
+          <Link to="/allcafes">
+            <button className="check-cafe-btn mt-[5rem] w-[10em] text-[#E3DCC2] p-2 bg-[#1B2021] rounded-md hover:bg-[#51513D]">
+              Show All Cafes
+            </button>
+          </Link>
         </div>
       </div>
       {/* Hero */}
@@ -165,7 +155,7 @@ const HomePage = () => {
       {/* Recommendation Section */}
       <div className="p-4">
         <h1 className="w-[90%] mx-auto font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
-          Recommendation For You
+          Top Recommendation
         </h1>
         <div className="recommendation-section w-[90%] mx-auto flex items-center justify-between gap-4 h-[55vh]">
           {cafes.slice(0, 5).map((cafe, index) => {
@@ -175,7 +165,7 @@ const HomePage = () => {
             return (
               <div
                 key={index}
-                className="recommendation--card-container bg-[#1B2021] shadow-lg hover:scale-110 hover:cursor-pointer rounded-md w-[15rem] h-full text-[#E3DCC2] font-montserrat overflow-hidden"
+                className="recommendation--card-container bg-[#1B2021] shadow-lg hover:scale-105 hover:cursor-pointer rounded-md w-[15rem] h-full text-[#E3DCC2] font-montserrat overflow-hidden"
               >
                 {/* Image section dengan overlay teks */}
                 <div

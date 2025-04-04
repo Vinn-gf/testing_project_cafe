@@ -35,6 +35,31 @@ def get_data(search_term=None):
         results.append(od)
     return results
 
+def get_data_by_id(nomor):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cafe_databases"
+    )
+    cursor = db.cursor()
+
+    cursor.execute("SHOW COLUMNS FROM cafe_tables")
+    columns = [col[0] for col in cursor.fetchall()]
+
+    query = "SELECT * FROM cafe_tables WHERE nomor = %s"
+    cursor.execute(query, (nomor,))
+    data = cursor.fetchone()
+    db.close()
+
+    if data:
+        od = OrderedDict()
+        for idx, col in enumerate(columns):
+            od[col] = data[idx]
+        return od
+    else:
+        return None
+
 @app.route('/api/data', methods=['GET'])
 def api_data():
     return jsonify(get_data())
@@ -42,6 +67,14 @@ def api_data():
 @app.route('/api/search/<keyword>', methods=['GET'])
 def api_search(keyword):
     return jsonify(get_data(keyword))
+
+@app.route('/api/cafe/<int:nomor>', methods=['GET'])
+def api_cafe(nomor):
+    cafe = get_data_by_id(nomor)
+    if cafe:
+        return jsonify(cafe)
+    else:
+        return jsonify({"error": "Cafe not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

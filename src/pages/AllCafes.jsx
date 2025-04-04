@@ -104,13 +104,13 @@ const AllCafes = () => {
 
       {/* Cafe List Section */}
       <div className="p-4">
-        <Link to="/detailcafe">
-          <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4">
-            {currentCafes.map((cafe, index) => (
-              <div
-                key={index}
-                className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
-              >
+        <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4">
+          {currentCafes.map((cafe, index) => (
+            <div
+              key={index}
+              className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
+            >
+              <Link to={`/detailcafe/${cafe.nomor}`}>
                 {/* Image section dengan overlay teks */}
                 <div className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url['../assets/image/card-cafe.jpg'])">
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
@@ -120,10 +120,10 @@ const AllCafes = () => {
                     <h1 className="text-[0.9rem] font-normal">{cafe.alamat}</h1>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </Link>
+              </Link>
+            </div>
+          ))}
+        </div>
 
         {/* Pagination Section */}
         <div className="w-[90%] mx-auto flex justify-center items-center mt-8 gap-4">

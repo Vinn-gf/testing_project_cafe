@@ -167,15 +167,17 @@ const HomePage = () => {
                 key={index}
                 className="recommendation--card-container bg-[#1B2021] shadow-lg hover:scale-105 hover:cursor-pointer rounded-md w-[15rem] h-full text-[#E3DCC2] font-montserrat overflow-hidden"
               >
-                {/* Image section dengan overlay teks */}
-                <div
-                  className="card-img-section relative h-[15rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url['../assets/image/card-cafe.jpg'])"
-                  // style={backgroundStyle}
-                >
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
-                    <h1 className="text-sm font-bold">{cafe.nama_kafe}</h1>
+                <Link to={`/detailcafe/${cafe.nomor}`}>
+                  {/* Image section dengan overlay teks */}
+                  <div
+                    className="card-img-section relative h-[15rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url['../assets/image/card-cafe.jpg'])"
+                    // style={backgroundStyle}
+                  >
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
+                      <h1 className="text-sm font-bold">{cafe.nama_kafe}</h1>
+                    </div>
                   </div>
-                </div>
+                </Link>
                 <div className="p-4 flex-row items-center gap-4">
                   <p>{cafe.alamat}</p>
                   <h1>{cafe.rating}</h1>

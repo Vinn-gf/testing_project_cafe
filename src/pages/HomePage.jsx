@@ -1,23 +1,58 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { ColorRing } from "react-loader-spinner";
+import { Link, useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [cafes, setCafes] = useState([]);
   const [UserLocation, setUserLocation] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   // const backgroundImageUrl = require("../assets/image/hero-bg.jpg");
-  // const [DistanceFetched, setDistanceFetched] = useState(false);
+  const [DistanceFetched, setDistanceFetched] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [distanceLoading, setDistanceLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  // ✅ [UPDATE] Fungsi helper untuk parsing jarak (misalnya: "2.4 km" => 2400)
+  const parseDistance = (distanceText) => {
+    if (!distanceText || distanceText === "N/A") {
+      return Infinity;
+    }
+    const parts = distanceText.split(" ");
+    const num = parseFloat(parts[0].replace(",", "."));
+    if (parts[1] && parts[1].toLowerCase() === "km") {
+      return num * 1000;
+    }
+    return num;
+  };
 
   // Fetch data cafe dari API Flask python
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/data")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Data dari API:", data);
+    const fetchCafe = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/api/data`);
+        if (!response.ok) {
+          throw new Error("Kafe tidak ditemukan");
+        }
+        const data = await response.json();
         setCafes(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCafe();
   }, []);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    if (searchKeyword.trim()) {
+      navigate(`/search/${searchKeyword}`);
+    }
+  };
 
   // Ambil lokasi user
   useEffect(() => {
@@ -44,46 +79,74 @@ const HomePage = () => {
   }, [UserLocation]);
 
   // Perhitungan jarak user dan lokasi cafe
-  // useEffect(() => {
-  //   if (UserLocation && cafes.length > 0 && !DistanceFetched) {
-  //     const apiKey = 'AlzaSyD-4uTkREKJUnRgRBfkdifFMYkQ-mVVIsH';
+  useEffect(() => {
+    if (UserLocation && cafes.length > 0 && !DistanceFetched) {
+      const apiKey = "AlzaSyD-4uTkREKJUnRgRBfkdifFMYkQ-mVVIsH";
 
-  //     const updateCafesWithDistance = cafes.map((cafe) => {
-  //       const cafeLat = parseFloat(cafe.latitude);
-  //       const cafeLong = parseFloat(cafe.longitude);
-  //       const userLat = UserLocation.latitude;
-  //       const userLong = UserLocation.longitude;
+      const updateCafesWithDistance = cafes.map((cafe) => {
+        const cafeLat = parseFloat(cafe.latitude);
+        const cafeLong = parseFloat(cafe.longitude);
+        const userLat = UserLocation.latitude;
+        const userLong = UserLocation.longitude;
 
-  //       const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
+        const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
 
-  //       return fetch(url)
-  //         .then(response => response.json())
-  //         .then((distanceData) => {
-  //           let distanceText = "N/A";
-  //           let durationText = "N/A";
-  //           if (
-  //             distanceData.rows &&
-  //             distanceData.rows[0] &&
-  //             distanceData.rows[0].elements &&
-  //             distanceData.rows[0].elements[0]
-  //           ) {
-  //             distanceText = distanceData.rows[0].elements[0].distance.text;
-  //             durationText = distanceData.rows[0].elements[0].duration.text;
-  //           }
-  //           return { ...cafe, distance: distanceText, duration: durationText };
-  //         })
-  //         .catch((error) => {
-  //           console.error(`Error fetching distance for ${cafe.nama_kafe}:`, error);
-  //           return { ...cafe, distance: "N/A", duration: "N/A" };
-  //         });
-  //     });
+        return fetch(url)
+          .then((response) => response.json())
+          .then((distanceData) => {
+            let distanceText = "N/A";
+            let durationText = "N/A";
+            if (
+              distanceData.rows &&
+              distanceData.rows[0] &&
+              distanceData.rows[0].elements &&
+              distanceData.rows[0].elements[0]
+            ) {
+              distanceText = distanceData.rows[0].elements[0].distance.text;
+              durationText = distanceData.rows[0].elements[0].duration.text;
+            }
+            return { ...cafe, distance: distanceText, duration: durationText };
+          })
+          .catch((error) => {
+            console.error(
+              `Error fetching distance for ${cafe.nama_kafe}:`,
+              error
+            );
+            return { ...cafe, distance: "N/A", duration: "N/A" };
+          });
+      });
 
-  //     Promise.all(updateCafesWithDistance).then((updatedCafes) => {
-  //       setCafes(updatedCafes);
-  //       setDistanceFetched(true);
-  //     });
-  //   }
-  // }, [UserLocation, cafes, DistanceFetched]);
+      Promise.all(updateCafesWithDistance).then((updatedCafes) => {
+        // ✅ [UPDATE] Mengurutkan kafe berdasarkan jarak terdekat dan hanya ambil 3 teratas
+        const sortedCafes = updatedCafes.sort(
+          (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
+        );
+        setCafes(sortedCafes.slice(0, 3));
+        setDistanceFetched(true);
+        setDistanceLoading(false);
+      });
+    }
+  }, [UserLocation, cafes, DistanceFetched]);
+
+  if (loading || distanceLoading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <div>
@@ -133,15 +196,25 @@ const HomePage = () => {
           <p className="text-[#E3DCC2] font-poppins">
             find your comfort and happy place.
           </p>
-          <div className="search-section flex items-center gap-6 mt-8 font-montserrat">
-            <input
-              className="search-input p-2 rounded-md outline-none text-black w-[70%]"
-              placeholder="Enter your cafe..."
-              type="text"
-            />
-            <button className="search-btn text-[#E3DCC2] bg-[#1B2021] p-2 w-[7rem] rounded-md hover:bg-[#51513D]">
-              Search
-            </button>
+          <div className="">
+            <form
+              onSubmit={handleSearch}
+              className="mt-4 mb-2 flex items-center font-montserrat gap-2"
+            >
+              <input
+                className="search-input p-2 rounded-md outline-none text-[#E3DCC2] bg-[#1B2021] w-[30%] font-montserrat"
+                placeholder="Enter your cafe..."
+                type="text"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="search-btn text-[#E3DCC2] bg-[#1B2021] py-2 px-4 rounded-md hover:bg-[#51513D]"
+              >
+                Search
+              </button>
+            </form>
           </div>
           <Link to="/allcafes">
             <button className="check-cafe-btn mt-[5rem] w-[10em] text-[#E3DCC2] p-2 bg-[#1B2021] rounded-md hover:bg-[#51513D]">
@@ -155,32 +228,37 @@ const HomePage = () => {
       {/* Recommendation Section */}
       <div className="p-4">
         <h1 className="w-[90%] mx-auto font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
-          Top Recommendation
+          Most Nearby Cafes
         </h1>
         <div className="recommendation-section w-[90%] mx-auto flex items-center justify-between gap-4 h-[55vh]">
-          {cafes.slice(0, 5).map((cafe, index) => {
-            // const backgroundStyle = {
-            //   backgroundImage: `url('https://unsplash.com/photos/a-store-front-with-bicycles-parked-in-front-lb2SXAyrQl8')`,
-            // };
+          {cafes.map((cafe, index) => {
             return (
               <div
                 key={index}
-                className="recommendation--card-container bg-[#1B2021] shadow-lg hover:scale-105 hover:cursor-pointer rounded-md w-[15rem] h-full text-[#E3DCC2] font-montserrat overflow-hidden"
+                className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
               >
                 <Link to={`/detailcafe/${cafe.nomor}`}>
-                  {/* Image section dengan overlay teks */}
-                  <div
-                    className="card-img-section relative h-[15rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url['../assets/image/card-cafe.jpg'])"
-                    // style={backgroundStyle}
-                  >
+                  <div className="card-img-section relative h-[15rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url['../assets/image/card-cafe.jpg'])">
                     <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
-                      <h1 className="text-sm font-bold">{cafe.nama_kafe}</h1>
+                      <h1 className="text-sm font-bold text-[1.3rem]">
+                        {cafe.nama_kafe}
+                      </h1>
                     </div>
                   </div>
                 </Link>
-                <div className="p-4 flex-row items-center gap-4">
+                <div className="p-4 flex-col items-center gap-4 text-[.95rem]">
                   <p>{cafe.alamat}</p>
                   <h1>{cafe.rating}</h1>
+                  {cafe.distance && cafe.duration ? (
+                    <div>
+                      <h1>
+                        Berjarak <strong>{cafe.distance}</strong> dari lokasi
+                        anda
+                      </h1>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
                 </div>
               </div>
             );
@@ -188,62 +266,6 @@ const HomePage = () => {
         </div>
       </div>
       {/* Recommendation Section */}
-
-      {/* {cafes.map((cafe, index) => (
-        <div className="mt-[20rem]" key={index}>
-          <p>
-            <strong>Nomor:</strong> {cafe.nomor}
-          </p>
-          <p>
-            <strong>Nama Kafe:</strong> {cafe.nama_kafe}
-          </p>
-          <p>
-            <strong>Alamat:</strong> {cafe.alamat}
-          </p>
-          <p>
-            <strong>Link Maps:</strong> {cafe.link_maps}
-          </p>
-          <p>
-            <strong>Latitude:</strong> {cafe.latitude}
-          </p>
-          <p>
-            <strong>Longitude:</strong> {cafe.longitude}
-          </p>
-          <p>
-            <strong>Desain:</strong> {cafe.desain}
-          </p>
-          <p>
-            <strong>Fasilitas:</strong> {cafe.fasilitas}
-          </p>
-          <p>
-            <strong>Harga Makanan:</strong> {cafe.harga_makanan}
-          </p>
-          <p>
-            <strong>Harga Minuman:</strong> {cafe.harga_minuman}
-          </p>
-          <p>
-            <strong>Rating:</strong> {cafe.rating}
-          </p> */}
-      {/* Tampilkan jarak dan durasi jika sudah dihitung */}
-      {/* {cafe.distance && cafe.duration ? (
-            <>
-              <p><strong>Jarak:</strong> {cafe.distance}</p>
-              <p><strong>Durasi:</strong> {cafe.duration}</p>
-            </>
-          ) : (
-            <p>Menghitung jarak...</p>
-            )} */}
-      {/* <hr />
-        </div>
-      ))} */}
-
-      {/* Opsional: Tampilkan lokasi user */}
-      {/* {UserLocation && (
-        <div>
-          <p><strong>Latitude User:</strong> {UserLocation.latitude}</p>
-          <p><strong>Longitude User:</strong> {UserLocation.longitude}</p>
-        </div>
-      )} */}
     </div>
   );
 };

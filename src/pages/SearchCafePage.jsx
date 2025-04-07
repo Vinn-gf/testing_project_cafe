@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { CookieKeys, CookieStorage } from "../utils/cookies";
 
 const SearchCafePage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +72,15 @@ const SearchCafePage = () => {
             <Link to="/about" className="hover:text-gray-200">
               Profile
             </Link>
+            <h1
+              className="hover:text-gray-200 hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
           </div>
           <div className="md:hidden">
             <button
@@ -132,26 +142,38 @@ const SearchCafePage = () => {
           <p className="w-[90%] mx-auto">No results found.</p>
         ) : (
           <div className="w-[90%] mx-auto flex flex-wrap items-center gap-4">
-            {results.map((cafe, index) => (
-              <div
-                key={index}
-                className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
-              >
-                {/* Image section dengan overlay teks */}
-                <Link to={`/detailcafe/${cafe.nomor}`}>
-                  <div className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url-['../image/card-cafe.jpg'])">
-                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
-                      <h1 className="text-[1.2rem] font-extrabold">
-                        {cafe.nama_kafe}
-                      </h1>
-                      <h1 className="text-[0.9rem] font-normal">
-                        {cafe.alamat}
-                      </h1>
+            {results.map((cafe, index) => {
+              let backgroundImageUrl;
+              try {
+                backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
+              } catch (error) {
+                backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
+              }
+
+              return (
+                <div
+                  key={index}
+                  className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
+                >
+                  {/* Image section dengan overlay teks */}
+                  <Link to={`/detailcafe/${cafe.nomor}`}>
+                    <div
+                      className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat"
+                      style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+                    >
+                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
+                        <h1 className="text-[1.2rem] font-extrabold">
+                          {cafe.nama_kafe}
+                        </h1>
+                        <h1 className="text-[0.9rem] font-normal">
+                          {cafe.alamat}
+                        </h1>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

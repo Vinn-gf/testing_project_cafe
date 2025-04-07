@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { CookieKeys, CookieStorage } from "../utils/cookies";
 
 const DetailCafe = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const DetailCafe = () => {
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -136,6 +138,13 @@ const DetailCafe = () => {
     return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
   }
 
+  let backgroundImageUrl;
+  try {
+    backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
+  } catch (error) {
+    backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
+  }
+
   return (
     <div className="bg-[#1B2021] overflow-hidden">
       {/* Navbar */}
@@ -151,6 +160,15 @@ const DetailCafe = () => {
             <Link to="/about" className="hover:text-gray-200">
               Profile
             </Link>
+            <h1
+              className="hover:text-gray-200 hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
           </div>
           <div className="md:hidden">
             <button
@@ -179,7 +197,10 @@ const DetailCafe = () => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Gambar Kafe */}
           <div className="w-full md:w-1/2">
-            <div className="card-img-section h-96 bg-cover bg-center rounded-lg shadow-md transition-transform duration-300 hover:scale-105 bg-(url-['../assets/image/card-cafe.jpg'])"></div>
+            <div
+              className="card-img-section h-96 bg-cover bg-center rounded-lg shadow-md transition-transform duration-300 hover:scale-105)"
+              style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+            ></div>
           </div>
           {/* Informasi Kafe */}
           <div className="w-full md:w-1/2 flex flex-col justify-center text-[#E3DCC2] ">

@@ -32,7 +32,7 @@ const LoginPage = () => {
         setError(data.error || "Login failed");
       } else {
         setSuccess("Login successful!");
-        CookieStorage.set(CookieKeys.AuthToken, data.token);
+        CookieStorage.set(CookieKeys.AuthToken, "TokenUser");
         setTimeout(() => {
           navigate("/");
         }, 1500);

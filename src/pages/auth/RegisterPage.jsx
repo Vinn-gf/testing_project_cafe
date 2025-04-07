@@ -1,20 +1,36 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showPassword, setshowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    // Validasi username: tidak ada spasi dan maksimum 10 huruf
+    // Regex ini memastikan tidak ada spasi dan panjang antara 1 hingga 10 karakter.
+    const usernameRegex = /^(?!.*\s).{1,10}$/;
+    if (!usernameRegex.test(username)) {
+      setError("Username tidak boleh mengandung spasi dan maksimal 10 huruf.");
+      return;
+    }
+
+    // Validasi password: minimal 1 huruf kecil, 1 huruf besar, dan 1 angka
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password harus memiliki minimal 1 huruf kecil, 1 huruf besar, dan 1 angka."
+      );
+      return;
+    }
 
     try {
       const response = await fetch("http://127.0.0.1:5000/api/register", {
@@ -84,7 +100,7 @@ const RegisterPage = () => {
             />
             <button
               type="button"
-              onClick={() => setshowPassword(!showPassword)}
+              onClick={() => setShowPassword(!showPassword)}
               className="absolute right-[1rem] top-[2.5rem] text-[#1B2021] flex"
             >
               {showPassword ? <FaEye size={20} /> : <FaEyeSlash size={20} />}
@@ -92,7 +108,7 @@ const RegisterPage = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-[#E3DCC2] hover:bg-[#A6A867] text-[#1B2021] font-bold py-2 px-4 rounded hover:bg- transition-colors duration-300"
+            className="w-full bg-[#E3DCC2] hover:bg-[#A6A867] text-[#1B2021] font-bold py-2 px-4 rounded transition-colors duration-300"
           >
             Register
           </button>

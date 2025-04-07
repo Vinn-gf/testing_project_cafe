@@ -8,6 +8,7 @@ import SearchCafePage from "../pages/SearchCafePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import ProtectedTokenUser from "../components/ProtectedComponents/ProtectedTokenUser";
+import UserPreferences from "../pages/UserPreferences";
 
 const RoutingPage = () => {
   return (
@@ -15,6 +16,7 @@ const RoutingPage = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/user_preferences" element={<UserPreferences />} />
         <Route
           path="/"
           element={

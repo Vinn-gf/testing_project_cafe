@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
+import { CookieKeys, CookieStorage } from "../utils/cookies";
 
 const AllCafes = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,16 +12,7 @@ const AllCafes = () => {
   const cafesPerPage = 6;
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
-
-  // useEffect(() => {
-  //   fetch("http://127.0.0.1:5000/api/data")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log("Data dari API:", data);
-  //       setCafes(data);
-  //     })
-  //     .catch((error) => console.error("Error fetching data:", error));
-  // }, []);
+  // const backgroundImageUrl = require("../assets/image/");
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -97,6 +89,15 @@ const AllCafes = () => {
             <Link to="/about" className="hover:text-gray-200">
               Profile
             </Link>
+            <h1
+              className="hover:text-gray-200 hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
           </div>
           <div className="md:hidden">
             <button
@@ -145,25 +146,40 @@ const AllCafes = () => {
 
       {/* Cafe List Section */}
       <div className="p-4">
-        <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4 ">
-          {currentCafes.map((cafe, index) => (
-            <div
-              key={index}
-              className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
-            >
-              <Link to={`/detailcafe/${cafe.nomor}`}>
-                {/* Image section dengan overlay teks */}
-                <div className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat bg-(url['../assets/image/card-cafe.jpg'])">
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
-                    <h1 className="text-[1.2rem] font-extrabold">
-                      {cafe.nama_kafe}
-                    </h1>
-                    <h1 className="text-[0.9rem] font-normal">{cafe.alamat}</h1>
+        <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4">
+          {currentCafes.map((cafe, index) => {
+            let backgroundImageUrl;
+            try {
+              backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
+            } catch (error) {
+              backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
+            }
+
+            return (
+              <div
+                key={index}
+                className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
+              >
+                <Link to={`/detailcafe/${cafe.nomor}`}>
+                  <div
+                    className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat)"
+                    style={{
+                      backgroundImage: `url(${backgroundImageUrl})`,
+                    }}
+                  >
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
+                      <h1 className="text-[1.2rem] font-extrabold">
+                        {cafe.nama_kafe}
+                      </h1>
+                      <h1 className="text-[0.9rem] font-normal">
+                        {cafe.alamat}
+                      </h1>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))}
+                </Link>
+              </div>
+            );
+          })}
         </div>
 
         {/* Pagination Section */}
@@ -175,7 +191,7 @@ const AllCafes = () => {
           >
             Previous
           </button>
-          <span className=" text-[#1B2021]">
+          <span className="text-[#1B2021]">
             Page {currentPage} of {totalPages}
           </span>
           <button

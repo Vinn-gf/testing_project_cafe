@@ -60,6 +60,40 @@ def get_data_by_id(nomor):
     else:
         return None
 
+def get_reviews(id_kafe=None):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cafe_databases"
+    )
+    cursor = db.cursor()
+
+    cursor.execute("SHOW COLUMNS FROM review_tables")
+    columns = [col[0] for col in cursor.fetchall()]
+
+    if id_kafe:
+        query = "SELECT * FROM review_tables WHERE id_kafe = %s"
+        cursor.execute(query, (id_kafe,))
+    else:
+        cursor.execute("SELECT * FROM review_tables")
+
+    data = cursor.fetchall()
+    db.close()
+
+    results = []
+    for row in data:
+        od = OrderedDict()
+        for idx, col in enumerate(columns):
+            od[col] = row[idx]
+        results.append(od)
+    return results
+
+@app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
+def api_reviews(id_kafe):
+    return jsonify(get_reviews(id_kafe))
+
+
 @app.route('/api/data', methods=['GET'])
 def api_data():
     return jsonify(get_data())

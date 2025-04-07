@@ -2,23 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useParams } from "react-router-dom";
 
-const sampleReviews = [
-  {
-    id: 1,
-    userName: "John Doe",
-    date: "2025-04-01",
-    rating: 4,
-    comment: "Tempat yang nyaman dan kopinya enak. Recommended!",
-  },
-  {
-    id: 2,
-    userName: "Jane Smith",
-    date: "2025-03-28",
-    rating: 5,
-    comment: "Pelayanan ramah dan suasana cozy, sangat menyenangkan.",
-  },
-];
-
 const DetailCafe = () => {
   const { id } = useParams();
   const [cafe, setCafe] = useState(null);
@@ -29,6 +12,9 @@ const DetailCafe = () => {
   const [distance, setDistance] = useState("N/A");
   const [duration, setDuration] = useState("N/A");
   const [userLocation, setUserLocation] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -48,6 +34,27 @@ const DetailCafe = () => {
 
     fetchCafe();
   }, [id]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/api/reviews/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch reviews");
+        }
+        const data = await response.json();
+        setReviews(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    if (cafe) {
+      fetchReviews();
+    }
+  }, [cafe, id]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -95,6 +102,20 @@ const DetailCafe = () => {
     fetchDistance();
   }, [userLocation, cafe]);
 
+  const totalReviews = reviews.length;
+  const totalPageReviews = Math.ceil(totalReviews / reviewsPerPage);
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPageReviews) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
   if (loading || distanceLoading) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-gray-100">
@@ -116,7 +137,7 @@ const DetailCafe = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="bg-[#1B2021] overflow-hidden">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">
@@ -154,7 +175,7 @@ const DetailCafe = () => {
       {/* Navbar */}
 
       {/* Detail Section */}
-      <div className="container mx-auto my-10 p-4 bg-[#1B2021] rounded-lg shadow-lg font-montserrat">
+      <div className="container w-[90%] mx-auto my-10 p-4 bg-[#1B2021] rounded-lg shadow-lg font-montserrat">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Gambar Kafe */}
           <div className="w-full md:w-1/2">
@@ -193,39 +214,44 @@ const DetailCafe = () => {
       </div>
       {/* Detail Section */}
 
-      {/* ✅ [TAMBAHAN] - Bagian Ulasan Pengguna */}
-      <div className="container mx-auto my-10 p-6 bg-white rounded-lg shadow-lg font-montserrat">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">User Reviews</h2>
+      {/* Reviews */}
+      <div className="mx-auto w-[90%] my-10 p-6 bg-[#1B2021] text-[#e3dcc2] rounded-lg shadow-lg font-montserrat">
+        <h2 className="text-2xl font-bold mb-4">User Reviews</h2>
         <div className="space-y-6">
-          {sampleReviews.map((review) => (
-            <div key={review.id} className="p-4 border rounded-lg">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-gray-700">
-                  {review.userName}
-                </h3>
-                <span className="text-sm text-gray-500">{review.date}</span>
+          {currentReviews.map((review, index) => {
+            return (
+              <div key={index} className="border rounded-lg">
+                <div className="border-b-2 border-[#E3DCC2] w-full">
+                  <div className="flex items-center justify-between m-2">
+                    <h3 className="text-xl font-bold">{review.nama}</h3>
+                  </div>
+                </div>
+                <p className="m-2">{review.ulasan}</p>
               </div>
-              <div className="flex items-center mt-2">
-                {/* Contoh tampilan rating berupa bintang */}
-                {Array(review.rating)
-                  .fill(0)
-                  .map((_, index) => (
-                    <svg
-                      key={index}
-                      className="w-5 h-5 text-yellow-500"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.38-2.455a1 1 0 00-1.175 0l-3.38 2.455c-.784.57-1.838-.197-1.539-1.118l1.287-3.97a1 1 0 00-.364-1.118L2.05 9.397c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.97z" />
-                    </svg>
-                  ))}
-              </div>
-              <p className="mt-2 text-gray-600">{review.comment}</p>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+        <div className="w-[90%] mx-auto flex justify-center items-center mt-8 gap-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-700 text-[#E3DCC2] rounded disabled:opacity-50 disabled:text-white hover:cursor-pointer"
+          >
+            Previous
+          </button>
+          <span className=" text-[#e3dcc2]">
+            Page {currentPage} of {totalPageReviews}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPageReviews}
+            className="px-4 py-2 bg-gray-700 text-[#E3DCC2] rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
-      {/* ✅ [TAMBAHAN] - Penutup Bagian Ulasan Pengguna */}
+      {/* Reviews*/}
     </div>
   );
 };

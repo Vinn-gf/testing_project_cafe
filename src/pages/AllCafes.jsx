@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
 
 const AllCafes = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [cafes, setCafes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const cafesPerPage = 6;
   const navigate = useNavigate();
@@ -19,6 +22,25 @@ const AllCafes = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
+  useEffect(() => {
+    const fetchCafe = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/api/data`);
+        if (!response.ok) {
+          throw new Error("Kafe tidak ditemukan");
+        }
+        const data = await response.json();
+        setCafes(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCafe();
+  }, []);
+
   const handleSearch = (event) => {
     event.preventDefault();
     if (searchKeyword.trim()) {
@@ -26,7 +48,6 @@ const AllCafes = () => {
     }
   };
 
-  // Hitung halaman
   const totalCafes = cafes.length;
   const totalPages = Math.ceil(totalCafes / cafesPerPage);
   const indexOfLastCafe = currentPage * cafesPerPage;
@@ -41,8 +62,28 @@ const AllCafes = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center bg-gray-100">
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
+  }
+
   return (
-    <div>
+    <div className="bg-white overflow-hidden">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">
@@ -104,7 +145,7 @@ const AllCafes = () => {
 
       {/* Cafe List Section */}
       <div className="p-4">
-        <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4">
+        <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4 ">
           {currentCafes.map((cafe, index) => (
             <div
               key={index}

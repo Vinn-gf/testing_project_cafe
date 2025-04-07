@@ -149,7 +149,7 @@ const HomePage = () => {
   }
 
   return (
-    <div>
+    <div className="bg-[#1B2021] overflow-hidden">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] text-[#E3DCC2] mx-auto flex justify-between items-center">
@@ -227,7 +227,7 @@ const HomePage = () => {
 
       {/* Recommendation Section */}
       <div className="p-4">
-        <h1 className="w-[90%] mx-auto font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
+        <h1 className="w-[90%] text-[#e3dcc2] mx-auto font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
           Most Nearby Cafes
         </h1>
         <div className="recommendation-section w-[90%] mx-auto flex items-center justify-between gap-4 h-[55vh]">

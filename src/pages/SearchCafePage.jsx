@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const SearchCafePage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +7,8 @@ const SearchCafePage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const navigate = useNavigate();
 
   // useEffect(() => {
   //   fetch(`http://127.0.0.1:5000/api/search/${keyword}`)
@@ -38,6 +40,13 @@ const SearchCafePage = () => {
 
     fetchCafe();
   }, [keyword]);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    if (searchKeyword.trim()) {
+      navigate(`/search/${searchKeyword}`);
+    }
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -85,16 +94,39 @@ const SearchCafePage = () => {
       </div>
       {/* Navbar */}
 
+      {/* Search Section */}
+      <div className="px-4 w-[90%] mx-auto flex items-center justify-between">
+        <form
+          onSubmit={handleSearch}
+          className="mt-4 w-[100%] mb-2 flex items-center font-montserrat gap-2"
+        >
+          <input
+            className="search-input p-2 rounded-md outline-none text-[#E3DCC2] w-[30%] bg-[#1B2021] font-montserrat"
+            placeholder="Enter your cafe..."
+            type="text"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="search-btn text-[#E3DCC2] bg-[#1B2021] py-2 px-4 rounded-md hover:bg-[#51513D]"
+          >
+            Search
+          </button>
+        </form>
+        <Link to="/allcafes">
+          <button className="check-cafe-btn w-[10em] text-[#E3DCC2] p-2 bg-[#1B2021] rounded-md hover:bg-[#51513D]">
+            Show All Cafes
+          </button>
+        </Link>
+      </div>
+      {/* Search Section */}
+
       <div className="p-4">
         <div className="head-section w-[90%] mx-auto flex items-center justify-between mb-4">
           <h1 className="font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
             Search Results for "{keyword}"
           </h1>
-          <Link to="/allcafes">
-            <button className="check-cafe-btn w-[10em] text-[#E3DCC2] p-2 bg-[#1B2021] rounded-md hover:bg-[#51513D]">
-              Show All Cafes
-            </button>
-          </Link>
         </div>
         {results.length === 0 ? (
           <p className="w-[90%] mx-auto">No results found.</p>

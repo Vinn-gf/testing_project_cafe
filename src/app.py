@@ -89,6 +89,72 @@ def get_reviews(id_kafe=None):
         results.append(od)
     return results
 
+def register_user(data):
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    # Hash password untuk keamanan
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+
+        # Cek apakah username sudah ada
+        cursor.execute("SELECT * FROM user_tables WHERE username = %s", (username,))
+        if cursor.fetchone():
+            db.close()
+            return jsonify({"error": "Username already exists"}), 400
+
+        # Simpan user baru ke database
+        query = "INSERT INTO user_tables (username, password) VALUES (%s, %s)"
+        cursor.execute(query, (username, password))
+        db.commit()
+        user_id = cursor.lastrowid
+        db.close()
+
+        return jsonify({"message": "User registered successfully", "user_id": user_id}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+def login_user(data):
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        query = "SELECT id_user, username, password FROM user_tables WHERE username = %s"
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        db.close()
+
+        if result:
+            user_id, user, stored_password = result
+            if (stored_password, password):
+                return jsonify({"message": "Login successful", "user_id": user_id}), 200
+            else:
+                return jsonify({"error": "Invalid credentials"}), 401
+        else:
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
 def api_reviews(id_kafe):
     return jsonify(get_reviews(id_kafe))
@@ -109,6 +175,16 @@ def api_cafe(nomor):
         return jsonify(cafe)
     else:
         return jsonify({"error": "Cafe not found"}), 404
+    
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    data = request.get_json()
+    return register_user(data)
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json()
+    return login_user(data)
 
 if __name__ == '__main__':
     app.run(debug=True)

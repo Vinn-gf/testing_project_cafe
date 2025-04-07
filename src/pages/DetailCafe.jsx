@@ -76,7 +76,7 @@ const DetailCafe = () => {
     const fetchDistance = async () => {
       if (userLocation && cafe) {
         setDistanceLoading(true);
-        const apiKey = "AlzaSyD-4uTkREKJUnRgRBfkdifFMYkQ-mVVIsH";
+        const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
         const userLat = userLocation.latitude;
         const userLong = userLocation.longitude;
         const cafeLat = parseFloat(cafe.latitude);

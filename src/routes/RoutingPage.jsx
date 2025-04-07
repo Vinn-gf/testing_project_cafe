@@ -5,15 +5,48 @@ import HomePage from "../pages/HomePage";
 import AllCafes from "../pages/AllCafes";
 import DetailCafe from "../pages/DetailCafe";
 import SearchCafePage from "../pages/SearchCafePage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
+import ProtectedTokenUser from "../components/ProtectedComponents/ProtectedTokenUser";
 
 const RoutingPage = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/allcafes" element={<AllCafes />} />
-        <Route path="/detailcafe/:id" element={<DetailCafe />} />
-        <Route path="/search/:keyword" element={<SearchCafePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedTokenUser>
+              <HomePage />
+            </ProtectedTokenUser>
+          }
+        />
+        <Route
+          path="/allcafes"
+          element={
+            <ProtectedTokenUser>
+              <AllCafes />
+            </ProtectedTokenUser>
+          }
+        />
+        <Route
+          path="/detailcafe/:id"
+          element={
+            <ProtectedTokenUser>
+              <DetailCafe />
+            </ProtectedTokenUser>
+          }
+        />
+        <Route
+          path="/search/:keyword"
+          element={
+            <ProtectedTokenUser>
+              <SearchCafePage />
+            </ProtectedTokenUser>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

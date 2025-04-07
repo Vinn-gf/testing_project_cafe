@@ -12,15 +12,15 @@ const AllCafes = () => {
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/data")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Data dari API:", data);
-        setCafes(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://127.0.0.1:5000/api/data")
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log("Data dari API:", data);
+  //       setCafes(data);
+  //     })
+  //     .catch((error) => console.error("Error fetching data:", error));
+  // }, []);
 
   useEffect(() => {
     const fetchCafe = async () => {

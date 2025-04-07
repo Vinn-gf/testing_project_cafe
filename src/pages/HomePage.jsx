@@ -78,10 +78,9 @@ const HomePage = () => {
     }
   }, [UserLocation]);
 
-  // Perhitungan jarak user dan lokasi cafe
   useEffect(() => {
     if (UserLocation && cafes.length > 0 && !DistanceFetched) {
-      const apiKey = "AlzaSyD-4uTkREKJUnRgRBfkdifFMYkQ-mVVIsH";
+      const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
 
       const updateCafesWithDistance = cafes.map((cafe) => {
         const cafeLat = parseFloat(cafe.latitude);

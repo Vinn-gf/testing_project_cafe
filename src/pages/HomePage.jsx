@@ -81,7 +81,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (UserLocation && cafes.length > 0 && !DistanceFetched) {
-      const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
+      const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
 
       const updateCafesWithDistance = cafes.map((cafe) => {
         const cafeLat = parseFloat(cafe.latitude);

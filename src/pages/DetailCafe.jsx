@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
+import { FaStar } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 const DetailCafe = () => {
   const { id } = useParams();
@@ -11,7 +13,7 @@ const DetailCafe = () => {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [distance, setDistance] = useState("N/A");
-  const [duration, setDuration] = useState("N/A");
+  // const [duration, setDuration] = useState("N/A");
   const [userLocation, setUserLocation] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,7 +80,7 @@ const DetailCafe = () => {
     const fetchDistance = async () => {
       if (userLocation && cafe) {
         setDistanceLoading(true);
-        const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
+        const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
         const userLat = userLocation.latitude;
         const userLong = userLocation.longitude;
         const cafeLat = parseFloat(cafe.latitude);
@@ -91,7 +93,7 @@ const DetailCafe = () => {
           const data = await response.json();
           if (data.rows.length > 0 && data.rows[0].elements.length > 0) {
             setDistance(data.rows[0].elements[0].distance.text);
-            setDuration(data.rows[0].elements[0].duration.text);
+            // setDuration(data.rows[0].elements[0].duration.text);
           }
         } catch (error) {
           console.error("Error mengambil data jarak:", error);
@@ -205,25 +207,35 @@ const DetailCafe = () => {
           {/* Informasi Kafe */}
           <div className="w-full md:w-1/2 flex flex-col justify-center text-[#E3DCC2] ">
             <h1 className="text-4xl font-bold mb-4">{cafe.nama_kafe}</h1>
-            <p className="text-lg mb-2">
-              <span className="font-normal">Rating Kafe:</span> {cafe.rating}
+            <p className="text-lg mb-2 flex gap-2">
+              <span className="flex items-center relative -top-[0.05rem]">
+                <FaStar />
+              </span>
+              <span>{cafe.rating} / 5</span>
+            </p>
+            <p className="text-lg mb-2 flex gap-2">
+              <span className="flex items-center relative -top-[0.05rem]">
+                <FaLocationDot />
+              </span>
+              <span className="font-normal">{cafe.alamat}</span>
+            </p>
+            <p className="text-lg mb-2 flex gap-2">
+              <span className="font-normal">
+                Harga Makanan : {cafe.harga_makanan}
+              </span>
+            </p>
+            <p className="text-lg mb-2 flex gap-2">
+              <span className="font-normal">
+                Harga Minuman : {cafe.harga_minuman}
+              </span>
             </p>
             <p className="text-lg mb-2">
-              <span className="font-normal">Alamat Kafe:</span> {cafe.alamat}
+              <span className="font-normal">Fasilitas : {cafe.fasilitas}</span>
             </p>
             <p className="text-lg mb-2">
-              <span className="font-normal">Harga Makanan:</span>{" "}
-              {cafe.harga_makanan}
-            </p>
-            <p className="text-lg mb-2">
-              <span className="font-normal">Harga Minuman:</span>{" "}
-              {cafe.harga_minuman}
-            </p>
-            <p className="text-lg mb-2">
-              <span className="font-normal">Jarak:</span> {distance}
-            </p>
-            <p className="text-lg mb-4">
-              <span className="font-normal">Durasi:</span> {duration}
+              <span className="font-normal">
+                Berjarak <strong>{distance}</strong> dari lokasi anda
+              </span>
             </p>
             <div className="flex items-center gap-2">
               <button className="p-[.75rem] flex items-center justify-center bg-[#E3DC95] text-[#1B2021] font-bold rounded-lg shadow hover:bg-[#A6A867] transition-colors duration-300 focus:bg-[#A6A867]">

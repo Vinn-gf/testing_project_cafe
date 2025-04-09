@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
+import { ColorRing } from "react-loader-spinner";
 
 const SearchCafePage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +51,19 @@ const SearchCafePage = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="w-full h-screen flex justify-center items-center bg-gray-100">
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+        />
+      </div>
+    );
   }
 
   if (error) {

@@ -32,10 +32,26 @@ const LoginPage = () => {
         setError(data.error || "Login failed");
       } else {
         setSuccess("Login successful!");
-        CookieStorage.set(CookieKeys.AuthToken, "TokenUser");
-        setTimeout(() => {
-          navigate("/");
-        }, 1500);
+        CookieStorage.set(CookieKeys.AuthToken, "Token Autentikasi");
+        CookieStorage.set(CookieKeys.UserToken, data.user_id);
+        console.log("preferensi", data.facilities_preference);
+        console.log("preferensi", data.distance_preference);
+        console.log("id", data.user_id);
+
+        if (!data.facilities_preference || !data.distance_preference) {
+          setSuccess("Login successful!");
+          setTimeout(() => {
+            navigate("/user_preferences");
+          }, 1500);
+        } else {
+          setSuccess("Login successful!");
+          setTimeout(() => {
+            navigate("/");
+          }, 1500);
+        }
+        // setTimeout(() => {
+        //   navigate("/");
+        // }, 1500);
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

@@ -95,9 +95,6 @@ def register_user(data):
 
     if not username or not password:
         return jsonify({"error": "Username and password are required"}), 400
-
-    # Hash password untuk keamanan
-
     try:
         db = mysql.connector.connect(
             host="localhost",
@@ -107,13 +104,11 @@ def register_user(data):
         )
         cursor = db.cursor()
 
-        # Cek apakah username sudah ada
         cursor.execute("SELECT * FROM user_tables WHERE username = %s", (username,))
         if cursor.fetchone():
             db.close()
             return jsonify({"error": "Username already exists"}), 400
 
-        # Simpan user baru ke database
         query = "INSERT INTO user_tables (username, password) VALUES (%s, %s)"
         cursor.execute(query, (username, password))
         db.commit()
@@ -139,22 +134,56 @@ def login_user(data):
             database="cafe_databases"
         )
         cursor = db.cursor()
-        query = "SELECT id_user, username, password FROM user_tables WHERE username = %s"
+        query = "SELECT id_user, username, password, preferensi_jarak, preferensi_fasilitas FROM user_tables WHERE username = %s"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         db.close()
 
         if result:
-            user_id, user, stored_password = result
-            if (stored_password, password):
-                return jsonify({"message": "Login successful", "user_id": user_id}), 200
+            user_id, user, stored_password, preferensi_jarak_user, preferensi_fasilitas_user, = result
+            if stored_password == password:
+                return jsonify({"message": "Login successful", "user_id": user_id, "distance_preference": preferensi_jarak_user, "facilities_preference": preferensi_fasilitas_user}), 200
             else:
-                return jsonify({"error": "Invalid credentials"}), 401
+                return jsonify({"error": "Wrong password"}), 401
         else:
             return jsonify({"error": "User not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+    
+def get_user_by_id(id_user):
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        query = "SELECT id_user, username, password, preferensi_jarak, preferensi_fasilitas FROM user_tables WHERE id_user = %s"
+        cursor.execute(query, (id_user,))
+        result = cursor.fetchone()
+        db.close()
+        if result:
+            return {
+                "id_user": result[0],
+                "username": result[1],
+                "password": result[2],
+                "preferensi_jarak": result[3],
+                "preferensi_fasilitas": result[4]
+            }
+        else:
+            return None
+    except Exception as e:
+        return {"error": str(e)}
+    
+@app.route('/api/users/<int:id_user>', methods=['GET'])
+def api_user_by_id(id_user):
+    user = get_user_by_id(id_user)
+    if user:
+        return jsonify(user)
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
 @app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
 def api_reviews(id_kafe):
     return jsonify(get_reviews(id_kafe))

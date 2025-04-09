@@ -16,7 +16,14 @@ const RoutingPage = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/user_preferences" element={<UserPreferences />} />
+        <Route
+          path="/user_preferences"
+          element={
+            <ProtectedTokenUser>
+              <UserPreferences />
+            </ProtectedTokenUser>
+          }
+        />
         <Route
           path="/"
           element={

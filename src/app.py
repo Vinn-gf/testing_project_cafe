@@ -175,6 +175,44 @@ def get_user_by_id(id_user):
             return None
     except Exception as e:
         return {"error": str(e)}
+
+def update_user_preferences(data):
+    user_id = data.get("user_id")
+    preferensi_jarak = data.get("preferensi_jarak")
+    preferensi_fasilitas = data.get("preferensi_fasilitas")
+
+    if not user_id:
+        return {"error": "User id is required"}, 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        query = """UPDATE user_tables 
+                   SET preferensi_jarak = %s, preferensi_fasilitas = %s 
+                   WHERE id_user = %s"""
+        cursor.execute(query, (preferensi_jarak, preferensi_fasilitas, user_id))
+        db.commit()
+        db.close()
+        
+        if cursor.rowcount > 0:
+            return {"message": "User preferences updated successfully"}, 200
+        else:
+            return {"error": "User not found or no changes made"}, 404
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+@app.route('/api/user/preferences', methods=['POST'])
+def api_update_user_preferences():
+    data = request.get_json()
+    result, status = update_user_preferences(data)
+    return jsonify(result), status
+
     
 @app.route('/api/users/<int:id_user>', methods=['GET'])
 def api_user_by_id(id_user):

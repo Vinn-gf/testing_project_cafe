@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
+import axios from "axios";
 
 function ProtectedTokenUser({ children }) {
   const navigate = useNavigate();
@@ -31,13 +32,11 @@ function ProtectedTokenUser({ children }) {
       }
 
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `http://127.0.0.1:5000/api/users/${userId}`
         );
-        if (!response.ok) {
-          throw new Error("User not found");
-        }
-        const userPreference = await response.json();
+
+        const userPreference = response.data;
         if (
           !userPreference.preferensi_jarak ||
           userPreference.preferensi_jarak.trim() === "" ||

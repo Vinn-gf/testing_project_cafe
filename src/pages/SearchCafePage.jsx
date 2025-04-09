@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
 import { ColorRing } from "react-loader-spinner";
+import axios from "axios";
 
 const SearchCafePage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,14 +26,10 @@ const SearchCafePage = () => {
   useEffect(() => {
     const fetchCafe = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `http://127.0.0.1:5000/api/search/${keyword}`
         );
-        if (!response.ok) {
-          throw new Error("Kafe tidak ditemukan");
-        }
-        const data = await response.json();
-        setResults(data);
+        setResults(response.data);
       } catch (err) {
         setError(err.message);
       } finally {

@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
+import axios from "axios";
 
 const HomePage = () => {
   const [cafes, setCafes] = useState([]);
   const [UserLocation, setUserLocation] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  // const backgroundImageUrl = require("../assets/image/hero-bg.jpg");
   const [DistanceFetched, setDistanceFetched] = useState(false);
   const [loading, setLoading] = useState(true);
   const [distanceLoading, setDistanceLoading] = useState(true);
@@ -15,7 +15,6 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  // ✅ [UPDATE] Fungsi helper untuk parsing jarak (misalnya: "2.4 km" => 2400)
   const parseDistance = (distanceText) => {
     if (!distanceText || distanceText === "N/A") {
       return Infinity;
@@ -28,16 +27,11 @@ const HomePage = () => {
     return num;
   };
 
-  // Fetch data cafe dari API Flask python
   useEffect(() => {
     const fetchCafe = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/data`);
-        if (!response.ok) {
-          throw new Error("Kafe tidak ditemukan");
-        }
-        const data = await response.json();
-        setCafes(data);
+        const response = await axios.get(`http://127.0.0.1:5000/api/data`);
+        setCafes(response.data);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -72,7 +66,6 @@ const HomePage = () => {
     }
   }, []);
 
-  // Logging untuk melihat perubahan UserLocation
   useEffect(() => {
     if (UserLocation) {
       console.log("User location:", UserLocation);
@@ -82,28 +75,28 @@ const HomePage = () => {
   useEffect(() => {
     if (UserLocation && cafes.length > 0 && !DistanceFetched) {
       const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
+      const userLat = UserLocation.latitude;
+      const userLong = UserLocation.longitude;
 
       const updateCafesWithDistance = cafes.map((cafe) => {
         const cafeLat = parseFloat(cafe.latitude);
         const cafeLong = parseFloat(cafe.longitude);
-        const userLat = UserLocation.latitude;
-        const userLong = UserLocation.longitude;
-
         const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
 
-        return fetch(url)
-          .then((response) => response.json())
-          .then((distanceData) => {
+        return axios
+          .get(url)
+          .then((response) => {
+            const data = response.data;
             let distanceText = "N/A";
             let durationText = "N/A";
             if (
-              distanceData.rows &&
-              distanceData.rows[0] &&
-              distanceData.rows[0].elements &&
-              distanceData.rows[0].elements[0]
+              data.rows &&
+              data.rows[0] &&
+              data.rows[0].elements &&
+              data.rows[0].elements[0]
             ) {
-              distanceText = distanceData.rows[0].elements[0].distance.text;
-              durationText = distanceData.rows[0].elements[0].duration.text;
+              distanceText = data.rows[0].elements[0].distance.text;
+              durationText = data.rows[0].elements[0].duration.text;
             }
             return { ...cafe, distance: distanceText, duration: durationText };
           })
@@ -117,7 +110,6 @@ const HomePage = () => {
       });
 
       Promise.all(updateCafesWithDistance).then((updatedCafes) => {
-        // ✅ [UPDATE] Mengurutkan kafe berdasarkan jarak terdekat dan hanya ambil 3 teratas
         const sortedCafes = updatedCafes.sort(
           (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
         );

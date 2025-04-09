@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
+import axios from "axios";
 
 const AllCafes = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,19 +13,16 @@ const AllCafes = () => {
   const cafesPerPage = 6;
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
-  // const backgroundImageUrl = require("../assets/image/");
 
   useEffect(() => {
     const fetchCafe = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/data`);
-        if (!response.ok) {
-          throw new Error("Kafe tidak ditemukan");
-        }
-        const data = await response.json();
-        setCafes(data);
+        const response = await axios.get(`http://127.0.0.1:5000/api/data`);
+        setCafes(response.data);
+        console.log(response);
         setLoading(false);
       } catch (err) {
+        console.log(err);
         setError(err.message);
         setLoading(false);
       }

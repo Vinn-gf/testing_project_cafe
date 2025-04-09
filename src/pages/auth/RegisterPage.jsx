@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
@@ -15,15 +16,12 @@ const RegisterPage = () => {
     setError("");
     setSuccess("");
 
-    // Validasi username: tidak ada spasi dan maksimum 10 huruf
-    // Regex ini memastikan tidak ada spasi dan panjang antara 1 hingga 10 karakter.
     const usernameRegex = /^(?!.*\s).{1,10}$/;
     if (!usernameRegex.test(username)) {
       setError("Username tidak boleh mengandung spasi dan maksimal 10 huruf.");
       return;
     }
 
-    // Validasi password: minimal 1 huruf kecil, 1 huruf besar, dan 1 angka
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
     if (!passwordRegex.test(password)) {
       setError(
@@ -33,22 +31,20 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.error || "Registration failed");
-      } else {
-        setSuccess("Registration successful! You can now login.");
-        setTimeout(() => navigate("/login"), 2000);
-      }
+      await axios.post(
+        "http://127.0.0.1:5000/api/register",
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      setSuccess("Registration successful! You can now login.");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      if (err.response && err.response.data) {
+        setError(err.response.data.error || "Registration failed");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     }
   };
 

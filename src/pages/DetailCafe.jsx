@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
 import { FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
+import axios from "axios";
 
 const DetailCafe = () => {
   const { id } = useParams();
@@ -23,12 +24,10 @@ const DetailCafe = () => {
   useEffect(() => {
     const fetchCafe = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/cafe/${id}`);
-        if (!response.ok) {
-          throw new Error("Kafe tidak ditemukan");
-        }
-        const data = await response.json();
-        setCafe(data);
+        const response = await axios.get(
+          `http://127.0.0.1:5000/api/cafe/${id}`
+        );
+        setCafe(response.data);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -42,12 +41,10 @@ const DetailCafe = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/reviews/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch reviews");
-        }
-        const data = await response.json();
-        setReviews(data);
+        const response = await axios.get(
+          `http://127.0.0.1:5000/api/reviews/${id}`
+        );
+        setReviews(response.data);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -80,20 +77,18 @@ const DetailCafe = () => {
     const fetchDistance = async () => {
       if (userLocation && cafe) {
         setDistanceLoading(true);
-        const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
+        const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
         const userLat = userLocation.latitude;
         const userLong = userLocation.longitude;
         const cafeLat = parseFloat(cafe.latitude);
         const cafeLong = parseFloat(cafe.longitude);
-
         const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
 
         try {
-          const response = await fetch(url);
-          const data = await response.json();
+          const response = await axios.get(url);
+          const data = response.data;
           if (data.rows.length > 0 && data.rows[0].elements.length > 0) {
             setDistance(data.rows[0].elements[0].distance.text);
-            // setDuration(data.rows[0].elements[0].duration.text);
           }
         } catch (error) {
           console.error("Error mengambil data jarak:", error);

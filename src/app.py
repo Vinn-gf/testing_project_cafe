@@ -26,7 +26,7 @@ def get_data(search_term=None):
 
     data = cursor.fetchall()
     db.close()
-
+    
     results = []
     for row in data:
         od = OrderedDict()

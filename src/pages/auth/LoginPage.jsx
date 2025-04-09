@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 // import Cookies from "universal-cookie";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
+import axios from "axios";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -18,43 +19,35 @@ const LoginPage = () => {
     setSuccess("");
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:5000/api/login",
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
-        setError(data.error || "Login failed");
+      setSuccess("Login successful!");
+      CookieStorage.set(CookieKeys.AuthToken, "Token Autentikasi");
+      CookieStorage.set(CookieKeys.UserToken, data.user_id);
+
+      if (!data.facilities_preference || !data.distance_preference) {
+        setSuccess("Login successful!");
+        setTimeout(() => {
+          navigate("/user_preferences");
+        }, 1500);
       } else {
         setSuccess("Login successful!");
-        CookieStorage.set(CookieKeys.AuthToken, "Token Autentikasi");
-        CookieStorage.set(CookieKeys.UserToken, data.user_id);
-        console.log("preferensi", data.facilities_preference);
-        console.log("preferensi", data.distance_preference);
-        console.log("id", data.user_id);
-
-        if (!data.facilities_preference || !data.distance_preference) {
-          setSuccess("Login successful!");
-          setTimeout(() => {
-            navigate("/user_preferences");
-          }, 1500);
-        } else {
-          setSuccess("Login successful!");
-          setTimeout(() => {
-            navigate("/");
-          }, 1500);
-        }
-        // setTimeout(() => {
-        //   navigate("/");
-        // }, 1500);
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      if (err.response && err.response.data) {
+        setError(err.response.data.error || "Login failed");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     }
   };
 

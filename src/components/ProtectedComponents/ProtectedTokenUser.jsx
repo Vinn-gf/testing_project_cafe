@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
 import axios from "axios";
 
 function ProtectedTokenUser({ children }) {
   const navigate = useNavigate();
+  var location = useLocation();
 
   useEffect(() => {
     const checkUserValidation = async () => {
@@ -37,13 +38,16 @@ function ProtectedTokenUser({ children }) {
         );
 
         const userPreference = response.data;
-        if (
-          !userPreference.preferensi_jarak ||
+        const PreferencesEmpty =
           userPreference.preferensi_jarak.trim() === "" ||
-          !userPreference.preferensi_fasilitas ||
-          userPreference.preferensi_fasilitas.trim() === ""
-        ) {
+          userPreference.preferensi_fasilitas.trim() === "";
+        if (PreferencesEmpty && location.pathname !== "/user_preferences") {
           navigate("/user_preferences", { replace: true });
+        } else if (
+          !PreferencesEmpty &&
+          location.pathname === "/user_preferences"
+        ) {
+          navigate(-1, { replace: true });
         }
       } catch (error) {
         console.error("Error checking user preferences:", error);
@@ -52,7 +56,7 @@ function ProtectedTokenUser({ children }) {
     };
 
     checkPreferenceValidation();
-  }, [navigate]);
+  }, [navigate, location]);
 
   return children;
 }

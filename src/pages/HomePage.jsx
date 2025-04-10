@@ -113,7 +113,7 @@ const HomePage = () => {
         const sortedCafes = updatedCafes.sort(
           (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
         );
-        setCafes(sortedCafes.slice(0, 3));
+        setCafes(sortedCafes.slice(0, 6));
         setDistanceFetched(true);
         setDistanceLoading(false);
       });
@@ -228,10 +228,12 @@ const HomePage = () => {
 
       {/* Recommendation Section */}
       <div className="p-4">
-        <h1 className="w-[90%] text-[#e3dcc2] mx-auto font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
-          Most Nearby Cafes
-        </h1>
-        <div className="recommendation-section w-[90%] mx-auto flex items-center justify-between gap-4 h-[55vh]">
+        <div className="w-[90%] mx-auto">
+          <h1 className="text-[#e3dcc2] font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
+            Top Recommendation
+          </h1>
+        </div>
+        <div className="recommendation-section w-[90%] mx-auto flex items-center flex-wrap gap-[1.25rem]">
           {cafes.map((cafe, index) => {
             let backgroundImageUrl;
             try {

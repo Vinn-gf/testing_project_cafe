@@ -195,7 +195,7 @@ const DetailCafe = () => {
           {/* Gambar Kafe */}
           <div className="w-full md:w-1/2">
             <div
-              className="card-img-section h-96 bg-cover bg-center rounded-lg shadow-md transition-transform duration-300 hover:scale-105)"
+              className="card-img-section h-96 bg-cover bg-center bg-no-repeat rounded-lg shadow-md transition-transform duration-300 hover:scale-105)"
               style={{ backgroundImage: `url(${backgroundImageUrl})` }}
             ></div>
           </div>

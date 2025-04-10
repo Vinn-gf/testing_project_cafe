@@ -9,6 +9,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import ProtectedTokenUser from "../components/ProtectedComponents/ProtectedTokenUser";
 import UserPreferences from "../pages/UserPreferences";
+import RecommendationCafes from "../pages/RecommendationCafes";
 
 const RoutingPage = () => {
   return (
@@ -53,6 +54,14 @@ const RoutingPage = () => {
           element={
             <ProtectedTokenUser>
               <SearchCafePage />
+            </ProtectedTokenUser>
+          }
+        />
+        <Route
+          path="/recommendation"
+          element={
+            <ProtectedTokenUser>
+              <RecommendationCafes />
             </ProtectedTokenUser>
           }
         />

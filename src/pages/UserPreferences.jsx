@@ -5,7 +5,6 @@ import axios from "axios";
 
 const UserPreferences = () => {
   const [jarak, setJarak] = useState("");
-  // Selected facilities sebagai array untuk menampung pilihan
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

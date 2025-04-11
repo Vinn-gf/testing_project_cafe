@@ -39,7 +39,10 @@ function ProtectedTokenUser({ children }) {
 
         const userPreference = response.data;
         const PreferencesEmpty =
-          userPreference.preferensi_jarak.trim() === "" ||
+          userPreference.preferensi_jarak_minimal === null ||
+          userPreference.preferensi_jarak_minimal === 0 ||
+          userPreference.preferensi_jarak_maksimal === null ||
+          userPreference.preferensi_jarak_maksimal === 0 ||
           userPreference.preferensi_fasilitas.trim() === "";
         if (PreferencesEmpty && location.pathname !== "/user_preferences") {
           navigate("/user_preferences", { replace: true });

@@ -134,15 +134,15 @@ def login_user(data):
             database="cafe_databases"
         )
         cursor = db.cursor()
-        query = "SELECT id_user, username, password, preferensi_jarak, preferensi_fasilitas FROM user_tables WHERE username = %s"
+        query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas FROM user_tables WHERE username = %s"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         db.close()
 
         if result:
-            user_id, user, stored_password, preferensi_jarak_user, preferensi_fasilitas_user, = result
+            user_id, user, stored_password, preferensi_jarak_minimal_user, preferensi_jarak_maksimal_user, preferensi_fasilitas_user, = result
             if stored_password == password:
-                return jsonify({"message": "Login successful", "user_id": user_id, "distance_preference": preferensi_jarak_user, "facilities_preference": preferensi_fasilitas_user}), 200
+                return jsonify({"message": "Login successful", "user_id": user_id, "minimum_distance_preference": preferensi_jarak_minimal_user, "maximum_distance_preference": preferensi_jarak_maksimal_user, "facilities_preference": preferensi_fasilitas_user}), 200
             else:
                 return jsonify({"error": "Wrong password"}), 401
         else:
@@ -159,7 +159,7 @@ def get_user_by_id(id_user):
             database="cafe_databases"
         )
         cursor = db.cursor()
-        query = "SELECT id_user, username, password, preferensi_jarak, preferensi_fasilitas FROM user_tables WHERE id_user = %s"
+        query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas FROM user_tables WHERE id_user = %s"
         cursor.execute(query, (id_user,))
         result = cursor.fetchone()
         db.close()
@@ -168,8 +168,9 @@ def get_user_by_id(id_user):
                 "id_user": result[0],
                 "username": result[1],
                 "password": result[2],
-                "preferensi_jarak": result[3],
-                "preferensi_fasilitas": result[4]
+                "preferensi_jarak_minimal": result[3],
+                "preferensi_jarak_maksimal": result[4],
+                "preferensi_fasilitas": result[5]
             }
         else:
             return None
@@ -178,7 +179,8 @@ def get_user_by_id(id_user):
 
 def update_user_preferences(data):
     user_id = data.get("user_id")
-    preferensi_jarak = data.get("preferensi_jarak")
+    preferensi_jarak_minimal = data.get("preferensi_jarak_minimal")
+    preferensi_jarak_maksimal = data.get("preferensi_jarak_maksimal")
     preferensi_fasilitas = data.get("preferensi_fasilitas")
 
     if not user_id:
@@ -193,9 +195,9 @@ def update_user_preferences(data):
         )
         cursor = db.cursor()
         query = """UPDATE user_tables 
-                   SET preferensi_jarak = %s, preferensi_fasilitas = %s 
+                   SET preferensi_jarak_minimal = %s, preferensi_jarak_maksimal = %s, preferensi_fasilitas = %s 
                    WHERE id_user = %s"""
-        cursor.execute(query, (preferensi_jarak, preferensi_fasilitas, user_id))
+        cursor.execute(query, (preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas, user_id))
         db.commit()
         db.close()
         

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
 import axios from "axios";
+import { API_ENDPOINTS } from "../utils/api_endpoints";
 
 const UserPreferences = () => {
   const [minimumDistance, setMinimumDistance] = useState("");
@@ -57,7 +58,7 @@ const UserPreferences = () => {
       }
 
       const response = await axios.post(
-        "http://127.0.0.1:5000/api/user/preferences",
+        `http://127.0.0.1:5000/${API_ENDPOINTS.USER_PREFERENCES}`,
         {
           user_id: userId,
           preferensi_jarak_minimal: parseInt(minimumDistance, 10),

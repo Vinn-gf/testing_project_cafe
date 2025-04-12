@@ -2,16 +2,17 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../utils/api_endpoints";
 
 function ProtectedTokenUser({ children }) {
   const navigate = useNavigate();
-  var location = useLocation();
-
+  const location = useLocation();
   useEffect(() => {
     const checkUserValidation = async () => {
       try {
         const tokenCheck = CookieStorage.get(CookieKeys.AuthToken);
-        if (!tokenCheck) {
+        const userIdCheck = CookieStorage.get(CookieKeys.UserToken);
+        if (!tokenCheck || !userIdCheck) {
           navigate("/login");
           return;
         }
@@ -27,14 +28,15 @@ function ProtectedTokenUser({ children }) {
   useEffect(() => {
     const checkPreferenceValidation = async () => {
       const userId = CookieStorage.get(CookieKeys.UserToken);
-      if (!userId) {
+      const userToken = CookieStorage.get(CookieKeys.AuthToken);
+      if (!userId || !userToken) {
         navigate("/login", { replace: true });
         return;
       }
 
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/api/users/${userId}`
+          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
         );
 
         const userPreference = response.data;
@@ -46,15 +48,22 @@ function ProtectedTokenUser({ children }) {
           userPreference.preferensi_fasilitas.trim() === "";
         if (PreferencesEmpty && location.pathname !== "/user_preferences") {
           navigate("/user_preferences", { replace: true });
+          console.log("heloo");
+          console.log(
+            "test",
+            userPreference.preferensi_jarak_minimal,
+            userPreference.preferensi_jarak_maksimal,
+            userPreference.preferensi_fasilitas
+          );
         } else if (
           !PreferencesEmpty &&
           location.pathname === "/user_preferences"
         ) {
-          navigate(-1, { replace: true });
+          navigate("/", { replace: true });
         }
       } catch (error) {
         console.error("Error checking user preferences:", error);
-        navigate("/login", { replace: true });
+        navigate("/user_preference", { replace: true });
       }
     };
 

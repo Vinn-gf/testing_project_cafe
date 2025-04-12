@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
 import { ColorRing } from "react-loader-spinner";
 import axios from "axios";
+import { API_ENDPOINTS } from "../utils/api_endpoints";
 
 const SearchCafePage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +28,7 @@ const SearchCafePage = () => {
     const fetchCafe = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/api/search/${keyword}`
+          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_SEARCH_CAFE}${keyword}`
         );
         setResults(response.data);
       } catch (err) {
@@ -86,6 +87,7 @@ const SearchCafePage = () => {
               className="hover:text-gray-200 hover:cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
                 navigate("/login");
               }}
             >

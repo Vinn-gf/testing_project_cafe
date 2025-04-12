@@ -5,6 +5,7 @@ import { CookieKeys, CookieStorage } from "../utils/cookies";
 import { FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import axios from "axios";
+import { API_ENDPOINTS } from "../utils/api_endpoints";
 
 const DetailCafe = () => {
   const { id } = useParams();
@@ -25,7 +26,7 @@ const DetailCafe = () => {
     const fetchCafe = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/api/cafe/${id}`
+          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_DETAIL_CAFE}${id}`
         );
         setCafe(response.data);
         setLoading(false);
@@ -42,7 +43,7 @@ const DetailCafe = () => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/api/reviews/${id}`
+          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_REVIEWS}${id}`
         );
         setReviews(response.data);
         setLoading(false);
@@ -161,6 +162,7 @@ const DetailCafe = () => {
               className="hover:text-gray-200 hover:cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
                 navigate("/login");
               }}
             >

@@ -3,8 +3,7 @@ import axios from "axios";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
-import { FaStar } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+import { API_ENDPOINTS } from "../utils/api_endpoints";
 
 // Helper function untuk parsing jarak dari teks (misal "2.4 km") ke meter
 const parseDistance = (distanceText) => {
@@ -30,7 +29,9 @@ const HomePage = () => {
   useEffect(() => {
     const fetchCafes = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/data");
+        const response = await axios.get(
+          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_ALL_CAFES}`
+        );
         setCafes(response.data);
       } catch (err) {
         setError(err.message);
@@ -69,8 +70,10 @@ const HomePage = () => {
       }
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/api/users/${userId}`
+          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
         );
+        // Asumsikan API mengembalikan JSON misalnya:
+        // { id_user: 3, username: "Kevin", preferensi_jarak_minimal: 1.5, preferensi_jarak_maksimal: 3.2, preferensi_fasilitas: "Free Wi-Fi, Billiard" }
         setUserPreferences(response.data);
       } catch (err) {
         setError(err.message);
@@ -84,17 +87,14 @@ const HomePage = () => {
   useEffect(() => {
     const fetchDistancesAndFilter = async () => {
       if (userLocation && cafes.length > 0 && userPreferences) {
-        // setDistanceLoading(true);
         const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
         const userLat = userLocation.latitude;
         const userLong = userLocation.longitude;
 
-        // Update setiap cafe dengan jarak dan durasi dari API distancematrix
         const updatedCafesPromises = cafes.map((cafe) => {
           const cafeLat = parseFloat(cafe.latitude);
           const cafeLong = parseFloat(cafe.longitude);
           const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
-
           return axios
             .get(url)
             .then((response) => {
@@ -128,7 +128,7 @@ const HomePage = () => {
         try {
           const updatedCafes = await Promise.all(updatedCafesPromises);
 
-          // Konversi preferensi jarak ke meter (pastikan menggunakan parseFloat agar nilai desimal tidak hilang)
+          // Konversi preferensi user dengan menggunakan parseFloat agar angka desimal tetap utuh
           const minPrefMeter =
             parseFloat(userPreferences.preferensi_jarak_minimal) * 1000;
           const maxPrefMeter =
@@ -139,7 +139,7 @@ const HomePage = () => {
                 .map((s) => s.trim().toLowerCase())
             : [];
 
-          // Filter kafe: memenuhi syarat jarak dan fasilitas
+          // Filter café: jarak harus di antara nilai preferensi dan memiliki setidaknya satu fasilitas yang cocok
           let filteredCafes = updatedCafes.filter((cafe) => {
             const cafeDistanceMeter = parseDistance(cafe.distance);
             const distanceMatch =
@@ -147,47 +147,34 @@ const HomePage = () => {
               cafeDistanceMeter <= maxPrefMeter;
             const facilityMatch =
               facilitiesArray.length > 0
-                ? facilitiesArray.some((facility) => {
-                    return (
+                ? facilitiesArray.some(
+                    (facility) =>
                       cafe.fasilitas &&
                       cafe.fasilitas.toLowerCase().includes(facility)
-                    );
-                  })
+                  )
                 : true;
             return distanceMatch && facilityMatch;
           });
 
-          // Jika jumlah café gabungan kurang dari 6, tambahkan café yang memenuhi syarat fasilitas saja
-          if (filteredCafes.length < 6) {
-            const facilityOnlyCafes = updatedCafes.filter((cafe) => {
+          // Jika tidak ada café yang memenuhi rentang, fallback: gunakan café dengan fasilitas matching saja dan urutkan berdasarkan jarak terdekat
+          if (filteredCafes.length === 0) {
+            filteredCafes = updatedCafes.filter((cafe) => {
               return facilitiesArray.length > 0
                 ? facilitiesArray.some(
                     (facility) =>
                       cafe.fasilitas &&
                       cafe.fasilitas.toLowerCase().includes(facility)
                   )
-                : false;
+                : true;
             });
-            // Gabungkan dengan filteredCafes tanpa duplikat (misal, dibandingkan dengan nomor café)
-            const combinedCafes = [...filteredCafes];
-            facilityOnlyCafes.forEach((cafe) => {
-              if (
-                !combinedCafes.some((existing) => existing.nomor === cafe.nomor)
-              ) {
-                combinedCafes.push(cafe);
-              }
-            });
-            // Urutkan berdasarkan jarak terdekat
-            filteredCafes = combinedCafes.sort(
+            filteredCafes = filteredCafes.sort(
               (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
             );
           } else {
-            // Urutkan café yang memenuhi kriteria jarak & fasilitas
             filteredCafes = filteredCafes.sort(
               (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
             );
           }
-
           // Ambil 6 rekomendasi teratas
           setCafes(filteredCafes.slice(0, 6));
         } catch (err) {
@@ -247,6 +234,7 @@ const HomePage = () => {
               className="hover:text-gray-200 hover:cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
                 navigate("/login");
               }}
             >
@@ -347,18 +335,8 @@ const HomePage = () => {
                   </div>
                 </Link>
                 <div className="p-4 flex-col items-center gap-4 text-[.95rem]">
-                  <span className="flex gap-[0.5rem]">
-                    <span className="flex items-center relative -top-[0.05rem]">
-                      <FaLocationDot />
-                    </span>
-                    <p>{cafe.alamat}</p>
-                  </span>
-                  <span className="flex gap-[0.5rem]">
-                    <span className="flex items-center relative -top-[0.05rem]">
-                      <FaStar />
-                    </span>
-                    <p>{cafe.rating}</p>
-                  </span>
+                  <p>{cafe.alamat}</p>
+                  <h1>{cafe.rating}</h1>
                   {cafe.distance && cafe.duration ? (
                     <div>
                       <h1>

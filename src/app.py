@@ -159,7 +159,7 @@ def get_user_by_id(id_user):
             database="cafe_databases"
         )
         cursor = db.cursor()
-        query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas FROM user_tables WHERE id_user = %s"
+        query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas, cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s"
         cursor.execute(query, (id_user,))
         result = cursor.fetchone()
         db.close()
@@ -170,7 +170,8 @@ def get_user_by_id(id_user):
                 "password": result[2],
                 "preferensi_jarak_minimal": result[3],
                 "preferensi_jarak_maksimal": result[4],
-                "preferensi_fasilitas": result[5]
+                "preferensi_fasilitas": result[5],
+                "cafe_telah_dikunjungi": result[6]
             }
         else:
             return None
@@ -208,6 +209,47 @@ def update_user_preferences(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
+    
+def add_visited_cafe(data):
+    user_id = data.get("user_id")
+    cafe_name = data.get("cafe_name")
+    
+    if not user_id or not cafe_name:
+        return {"error": "User ID and Cafe Name are required"}, 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        # Update field cafe_telah_dikunjungi: jika sudah ada nilainya, tambahkan dengan koma, jika NULL, gunakan nilai baru
+        query = """
+            UPDATE user_tables 
+            SET cafe_telah_dikunjungi = 
+                IFNULL(CONCAT(cafe_telah_dikunjungi, ', ', %s), %s)
+            WHERE id_user = %s
+        """
+        cursor.execute(query, (cafe_name, cafe_name, user_id))
+        db.commit()
+        db.close()
+        
+        if cursor.rowcount > 0:
+            return {"message": "Visited cafe added successfully"}, 200
+        else:
+            return {"error": "User not found or no changes made"}, 404
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+@app.route('/api/user/visited', methods=['POST'])
+def api_add_visited_cafe():
+    data = request.get_json()
+    result, status = add_visited_cafe(data)
+    return jsonify(result), status
+
 
 @app.route('/api/user/preferences', methods=['POST'])
 def api_update_user_preferences():

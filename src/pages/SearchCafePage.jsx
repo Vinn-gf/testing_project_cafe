@@ -80,7 +80,7 @@ const SearchCafePage = () => {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
-            <Link to="/about" className="hover:text-gray-200">
+            <Link to="/profile" className="hover:text-gray-200">
               Profile
             </Link>
             <h1
@@ -108,7 +108,7 @@ const SearchCafePage = () => {
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
-            <Link to="/about" className="block p-2 text-[#E3DCC2]">
+            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
               Profile
             </Link>
           </div>
@@ -165,7 +165,7 @@ const SearchCafePage = () => {
               return (
                 <div
                   key={index}
-                  className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
+                  className="search-card-container bg-[#1B2021] hover:cursor-pointer rounded-md w-[32%] shadow-md shadow-[#1B2021] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
                 >
                   {/* Image section dengan overlay teks */}
                   <Link to={`/detailcafe/${cafe.nomor}`}>

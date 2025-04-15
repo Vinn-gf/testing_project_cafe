@@ -87,7 +87,7 @@ const AllCafes = () => {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
-            <Link to="/about" className="hover:text-gray-200">
+            <Link to="/profile" className="hover:text-gray-200">
               Profile
             </Link>
             <h1
@@ -115,7 +115,7 @@ const AllCafes = () => {
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
-            <Link to="/about" className="block p-2 text-[#E3DCC2]">
+            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
               Profile
             </Link>
           </div>

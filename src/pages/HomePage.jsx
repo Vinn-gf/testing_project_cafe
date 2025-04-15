@@ -4,8 +4,9 @@ import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
 import { API_ENDPOINTS } from "../utils/api_endpoints";
+import { FaLocationDot } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa";
 
-// Helper function untuk parsing jarak dari teks (misal "2.4 km") ke meter
 const parseDistance = (distanceText) => {
   if (!distanceText || distanceText === "N/A") return Infinity;
   const parts = distanceText.split(" ");
@@ -227,7 +228,7 @@ const HomePage = () => {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
-            <Link to="/about" className="hover:text-gray-200">
+            <Link to="/profile" className="hover:text-gray-200">
               Profile
             </Link>
             <h1
@@ -255,7 +256,7 @@ const HomePage = () => {
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
-            <Link to="/about" className="block p-2 text-[#E3DCC2]">
+            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
               Profile
             </Link>
           </div>
@@ -335,8 +336,18 @@ const HomePage = () => {
                   </div>
                 </Link>
                 <div className="p-4 flex-col items-center gap-4 text-[.95rem]">
-                  <p>{cafe.alamat}</p>
-                  <h1>{cafe.rating}</h1>
+                  <div className="location-text flex gap-2">
+                    <span className="flex items-center relative -top-[0.05rem]">
+                      <FaLocationDot />
+                    </span>
+                    <p>{cafe.alamat}</p>
+                  </div>
+                  <div className="rating-text flex gap-2">
+                    <span className="flex items-center relative -top-[0.05rem]">
+                      <FaStar />
+                    </span>
+                    <p>{cafe.rating}</p>
+                  </div>
                   {cafe.distance && cafe.duration ? (
                     <div>
                       <h1>

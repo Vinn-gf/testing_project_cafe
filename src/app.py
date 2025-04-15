@@ -225,11 +225,12 @@ def add_visited_cafe(data):
             database="cafe_databases"
         )
         cursor = db.cursor()
-        # Update field cafe_telah_dikunjungi: jika sudah ada nilainya, tambahkan dengan koma, jika NULL, gunakan nilai baru
         query = """
             UPDATE user_tables 
-            SET cafe_telah_dikunjungi = 
-                IFNULL(CONCAT(cafe_telah_dikunjungi, ', ', %s), %s)
+            SET cafe_telah_dikunjungi = CASE 
+                WHEN TRIM(cafe_telah_dikunjungi) = '' THEN %s
+                ELSE CONCAT(cafe_telah_dikunjungi, ', ', %s)
+            END
             WHERE id_user = %s
         """
         cursor.execute(query, (cafe_name, cafe_name, user_id))
@@ -243,6 +244,7 @@ def add_visited_cafe(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
+
 
 @app.route('/api/user/visited', methods=['POST'])
 def api_add_visited_cafe():

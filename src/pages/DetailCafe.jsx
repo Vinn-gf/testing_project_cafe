@@ -11,6 +11,7 @@ import { API_ENDPOINTS } from "../utils/api_endpoints";
 const DetailCafe = () => {
   const { id } = useParams();
   const [cafe, setCafe] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [loading, setLoading] = useState(true);
   const [distanceLoading, setDistanceLoading] = useState(true);
   const [error, setError] = useState("");
@@ -123,6 +124,13 @@ const DetailCafe = () => {
     fetchDistance();
   }, [userLocation, cafe]);
 
+  const handleSearch = (event) => {
+    event.preventDefault();
+    if (searchKeyword.trim()) {
+      navigate(`/search/${searchKeyword}`);
+    }
+  };
+
   // Pagination untuk Reviews
   const totalReviews = reviews.length;
   const totalPageReviews = Math.ceil(totalReviews / reviewsPerPage);
@@ -157,7 +165,6 @@ const DetailCafe = () => {
       return;
     }
 
-    // Cek apakah café sudah terdaftar di field cafe_telah_dikunjungi
     const alreadyVisited =
       userPreferences.cafe_telah_dikunjungi &&
       userPreferences.cafe_telah_dikunjungi
@@ -180,13 +187,14 @@ const DetailCafe = () => {
       setSuccess(
         response.data.message || "Cafe marked as visited successfully!"
       );
-      // Update state userPreferences agar mencakup cafe yang baru dikunjungi
-      setUserPreferences((prev) => ({
-        ...prev,
-        cafe_telah_dikunjungi: prev.cafe_telah_dikunjungi
-          ? `${prev.cafe_telah_dikunjungi}, ${cafe.nama_kafe}`
-          : cafe.nama_kafe,
-      }));
+      setUserPreferences((prev) => {
+        const current = prev.cafe_telah_dikunjungi?.trim() || "";
+        return {
+          ...prev,
+          cafe_telah_dikunjungi:
+            current === "" ? cafe.nama_kafe : `${current}, ${cafe.nama_kafe}`,
+        };
+      });
     } catch (err) {
       setError(
         err.response?.data?.error || "An error occurred. Please try again."
@@ -222,7 +230,7 @@ const DetailCafe = () => {
   }
 
   return (
-    <div className="bg-[#1B2021] overflow-hidden">
+    <div className="overflow-hidden">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] text-[#E3DCC2] mx-auto flex justify-between items-center">
@@ -233,7 +241,7 @@ const DetailCafe = () => {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
-            <Link to="/about" className="hover:text-gray-200">
+            <Link to="/profile" className="hover:text-gray-200">
               Profile
             </Link>
             <h1
@@ -261,7 +269,7 @@ const DetailCafe = () => {
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
-            <Link to="/about" className="block p-2 text-[#E3DCC2]">
+            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
               Profile
             </Link>
           </div>
@@ -269,7 +277,34 @@ const DetailCafe = () => {
       </div>
       {/* Navbar */}
 
-      {/* Display Pesan Success/Error */}
+      {/* Search Section */}
+      <div className="px-4 w-[90%] mx-auto flex items-center justify-between">
+        <form
+          onSubmit={handleSearch}
+          className="mt-4 w-[100%] mb-2 flex items-center font-montserrat gap-2"
+        >
+          <input
+            className="search-input p-2 rounded-md outline-none text-[#E3DCC2] w-[30%] bg-[#1B2021] font-montserrat"
+            placeholder="Enter your cafe..."
+            type="text"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="search-btn text-[#E3DCC2] bg-[#1B2021] py-2 px-4 rounded-md hover:bg-[#51513D]"
+          >
+            Search
+          </button>
+        </form>
+        <Link to="/allcafes">
+          <button className="check-cafe-btn w-[10em] text-[#E3DCC2] p-2 bg-[#1B2021] rounded-md hover:bg-[#51513D]">
+            Show All Cafes
+          </button>
+        </Link>
+      </div>
+      {/* Search Section */}
+
       {success && <div></div>}
       {error && (
         <div className="w-[90%] mx-auto my-4 p-4 bg-red-100 text-red-700 rounded">
@@ -278,8 +313,8 @@ const DetailCafe = () => {
       )}
 
       {/* Detail Section */}
-      <div className="container w-[90%] mx-auto my-10 p-4 bg-[#1B2021] rounded-lg shadow-lg font-montserrat">
-        <div className="flex flex-col md:flex-row gap-8">
+      <div className="container w-[90%] mx-auto my-10 p-4 bg-[#1B2021] rounded-lg font-montserrat">
+        <div className="flex flex-col md:flex-row gap-8 shadow-xl shadow-[#1B2021]">
           {/* Gambar Kafe */}
           <div className="w-full md:w-1/2">
             <div
@@ -353,7 +388,7 @@ const DetailCafe = () => {
       {/* Detail Section */}
 
       {/* Reviews */}
-      <div className="mx-auto w-[90%] my-10 p-6 bg-[#1B2021] text-[#e3dcc2] rounded-lg shadow-lg font-montserrat">
+      <div className="mx-auto w-[90%] my-10 p-6 bg-[#1B2021] text-[#e3dcc2] rounded-lg shadow-xl shadow-[#1B2021] font-montserrat">
         <h2 className="text-2xl font-bold mb-4">User Reviews</h2>
         <div className="space-y-6">
           {currentReviews.map((review, index) => (

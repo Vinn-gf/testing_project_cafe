@@ -10,6 +10,7 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import ProtectedTokenUser from "../components/ProtectedComponents/ProtectedTokenUser";
 import UserPreferences from "../pages/UserPreferences";
 import RecommendationCafes from "../pages/RecommendationCafes";
+import ProfilePage from "../pages/ProfilePage";
 
 const RoutingPage = () => {
   return (
@@ -22,6 +23,14 @@ const RoutingPage = () => {
           element={
             <ProtectedTokenUser>
               <UserPreferences />
+            </ProtectedTokenUser>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedTokenUser>
+              <ProfilePage />
             </ProtectedTokenUser>
           }
         />

@@ -58,7 +58,7 @@ const UserPreferences = () => {
       }
 
       const response = await axios.post(
-        `http://127.0.0.1:5000/${API_ENDPOINTS.USER_PREFERENCES}`,
+        `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.USER_PREFERENCES}`,
         {
           user_id: userId,
           preferensi_jarak_minimal: parseInt(minimumDistance, 10),

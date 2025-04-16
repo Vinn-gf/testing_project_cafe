@@ -30,7 +30,12 @@ const DetailCafe = () => {
     const fetchCafe = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_DETAIL_CAFE}${id}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${id}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         setCafe(response.data);
       } catch (err) {
@@ -47,7 +52,12 @@ const DetailCafe = () => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_REVIEWS}${id}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_REVIEWS}${id}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         setReviews(response.data);
       } catch (err) {
@@ -86,7 +96,12 @@ const DetailCafe = () => {
       }
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         // Contoh response: { id_user: 3, username: "Kevin", cafe_telah_dikunjungi: "Meinewelt, Cafe XYZ", ... }
         setUserPreferences(response.data);
@@ -102,7 +117,7 @@ const DetailCafe = () => {
     const fetchDistance = async () => {
       if (userLocation && cafe) {
         setDistanceLoading(true);
-        const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
+        const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
         const userLat = userLocation.latitude;
         const userLong = userLocation.longitude;
         const cafeLat = parseFloat(cafe.latitude);
@@ -180,7 +195,7 @@ const DetailCafe = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:5000/${API_ENDPOINTS.VISITED_CAFES}`,
+        `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.VISITED_CAFES}`,
         { user_id: userId, cafe_name: cafe.nama_kafe },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -204,7 +219,7 @@ const DetailCafe = () => {
 
   if (loading || distanceLoading) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-gray-100">
+      <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
           visible={true}
           height="80"
@@ -212,7 +227,7 @@ const DetailCafe = () => {
           ariaLabel="color-ring-loading"
           wrapperStyle={{}}
           wrapperClass="color-ring-wrapper"
-          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+          colors={["#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2"]}
         />
       </div>
     );
@@ -230,7 +245,7 @@ const DetailCafe = () => {
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden bg-[#2D3738]">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] text-[#E3DCC2] mx-auto flex justify-between items-center">

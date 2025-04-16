@@ -19,10 +19,39 @@ def get_data(search_term=None):
     columns = [col[0] for col in cursor.fetchall()]
 
     if search_term:
-        query = "SELECT * FROM cafe_tables WHERE nama_kafe LIKE %s OR alamat LIKE %s"
+        query = "SELECT * FROM cafe_tables WHERE nama_kafe LIKE %s OR nama_kafe LIKE %s"
         cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
     else:
         cursor.execute("SELECT * FROM cafe_tables")
+
+    data = cursor.fetchall()
+    db.close()
+    
+    results = []
+    for row in data:
+        od = OrderedDict()
+        for idx, col in enumerate(columns):
+            od[col] = row[idx]
+        results.append(od)
+    return results
+
+def get_user_rating(search_term=None):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cafe_databases"
+    )
+    cursor = db.cursor()
+
+    cursor.execute("SHOW COLUMNS FROM user_rating_table")
+    columns = [col[0] for col in cursor.fetchall()]
+
+    if search_term:
+        query = "SELECT * FROM user_rating_table WHERE id_user LIKE %s OR id_user LIKE %s"
+        cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
+    else:
+        cursor.execute("SELECT * FROM user_rating_table")
 
     data = cursor.fetchall()
     db.close()
@@ -277,6 +306,10 @@ def api_reviews(id_kafe):
 def api_data():
     return jsonify(get_data())
 
+@app.route('/api/user_rating', methods=['GET'])
+def api_user_rating():
+    return jsonify(get_user_rating())
+
 @app.route('/api/search/<keyword>', methods=['GET'])
 def api_search(keyword):
     return jsonify(get_data(keyword))
@@ -299,5 +332,5 @@ def api_login():
     data = request.get_json()
     return login_user(data)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(port=8080, debug=True)

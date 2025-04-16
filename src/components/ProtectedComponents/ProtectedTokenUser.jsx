@@ -36,7 +36,12 @@ function ProtectedTokenUser({ children }) {
 
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
 
         const userPreference = response.data;

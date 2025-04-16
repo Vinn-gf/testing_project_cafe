@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 // import Cookies from "universal-cookie";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../utils/api_endpoints";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -19,8 +20,9 @@ const LoginPage = () => {
     setSuccess("");
 
     try {
+      // const api_url = process.env.REACT_APP_API_URL;
       const response = await axios.post(
-        "http://127.0.0.1:5000/api/login",
+        `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.LOGIN}`,
         { username, password },
         { headers: { "Content-Type": "application/json" } }
       );

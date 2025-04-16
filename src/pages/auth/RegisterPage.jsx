@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../utils/api_endpoints";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
@@ -32,7 +33,7 @@ const RegisterPage = () => {
 
     try {
       await axios.post(
-        "http://127.0.0.1:5000/api/register",
+        `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.REGISTER}`,
         { username, password },
         { headers: { "Content-Type": "application/json" } }
       );

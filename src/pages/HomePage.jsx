@@ -31,7 +31,12 @@ const HomePage = () => {
     const fetchCafes = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_ALL_CAFES}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         setCafes(response.data);
       } catch (err) {
@@ -71,7 +76,12 @@ const HomePage = () => {
       }
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         // Asumsikan API mengembalikan JSON misalnya:
         // { id_user: 3, username: "Kevin", preferensi_jarak_minimal: 1.5, preferensi_jarak_maksimal: 3.2, preferensi_fasilitas: "Free Wi-Fi, Billiard" }
@@ -198,7 +208,7 @@ const HomePage = () => {
 
   if (loading || distanceLoading) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-gray-100">
+      <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
           visible={true}
           height="80"
@@ -206,7 +216,7 @@ const HomePage = () => {
           ariaLabel="color-ring-loading"
           wrapperStyle={{}}
           wrapperClass="color-ring-wrapper"
-          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+          colors={["#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2"]}
         />
       </div>
     );

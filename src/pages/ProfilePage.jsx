@@ -21,7 +21,12 @@ const ProfilePage = () => {
       }
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         setUser(response.data);
       } catch (err) {
@@ -55,7 +60,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden bg-[#2D3738] min-h-screen">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">

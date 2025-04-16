@@ -15,7 +15,7 @@ const SearchCafePage = () => {
   const navigate = useNavigate();
 
   // useEffect(() => {
-  //   fetch(`http://127.0.0.1:5000/api/search/${keyword}`)
+  //   fetch(`${process.env.REACT_APP_URL_SERVER}api/search/${keyword}`)
   //     .then((res) => res.json())
   //     .then((data) => {
   //       console.log("Search Results:", data);
@@ -28,7 +28,12 @@ const SearchCafePage = () => {
     const fetchCafe = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_SEARCH_CAFE}${keyword}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_SEARCH_CAFE}${keyword}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         setResults(response.data);
       } catch (err) {
@@ -50,7 +55,7 @@ const SearchCafePage = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-gray-100">
+      <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
           visible={true}
           height="80"
@@ -58,7 +63,7 @@ const SearchCafePage = () => {
           ariaLabel="color-ring-loading"
           wrapperStyle={{}}
           wrapperClass="color-ring-wrapper"
-          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+          colors={["#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2"]}
         />
       </div>
     );
@@ -69,7 +74,7 @@ const SearchCafePage = () => {
   }
 
   return (
-    <div>
+    <div className="bg-[#2D3738]">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">
@@ -146,48 +151,54 @@ const SearchCafePage = () => {
 
       <div className="p-4">
         <div className="head-section w-[90%] mx-auto flex items-center justify-between mb-4">
-          <h1 className="font-montserrat font-bold text-[1.4rem] tracking-wide mb-4">
+          <h1 className="font-montserrat font-bold text-[1.4rem] tracking-wide mb-4 text-[#e3dcc2]">
             Search Results for "{keyword}"
           </h1>
         </div>
-        {results.length === 0 ? (
-          <p className="w-[90%] mx-auto">No results found.</p>
-        ) : (
-          <div className="w-[90%] mx-auto flex flex-wrap items-center gap-4">
-            {results.map((cafe, index) => {
-              let backgroundImageUrl;
-              try {
-                backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
-              } catch (error) {
-                backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
-              }
+        <div className="min-h-screen">
+          {results.length === 0 ? (
+            <div className="w-[90%] mx-auto bg-[#2D3738] overflow-hidden h-screen">
+              <p className="text-[#e3dcc2]">No results found.</p>
+            </div>
+          ) : (
+            <div className="w-[90%] mx-auto flex flex-wrap items-center gap-4">
+              {results.map((cafe, index) => {
+                let backgroundImageUrl;
+                try {
+                  backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
+                } catch (error) {
+                  backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
+                }
 
-              return (
-                <div
-                  key={index}
-                  className="search-card-container bg-[#1B2021] hover:cursor-pointer rounded-md w-[32%] shadow-md shadow-[#1B2021] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
-                >
-                  {/* Image section dengan overlay teks */}
-                  <Link to={`/detailcafe/${cafe.nomor}`}>
-                    <div
-                      className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat"
-                      style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-                    >
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
-                        <h1 className="text-[1.2rem] font-extrabold">
-                          {cafe.nama_kafe}
-                        </h1>
-                        <h1 className="text-[0.9rem] font-normal">
-                          {cafe.alamat}
-                        </h1>
+                return (
+                  <div
+                    key={index}
+                    className="search-card-container bg-[#1B2021] hover:cursor-pointer rounded-md w-[32%] shadow-md shadow-[#1B2021] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
+                  >
+                    {/* Image section dengan overlay teks */}
+                    <Link to={`/detailcafe/${cafe.nomor}`}>
+                      <div
+                        className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat"
+                        style={{
+                          backgroundImage: `url(${backgroundImageUrl})`,
+                        }}
+                      >
+                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
+                          <h1 className="text-[1.2rem] font-extrabold">
+                            {cafe.nama_kafe}
+                          </h1>
+                          <h1 className="text-[0.9rem] font-normal">
+                            {cafe.alamat}
+                          </h1>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

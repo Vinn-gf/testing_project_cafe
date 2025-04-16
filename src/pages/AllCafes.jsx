@@ -19,7 +19,12 @@ const AllCafes = () => {
     const fetchCafe = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/${API_ENDPOINTS.GET_ALL_CAFES}`
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": true,
+            },
+          }
         );
         setCafes(response.data);
         console.log(response);
@@ -57,7 +62,7 @@ const AllCafes = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-gray-100">
+      <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
           visible={true}
           height="80"
@@ -65,7 +70,7 @@ const AllCafes = () => {
           ariaLabel="color-ring-loading"
           wrapperStyle={{}}
           wrapperClass="color-ring-wrapper"
-          colors={["#1B2021", "#E3DCC2", "#1B2021", "#E3DCC2", "#1B2021"]}
+          colors={["#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2"]}
         />
       </div>
     );
@@ -76,7 +81,7 @@ const AllCafes = () => {
   }
 
   return (
-    <div className="bg-white overflow-hidden">
+    <div className="bg-[#2D3738] overflow-hidden">
       {/* Navbar */}
       <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
         <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">
@@ -193,7 +198,7 @@ const AllCafes = () => {
           >
             Previous
           </button>
-          <span className="text-[#1B2021]">
+          <span className="text-[#e3dcc2]">
             Page {currentPage} of {totalPages}
           </span>
           <button

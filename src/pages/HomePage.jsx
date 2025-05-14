@@ -16,40 +16,36 @@ const parseDistance = (distanceText) => {
 };
 
 const HomePage = () => {
-  const [cafes, setCafes] = useState([]);
+  const [cafes, setCafes] = useState([]); // tetap sebagai data awal
+  const [recommendedCafes, setRecommendedCafes] = useState([]); // state baru untuk hasil filter
   const [userLocation, setUserLocation] = useState(null);
   const [userPreferences, setUserPreferences] = useState(null);
   const [loading, setLoading] = useState(true);
   const [distanceLoading, setDistanceLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
+  const navigate = useNavigate();
 
-  // --- Ambil Data Cafe ---
+  // 1) fetch semua café sekali
   useEffect(() => {
     const fetchCafes = async () => {
       try {
-        const response = await axios.get(
+        const resp = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": true,
-            },
-          }
+          { headers: { "ngrok-skip-browser-warning": true } }
         );
-        setCafes(response.data);
+        setCafes(resp.data);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCafes();
   }, []);
 
-  // --- Ambil Lokasi User ---
+  // 2) ambil lokasi user sekali
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -59,145 +55,101 @@ const HomePage = () => {
             longitude: position.coords.longitude,
           });
         },
-        (error) => console.error("Error getting user location:", error)
+        (error) => console.error("Error getting user location:", error),
+        {
+          enableHighAccuracy: true, // pakai GPS kalau tersedia
+          maximumAge: 0, // jangan pakai posisi yang di-cache
+          timeout: 10000, // batalkan kalau lebih dari 10 detik
+        }
       );
-    } else {
-      console.error("Geolocation tidak didukung oleh browser ini.");
     }
   }, []);
 
-  // --- Ambil Preferensi User (dinamis dari API get_user_by_id) ---
+  // 3) fetch preferensi user sekali
   useEffect(() => {
     const fetchUserPreferences = async () => {
       const userId = CookieStorage.get(CookieKeys.UserToken);
       if (!userId) {
-        setError("User ID not found. Please login again.");
+        setError("User ID tidak ditemukan. Silakan login kembali.");
         return;
       }
       try {
-        const response = await axios.get(
+        const resp = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": true,
-            },
-          }
+          { headers: { "ngrok-skip-browser-warning": true } }
         );
-        // Asumsikan API mengembalikan JSON misalnya:
-        // { id_user: 3, username: "Kevin", preferensi_jarak_minimal: 1.5, preferensi_jarak_maksimal: 3.2, preferensi_fasilitas: "Free Wi-Fi, Billiard" }
-        setUserPreferences(response.data);
+        setUserPreferences(resp.data);
       } catch (err) {
         setError(err.message);
       }
     };
-
     fetchUserPreferences();
   }, []);
 
-  // --- Fetch Jarak untuk Setiap Cafe dan Hitung Rekomendasi ---
+  // 4) hanya triggered saat semua data sudah tersedia, TAPI TIDAK lagi tergantung pada `recommendedCafes`
   useEffect(() => {
     const fetchDistancesAndFilter = async () => {
-      if (userLocation && cafes.length > 0 && userPreferences) {
-        const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
-        const userLat = userLocation.latitude;
-        const userLong = userLocation.longitude;
+      if (!userLocation || cafes.length === 0 || !userPreferences) return;
 
-        const updatedCafesPromises = cafes.map((cafe) => {
-          const cafeLat = parseFloat(cafe.latitude);
-          const cafeLong = parseFloat(cafe.longitude);
-          const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
-          return axios
-            .get(url)
-            .then((response) => {
-              const data = response.data;
-              let distanceText = "N/A";
-              let durationText = "N/A";
-              if (
-                data.rows &&
-                data.rows[0] &&
-                data.rows[0].elements &&
-                data.rows[0].elements[0]
-              ) {
-                distanceText = data.rows[0].elements[0].distance.text;
-                durationText = data.rows[0].elements[0].duration.text;
-              }
-              return {
-                ...cafe,
-                distance: distanceText,
-                duration: durationText,
-              };
-            })
-            .catch((error) => {
-              console.error(
-                `Error fetching distance for ${cafe.nama_kafe}:`,
-                error
-              );
-              return { ...cafe, distance: "N/A", duration: "N/A" };
-            });
-        });
+      const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
+      const { latitude: uLat, longitude: uLong } = userLocation;
 
-        try {
-          const updatedCafes = await Promise.all(updatedCafesPromises);
-
-          // Konversi preferensi user dengan menggunakan parseFloat agar angka desimal tetap utuh
-          const minPrefMeter =
-            parseFloat(userPreferences.preferensi_jarak_minimal) * 1000;
-          const maxPrefMeter =
-            parseFloat(userPreferences.preferensi_jarak_maksimal) * 1000;
-          const facilitiesArray = userPreferences.preferensi_fasilitas
-            ? userPreferences.preferensi_fasilitas
-                .split(",")
-                .map((s) => s.trim().toLowerCase())
-            : [];
-
-          // Filter café: jarak harus di antara nilai preferensi dan memiliki setidaknya satu fasilitas yang cocok
-          let filteredCafes = updatedCafes.filter((cafe) => {
-            const cafeDistanceMeter = parseDistance(cafe.distance);
-            const distanceMatch =
-              cafeDistanceMeter >= minPrefMeter &&
-              cafeDistanceMeter <= maxPrefMeter;
-            const facilityMatch =
-              facilitiesArray.length > 0
-                ? facilitiesArray.some(
-                    (facility) =>
-                      cafe.fasilitas &&
-                      cafe.fasilitas.toLowerCase().includes(facility)
-                  )
-                : true;
-            return distanceMatch && facilityMatch;
-          });
-
-          // Jika tidak ada café yang memenuhi rentang, fallback: gunakan café dengan fasilitas matching saja dan urutkan berdasarkan jarak terdekat
-          if (filteredCafes.length === 0) {
-            filteredCafes = updatedCafes.filter((cafe) => {
-              return facilitiesArray.length > 0
-                ? facilitiesArray.some(
-                    (facility) =>
-                      cafe.fasilitas &&
-                      cafe.fasilitas.toLowerCase().includes(facility)
-                  )
-                : true;
-            });
-            filteredCafes = filteredCafes.sort(
-              (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
-            );
-          } else {
-            filteredCafes = filteredCafes.sort(
-              (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
-            );
+      const withDistance = await Promise.all(
+        cafes.map(async (cafe) => {
+          const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafe.latitude} , ${cafe.longitude}&origins=${uLat} , ${uLong}&key=${apiKey}`;
+          try {
+            const { data } = await axios.get(url);
+            const el = data.rows?.[0]?.elements?.[0];
+            return {
+              ...cafe,
+              distance: el?.distance?.text || "N/A",
+              duration: el?.duration?.text || "N/A",
+            };
+          } catch {
+            return { ...cafe, distance: "N/A", duration: "N/A" };
           }
-          // Ambil 6 rekomendasi teratas
-          setCafes(filteredCafes.slice(0, 6));
-        } catch (err) {
-          console.error("Error during recommendation processing:", err);
-        } finally {
-          setDistanceLoading(false);
-        }
+        })
+      );
+
+      const minM = parseFloat(userPreferences.preferensi_jarak_minimal) * 1000;
+      const maxM = parseFloat(userPreferences.preferensi_jarak_maksimal) * 1000;
+      const facs = userPreferences.preferensi_fasilitas
+        ? userPreferences.preferensi_fasilitas
+            .split(",")
+            .map((s) => s.trim().toLowerCase())
+        : [];
+
+      let filtered = withDistance.filter((c) => {
+        const d = parseDistance(c.distance);
+        const inRange = d >= minM && d <= maxM;
+        const hasFac = facs.length
+          ? facs.some((f) => c.fasilitas?.toLowerCase().includes(f))
+          : true;
+        return inRange && hasFac;
+      });
+
+      if (filtered.length === 0) {
+        filtered = withDistance
+          .filter((c) =>
+            facs.length
+              ? facs.some((f) => c.fasilitas?.toLowerCase().includes(f))
+              : true
+          )
+          .sort(
+            (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
+          );
+      } else {
+        filtered.sort(
+          (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
+        );
       }
+
+      setRecommendedCafes(filtered.slice(0, 6));
+      setDistanceLoading(false);
     };
 
     fetchDistancesAndFilter();
-  }, [userLocation, cafes, userPreferences]);
+  }, [userLocation, cafes, userPreferences]); // NOTE: tidak tergantung pada recommendedCafes
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -206,6 +158,7 @@ const HomePage = () => {
     }
   };
 
+  // 5) render
   if (loading || distanceLoading) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
@@ -221,7 +174,6 @@ const HomePage = () => {
       </div>
     );
   }
-
   if (error) {
     return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
   }
@@ -321,7 +273,7 @@ const HomePage = () => {
           </h1>
         </div>
         <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-[1.25rem]">
-          {cafes.map((cafe, index) => {
+          {recommendedCafes.map((cafe, index) => {
             let backgroundImageUrl;
             try {
               backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);

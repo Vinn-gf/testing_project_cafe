@@ -120,9 +120,9 @@ const DetailCafe = () => {
         const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
         const userLat = userLocation.latitude;
         const userLong = userLocation.longitude;
-        const cafeLat = parseFloat(cafe.latitude);
-        const cafeLong = parseFloat(cafe.longitude);
-        const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${cafeLat},${cafeLong}&origins=${userLat},${userLong}&key=${apiKey}`;
+        const cafeLat = cafe.latitude;
+        const cafeLong = cafe.longitude;
+        const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?&destinations=${cafeLat} , ${cafeLong}&origins=${userLat} , ${userLong}&key=${apiKey}`;
         try {
           const response = await axios.get(url);
           const data = response.data;

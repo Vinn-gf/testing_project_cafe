@@ -20,22 +20,15 @@ const AllCafes = () => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": true,
-            },
-          }
+          { headers: { "ngrok-skip-browser-warning": true } }
         );
         setCafes(response.data);
-        console.log(response);
-        setLoading(false);
       } catch (err) {
-        console.log(err);
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchCafe();
   }, []);
 
@@ -68,8 +61,6 @@ const AllCafes = () => {
           height="80"
           width="80"
           ariaLabel="color-ring-loading"
-          wrapperStyle={{}}
-          wrapperClass="color-ring-wrapper"
           colors={["#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2", "#E3DCC2"]}
         />
       </div>
@@ -83,8 +74,8 @@ const AllCafes = () => {
   return (
     <div className="bg-[#2D3738] overflow-hidden">
       {/* Navbar */}
-      <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
-        <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">
+      <div className="bg-[#1B2021] p-4 font-montserrat">
+        <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
           </Link>
@@ -96,7 +87,7 @@ const AllCafes = () => {
               Profile
             </Link>
             <h1
-              className="hover:text-gray-200 hover:cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
                 CookieStorage.remove(CookieKeys.UserToken);
@@ -106,36 +97,43 @@ const AllCafes = () => {
               Logout
             </h1>
           </div>
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="focus:outline-none text-[#E3DCC2]"
-            >
-              {isOpen ? "Close" : "Menu"}
-            </button>
-          </div>
+          <button
+            className="md:hidden focus:outline-none text-[#E3DCC2]"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? "Close" : "Menu"}
+          </button>
         </div>
         {isOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden w-[90%] mx-auto space-y-2">
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
             <Link to="/profile" className="block p-2 text-[#E3DCC2]">
               Profile
             </Link>
+            <h1
+              className="block p-2 text-[#E3DCC2] hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
           </div>
         )}
       </div>
-      {/* Navbar */}
 
       {/* Search Section */}
       <div className="px-4">
         <form
           onSubmit={handleSearch}
-          className="w-[90%] mx-auto mt-4 mb-2 flex items-center font-montserrat gap-2"
+          className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 font-montserrat"
         >
           <input
-            className="search-input p-2 rounded-md outline-none text-[#E3DCC2] w-[30%] bg-[#1B2021] font-montserrat"
+            className="search-input p-2 rounded-md outline-none text-[#E3DCC2] bg-[#1B2021] w-full sm:w-[60%] md:w-[30%]"
             placeholder="Enter your cafe..."
             type="text"
             value={searchKeyword}
@@ -143,44 +141,38 @@ const AllCafes = () => {
           />
           <button
             type="submit"
-            className="search-btn text-[#E3DCC2] bg-[#1B2021] py-2 px-4 rounded-md hover:bg-[#51513D]"
+            className="search-btn text-[#E3DCC2] bg-[#1B2021] py-2 px-4 rounded-md hover:bg-[#51513D] w-full sm:w-auto"
           >
             Search
           </button>
         </form>
       </div>
-      {/* Search Section */}
 
       {/* Cafe List Section */}
       <div className="p-4">
-        <div className="recommendation-section w-[90%] mx-auto flex flex-wrap items-center gap-4">
+        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {currentCafes.map((cafe, index) => {
             let backgroundImageUrl;
             try {
               backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
-            } catch (error) {
+            } catch {
               backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
             }
-
             return (
               <div
                 key={index}
-                className="recommendation-card-container bg-[#1B2021] shadow-lg hover:cursor-pointer rounded-md w-[32%] h-full overflow-hidden text-[#E3DCC2] font-montserrat"
+                className="bg-[#1B2021] rounded-md overflow-hidden shadow-md font-montserrat"
               >
                 <Link to={`/detailcafe/${cafe.nomor}`}>
                   <div
-                    className="card-img-section relative h-[21rem] rounded-t-md bg-cover bg-center bg-no-repeat)"
-                    style={{
-                      backgroundImage: `url(${backgroundImageUrl})`,
-                    }}
+                    className="relative h-[21rem] bg-cover bg-center rounded-t-md"
+                    style={{ backgroundImage: `url(${backgroundImageUrl})` }}
                   >
-                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 h-[18%]">
+                    <div className="text-[#E3DCC2] absolute bottom-0 inset-x-0 bg-black bg-opacity-50 p-2 h-[18%]">
                       <h1 className="text-[1.2rem] font-extrabold">
                         {cafe.nama_kafe}
                       </h1>
-                      <h1 className="text-[0.9rem] font-normal">
-                        {cafe.alamat}
-                      </h1>
+                      <p className="text-[0.9rem] font-normal">{cafe.alamat}</p>
                     </div>
                   </div>
                 </Link>
@@ -190,11 +182,11 @@ const AllCafes = () => {
         </div>
 
         {/* Pagination Section */}
-        <div className="w-[90%] mx-auto flex justify-center items-center mt-8 gap-4">
+        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto flex flex-col sm:flex-row justify-center items-center mt-8 gap-4">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-700 text-[#E3DCC2] rounded disabled:opacity-50 disabled:text-white hover:cursor-pointer"
+            className="px-4 py-2 bg-gray-700 text-[#E3DCC2] rounded disabled:opacity-50"
           >
             Previous
           </button>
@@ -210,7 +202,6 @@ const AllCafes = () => {
           </button>
         </div>
       </div>
-      {/* Cafe List Section */}
     </div>
   );
 };

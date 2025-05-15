@@ -35,6 +35,68 @@ def get_data(search_term=None):
         results.append(od)
     return results
 
+def get_menu(search_term=None):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cafe_databases"
+    )
+    cursor = db.cursor()
+
+    cursor.execute("SHOW COLUMNS FROM menu_tables")
+    columns = [col[0] for col in cursor.fetchall()]
+
+    if search_term:
+        query = "SELECT * FROM menu_tables WHERE nama_menu LIKE %s OR nama_menu LIKE %s"
+        cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
+    else:
+        cursor.execute("SELECT * FROM menu_tables")
+
+    data = cursor.fetchall()
+    db.close()
+    
+    results = []
+    for row in data:
+        od = OrderedDict()
+        for idx, col in enumerate(columns):
+            od[col] = row[idx]
+        results.append(od)
+    return results
+
+def get_menu_by_id(id_cafe):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cafe_databases"
+    )
+    cursor = db.cursor()
+
+    # Ambil nama kolom
+    cursor.execute("SHOW COLUMNS FROM menu_tables")
+    columns = [col[0] for col in cursor.fetchall()]
+
+    # Ambil semua baris untuk id_cafe
+    query = "SELECT * FROM menu_tables WHERE id_cafe = %s"
+    cursor.execute(query, (id_cafe,))
+    rows = cursor.fetchall()
+    db.close()
+
+    # Jika tidak ada baris, kembalikan None
+    if not rows:
+        return None
+
+    # Ubah setiap baris menjadi OrderedDict dan kumpulkan
+    menus = []
+    for row in rows:
+        od = OrderedDict()
+        for idx, col in enumerate(columns):
+            od[col] = row[idx]
+        menus.append(od)
+
+    return menus
+
 def get_user_rating(search_term=None):
     db = mysql.connector.connect(
         host="localhost",
@@ -305,6 +367,17 @@ def api_reviews(id_kafe):
 @app.route('/api/data', methods=['GET'])
 def api_data():
     return jsonify(get_data())
+
+@app.route('/api/menus', methods=['GET'])
+def api_menu():
+    return jsonify(get_menu())
+
+@app.route('/api/menu/<int:id_cafe>', methods=['GET'])
+def api_menu_by_id(id_cafe):
+    menus = get_menu_by_id(id_cafe)
+    if menus is None:
+        return jsonify({"error": "Menu not found"}), 404
+    return jsonify(menus), 200
 
 @app.route('/api/user_rating', methods=['GET'])
 def api_user_rating():

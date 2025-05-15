@@ -8,4 +8,5 @@ export const API_ENDPOINTS = {
   GET_USER_BY_ID: "/api/users/",
   GET_DETAIL_CAFE: "/api/cafe/",
   VISITED_CAFES: "/api/user/visited",
+  GET_MENU_BY_ID: "/api/menu/",
 };

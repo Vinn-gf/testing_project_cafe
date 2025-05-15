@@ -11,6 +11,7 @@ import ProtectedTokenUser from "../components/ProtectedComponents/ProtectedToken
 import UserPreferences from "../pages/UserPreferences";
 import RecommendationCafes from "../pages/RecommendationCafes";
 import ProfilePage from "../pages/ProfilePage";
+import MenuPage from "../pages/MenuPage";
 
 const RoutingPage = () => {
   return (
@@ -71,6 +72,14 @@ const RoutingPage = () => {
           element={
             <ProtectedTokenUser>
               <RecommendationCafes />
+            </ProtectedTokenUser>
+          }
+        />
+        <Route
+          path="/menu/:id"
+          element={
+            <ProtectedTokenUser>
+              <MenuPage />
             </ProtectedTokenUser>
           }
         />

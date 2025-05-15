@@ -71,19 +71,41 @@ const DetailCafe = () => {
 
   // --- Ambil Lokasi User ---
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (error) => console.error("Error mendapatkan lokasi pengguna:", error)
-      );
-    } else {
-      console.error("Geolokasi tidak didukung oleh browser ini.");
-    }
+    const getGPS = () =>
+      new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          return reject(new Error("Geolokasi tidak didukung"));
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) =>
+            resolve({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+            }),
+          (err) => reject(err),
+          { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+        );
+      });
+
+    const getIPLocation = async () => {
+      const { data } = await axios.get("https://ipapi.co/json/");
+      return { latitude: data.latitude, longitude: data.longitude };
+    };
+
+    (async () => {
+      try {
+        const gpsPos = await getGPS();
+        setUserLocation(gpsPos);
+      } catch (gpsErr) {
+        console.warn("GPS gagal:", gpsErr.message);
+        try {
+          const ipPos = await getIPLocation();
+          setUserLocation(ipPos);
+        } catch (ipErr) {
+          console.error("IP lookup gagal:", ipErr);
+        }
+      }
+    })();
   }, []);
 
   // --- Ambil Preferensi User (dari API get_user_by_id) ---
@@ -217,7 +239,7 @@ const DetailCafe = () => {
     }
   };
 
-  if (loading || distanceLoading) {
+  if (loading || distanceLoading || !userLocation) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
@@ -396,6 +418,11 @@ const DetailCafe = () => {
               >
                 Mark as Visited
               </button>
+              <Link to={`/menu/${cafe.nomor}`}>
+                <button className="bg-[#E3DC95] text-[#1B2021] hover:bg-[#A6A867] hover:text-white p-[.75rem] flex items-center justify-center font-bold rounded-lg shadow transition-colors duration-300">
+                  Menu
+                </button>
+              </Link>
             </div>
           </div>
         </div>

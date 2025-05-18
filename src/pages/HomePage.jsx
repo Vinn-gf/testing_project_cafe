@@ -27,101 +27,98 @@ const HomePage = () => {
   const navigate = useNavigate();
   const hero_image = require("../assets/image/hero-bg2.jpg");
 
-  // 1) Fetch all cafes
+  // 1) Load cafes
   useEffect(() => {
-    const fetchCafes = async () => {
+    (async () => {
       try {
         const { data } = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
           { headers: { "ngrok-skip-browser-warning": true } }
         );
         setCafes(data);
-      } catch (err) {
-        setError(err.message);
+      } catch (e) {
+        setError(e.message);
       } finally {
         setLoading(false);
-      }
-    };
-    fetchCafes();
-  }, []);
-
-  // 2) Get user GPS or IP
-  useEffect(() => {
-    const getGPS = () =>
-      new Promise((resolve, reject) => {
-        if (!navigator.geolocation)
-          return reject(new Error("Geolokasi tidak didukung"));
-        navigator.geolocation.getCurrentPosition(
-          (pos) =>
-            resolve({
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-            }),
-          reject,
-          { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-        );
-      });
-    const getIP = async () => {
-      const { data } = await axios.get("https://ipapi.co/json/");
-      return { latitude: data.latitude, longitude: data.longitude };
-    };
-    (async () => {
-      try {
-        const gps = await getGPS();
-        setUserLocation(gps);
-      } catch {
-        try {
-          const ip = await getIP();
-          setUserLocation(ip);
-        } catch (e) {
-          setError("Gagal mendapatkan lokasi user.");
-        }
       }
     })();
   }, []);
 
-  // 3) Fetch user preferences
+  // 2) Get user location via Geolocation
   useEffect(() => {
-    const fetchPrefs = async () => {
-      const uid = CookieStorage.get(CookieKeys.UserToken);
-      if (!uid) {
-        setError("User ID tidak ditemukan. Silakan login kembali.");
-        return;
-      }
-      try {
-        const { data } = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${uid}`,
-          { headers: { "ngrok-skip-browser-warning": true } }
-        );
-        setUserPreferences(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-    fetchPrefs();
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const { latitude, longitude } = coords;
+        setUserLocation({ latitude, longitude });
+      },
+      (err) => {
+        setError("Failed to get location: " + err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   }, []);
 
-  // 4) Compute distances & filter recommendations
+  // 3) Load user preferences
   useEffect(() => {
-    const loadRecs = async () => {
-      if (!userLocation || !userPreferences || cafes.length === 0) return;
-      const apiKey = process.env.REACT_APP_GOMAPS_API_KE;
-      const { latitude: uLat, longitude: uLong } = userLocation;
+    const uid = CookieStorage.get(CookieKeys.UserToken);
+    if (!uid) {
+      setError("User ID not found—please login again.");
+      return;
+    }
+    axios
+      .get(
+        `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${uid}`,
+        {
+          headers: { "ngrok-skip-browser-warning": true },
+        }
+      )
+      .then(({ data }) => setUserPreferences(data))
+      .catch((e) => setError(e.message));
+  }, []);
 
-      // add distance info
+  // 4) Compute distances & recommendations
+  useEffect(() => {
+    (async () => {
+      if (!userLocation || !userPreferences || cafes.length === 0) return;
+      const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
+      const { latitude: uLat, longitude: uLng } = userLocation;
+
       const withDistance = await Promise.all(
-        cafes.map(async (cafe) => {
+        cafes.map(async (c) => {
+          // Validate cafe coordinates
+          if (!c.latitude || !c.longitude) {
+            console.log(
+              `Skipping cafe ${c.nama_kafe} due to missing coordinates.`
+            );
+            return { ...c, distance: "N/A" };
+          }
+
           try {
-            const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?&destinations=${cafe.latitude} , ${cafe.longitude}&origins=${uLat} , ${uLong}&key=${apiKey}`;
+            // Ensure coordinates are properly formatted without spaces
+            const destinations = `${c.latitude},${c.longitude}`;
+            const origins = `${uLat},${uLng}`;
+            const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destinations}&origins=${origins}&key=${apiKey}`;
+
             const { data } = await axios.get(url);
+
+            if (data.status !== "OK") {
+              throw new Error(`API Error: ${data.status}`);
+            }
+
             const el = data.rows?.[0]?.elements?.[0] || {};
-            return {
-              ...cafe,
-              distance: el.distance?.text || "N/A",
-              duration: el.duration?.text || "N/A",
-            };
-          } catch {
-            return { ...cafe, distance: "N/A", duration: "N/A" };
+            return { ...c, distance: el.distance?.text || "N/A" };
+          } catch (error) {
+            console.error(
+              `Error fetching distance for cafe ${c.nama_kafe}:`,
+              error.message
+            );
+            return { ...c, distance: "N/A" };
           }
         })
       );
@@ -133,43 +130,42 @@ const HomePage = () => {
         .split(",")
         .map((s) => s.trim().toLowerCase());
 
-      // 1) first try all fasilitas & in-range
-      let filtered = withDistance.filter((cafe) => {
-        const d = parseDistance(cafe.distance);
-        const inRange = d >= minM && d <= maxM;
-        const hasAll = facs.every((f) =>
-          cafe.fasilitas?.toLowerCase().includes(f)
+      let filtered = withDistance.filter((c) => {
+        const d = parseDistance(c.distance);
+        return (
+          d >= minM &&
+          d <= maxM &&
+          facs.every((f) => c.fasilitas?.toLowerCase().includes(f))
         );
-        return inRange && hasAll;
       });
 
-      // 2) if none, fallback to any satu fasilitas, sorted by closeness to mid
       if (filtered.length === 0) {
-        const anyFac = withDistance.filter((cafe) =>
-          facs.some((f) => cafe.fasilitas?.toLowerCase().includes(f))
-        );
-        anyFac.sort(
-          (a, b) =>
-            Math.abs(parseDistance(a.distance) - mid) -
-            Math.abs(parseDistance(b.distance) - mid)
-        );
-        filtered = anyFac;
+        filtered = withDistance
+          .filter((c) =>
+            facs.some((f) => c.fasilitas?.toLowerCase().includes(f))
+          )
+          .sort(
+            (a, b) =>
+              Math.abs(parseDistance(a.distance) - mid) -
+              Math.abs(parseDistance(b.distance) - mid)
+          );
       }
 
       setRecommendedCafes(filtered.slice(0, 6));
       setDistanceLoading(false);
-    };
-    loadRecs();
+    })();
   }, [userLocation, userPreferences, cafes]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchKeyword.trim()) navigate(`/search/${searchKeyword}`);
+    if (searchKeyword.trim()) {
+      navigate(`/search/${searchKeyword}`);
+    }
   };
 
   if (loading || distanceLoading || !userLocation) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
+      <div className="w-full h-screen flex items-center justify-center bg-[#2D3738]">
         <ColorRing
           visible
           height="80"
@@ -181,14 +177,14 @@ const HomePage = () => {
     );
   }
   if (error) {
-    return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
+    return <p className="text-center text-red-500 mt-10">{error}</p>;
   }
 
   return (
     <div className="bg-[#1B2021] overflow-hidden">
       {/* Navbar */}
-      <div className="bg-[#1B2021] p-4 font-montserrat">
-        <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
+      <div className="p-4 bg-[#1B2021] font-montserrat">
+        <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
           </Link>
@@ -211,14 +207,14 @@ const HomePage = () => {
             </h1>
           </div>
           <button
-            className="md:hidden focus:outline-none text-[#E3DCC2]"
+            className="md:hidden text-[#E3DCC2] focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? "Close" : "Menu"}
           </button>
         </div>
         {isOpen && (
-          <div className="md:hidden w-[90%] mx-auto space-y-2">
+          <div className="md:hidden mx-auto w-[90%] space-y-2">
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
@@ -246,11 +242,11 @@ const HomePage = () => {
         style={{ backgroundImage: `url(${hero_image})` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="relative z-10 w-[90%] sm:w-[85%] md:w-[75%] lg:w-[60%] mx-auto">
-          <h1 className="font-montserrat text-[#E3DCC2] font-bold text-4xl md:text-[4rem] tracking-wide">
+        <div className="relative z-10 mx-auto w-[90%] sm:w-[85%] md:w-[75%] lg:w-[60%]">
+          <h1 className="font-montserrat text-4xl md:text-[4rem] font-bold text-[#E3DCC2] tracking-wide">
             Welcome.
           </h1>
-          <p className="text-[#E3DCC2] font-poppins mt-2">
+          <p className="mt-2 font-poppins text-[#E3DCC2]">
             find your comfort and happy place.
           </p>
           <form
@@ -261,12 +257,12 @@ const HomePage = () => {
               type="text"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              className="p-2 rounded-md outline-none bg-[#1B2021] text-[#E3DCC2] w-full sm:w-2/3 md:w-[30%]"
               placeholder="Enter your cafe..."
+              className="w-full sm:w-2/3 md:w-[30%] p-2 bg-[#1B2021] text-[#E3DCC2] rounded-md outline-none"
             />
             <button
               type="submit"
-              className="py-2 px-4 rounded-md bg-[#1B2021] text-[#E3DCC2] hover:bg-[#51513D] w-full sm:w-auto"
+              className="w-full sm:w-auto py-2 px-4 bg-[#1B2021] text-[#E3DCC2] rounded-md hover:bg-[#51513D]"
             >
               Search
             </button>
@@ -279,49 +275,49 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Recommendation Section */}
+      {/* Recommendations */}
       <div className="p-4">
-        <h1 className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto text-[#e3dcc2] font-montserrat font-bold text-[1.4rem] mb-4">
+        <h1 className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] mb-4 text-[1.4rem] font-bold font-montserrat text-[#e3dcc2]">
           Recommended Cafes Based on Your Preferences
         </h1>
-        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {recommendedCafes.map((cafe, idx) => {
+        <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {recommendedCafes.map((c, idx) => {
             const img = (() => {
               try {
-                return require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
+                return require(`../assets/image/card-cafe-${c.nomor}.jpg`);
               } catch {
-                return require("../assets/image/card-cafe.jpg");
+                return require(`../assets/image/card-cafe.jpg`);
               }
             })();
             return (
               <div
                 key={idx}
-                className="bg-[#1B2021] shadow-lg rounded-md overflow-hidden font-montserrat"
+                className="bg-[#1B2021] rounded-md shadow-lg overflow-hidden font-montserrat"
               >
-                <Link to={`/detailcafe/${cafe.nomor}`}>
+                <Link to={`/detailcafe/${c.nomor}`}>
                   <div
                     className="relative h-60 bg-cover bg-center"
                     style={{ backgroundImage: `url(${img})` }}
                   >
                     <div className="absolute bottom-0 inset-x-0 bg-black bg-opacity-50 p-2">
                       <h1 className="text-[1.3rem] font-bold text-[#E3DCC2]">
-                        {cafe.nama_kafe}
+                        {c.nama_kafe}
                       </h1>
                     </div>
                   </div>
                 </Link>
-                <div className="p-4 flex flex-col gap-2 text-[.95rem] text-[#E3DCC2]">
+                <div className="p-4 flex flex-col gap-2 text-[#E3DCC2] text-[.95rem]">
                   <div className="flex items-center gap-2">
                     <FaLocationDot />
-                    <p>{cafe.alamat}</p>
+                    <p>{c.alamat}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <FaStar />
-                    <p>{cafe.rating}</p>
+                    <p>{c.rating}</p>
                   </div>
-                  {cafe.distance && (
+                  {c.distance && (
                     <p>
-                      Berjarak <strong>{cafe.distance}</strong> dari lokasi Anda
+                      Berjarak <strong>{c.distance}</strong> dari lokasi Anda
                     </p>
                   )}
                 </div>

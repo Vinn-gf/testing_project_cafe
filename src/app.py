@@ -335,6 +335,55 @@ def add_visited_cafe(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
+    
+def add_favorite_menu(data):
+    user_id   = data.get("user_id")
+    id_cafe   = data.get("id_cafe")
+    nama_menu = data.get("nama_menu")
+    harga     = data.get("harga")
+
+    if not (user_id and id_cafe and nama_menu and harga is not None):
+        return {"error": "user_id, id_cafe, nama_menu, dan harga wajib diisi"}, 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+
+        query = """
+        UPDATE user_tables
+        SET menu_yang_disukai = JSON_ARRAY_APPEND(
+            COALESCE(menu_yang_disukai, JSON_ARRAY()),
+            '$',
+            JSON_OBJECT(
+              'id_cafe',   %s,
+              'nama_menu', %s,
+              'harga',     %s
+            )
+        )
+        WHERE id_user = %s
+        """
+        params = (id_cafe, nama_menu, harga, user_id)
+        cursor.execute(query, params)
+        db.commit()
+        updated = cursor.rowcount
+        db.close()
+
+        if updated:
+            return {"message": "Menu favorit berhasil ditambahkan"}, 200
+        else:
+            return {"error": "User tidak ditemukan"}, 404
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.route('/api/user/favorite_menu', methods=['POST'])
+def api_add_favorite_menu():
+    data = request.get_json()
+    result, status = add_favorite_menu(data)
+    return jsonify(result), status
 
 
 @app.route('/api/user/visited', methods=['POST'])

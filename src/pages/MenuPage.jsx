@@ -1,53 +1,81 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../utils/api_endpoints";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ColorRing } from "react-loader-spinner";
+import { CookieKeys, CookieStorage } from "../utils/cookies";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 const MenuPage = () => {
   const { id: cafeId } = useParams();
-  const [menus, setMenus] = useState([]); // langsung pakai menus
+  const navigate = useNavigate(); // still used for logout
+
+  const [cafeName, setCafeName] = useState("");
+  const [menus, setMenus] = useState([]);
+  const [likedMenus, setLikedMenus] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  //   const [Test, setTest] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
   const itemsPerPage = 9;
 
+  // 1) fetch cafe name
   useEffect(() => {
-    const fetchMenu = async () => {
+    (async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_MENU_BY_ID}${cafeId}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": true,
-            },
-          }
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`
         );
-        setMenus(response.data);
-      } catch (err) {
-        setError(err.message);
+        setCafeName(data.nama_kafe);
+      } catch {
+        // ignore
+      }
+    })();
+  }, [cafeId]);
+
+  // 2) fetch menus
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_MENU_BY_ID}${cafeId}`,
+          { headers: { "ngrok-skip-browser-warning": true } }
+        );
+        setMenus(data);
+      } catch (e) {
+        setError(e.message);
       } finally {
         setLoading(false);
       }
-    };
-    fetchMenu();
+    })();
   }, [cafeId]);
 
-  useEffect(() => {
-    console.log(menus.length, "length");
-    console.log(menus, "menu");
-  }, [menus]);
+  // filter by nama_menu live
+  const filteredMenus = menus.filter((m) =>
+    m.nama_menu.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
 
-  const totalPages = Math.ceil(menus.length / itemsPerPage);
+  // pagination over filteredMenus
+  const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
-  const currentMenus = menus.slice(startIdx, startIdx + itemsPerPage);
+  const currentMenus = filteredMenus.slice(startIdx, startIdx + itemsPerPage);
 
   const handlePrev = () => currentPage > 1 && setCurrentPage((p) => p - 1);
   const handleNext = () =>
     currentPage < totalPages && setCurrentPage((p) => p + 1);
 
-  if (loading || menus.length < 0) {
+  // toggle like a single menu by its unique id
+  const toggleLike = (menuId) => {
+    setLikedMenus((prev) => {
+      const next = new Set(prev);
+      next.has(menuId) ? next.delete(menuId) : next.add(menuId);
+      return next;
+    });
+  };
+
+  if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
@@ -65,56 +93,110 @@ const MenuPage = () => {
   }
 
   return (
-    <div className="bg-[#2D3738] min-h-screen p-4">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-[#E3DCC2] mb-4 font-montserrat">
-          Menu Cafe #{cafeId}
-        </h1>
-
-        {/* Makanan */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold text-[#E3DCC2] mb-2 font-montserrat">
-            Makanan
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {currentMenus.map((item) => (
-              <div
-                key={item.id_cafe}
-                className="bg-[#1B2021] p-4 rounded-lg shadow-md flex flex-col"
-              >
-                <h3 className="font-bold text-lg text-[#E3DCC2]">
-                  {item.nama_menu}
-                </h3>
-                <p className="mt-2 text-[#E3DCC2]">Harga: {item.harga}</p>
-              </div>
-            ))}
+    <div className="bg-[#2D3738] min-h-screen overflow-hidden font-montserrat">
+      {/* Navbar */}
+      <div className="bg-[#1B2021] p-4 font-montserrat">
+        <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
+          <Link to="/" className="text-xl font-bold tracking-widest">
+            Vinn.
+          </Link>
+          <div className="hidden md:flex space-x-10">
+            <Link to="/" className="hover:text-gray-200">
+              Home
+            </Link>
+            <Link to="/profile" className="hover:text-gray-200">
+              Profile
+            </Link>
+            <h1
+              className="hover:text-gray-200 cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
           </div>
-        </section>
+          <button
+            className="md:hidden focus:outline-none text-[#E3DCC2]"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? "Close" : "Menu"}
+          </button>
+        </div>
+        {isOpen && (
+          <div className="md:hidden w-[90%] mx-auto space-y-2">
+            <Link to="/" className="block p-2 text-[#E3DCC2]">
+              Home
+            </Link>
+            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
+              Profile
+            </Link>
+            <h1
+              className="block p-2 text-[#E3DCC2] hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
+          </div>
+        )}
+      </div>
 
-        {/* Minuman */}
-        {/* <section className="mb-8">
-          <h2 className="text-xl font-semibold text-[#E3DCC2] mb-2 font-montserrat">
-            Minuman
-          </h2>
-          {minuman.length > 0 ? (
-            <p className="text-[#e3dcc2]">Tidak ada menu minuman.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {minuman.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-[#1B2021] p-4 rounded-lg shadow-md flex flex-col"
-                >
-                  <h3 className="font-bold text-lg text-[#E3DCC2]">
-                    {item.nama_menu}
-                  </h3>
-                  <p className="mt-2 text-[#E3DCC2]">Harga: {item.harga}</p>
-                </div>
-              ))}
+      {/* Live Search & Show All Cafes */}
+      <div className="px-4">
+        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-2">
+          <input
+            type="text"
+            placeholder="Enter your menu..."
+            className="p-2 rounded-md outline-none bg-[#1B2021] text-[#E3DCC2] w-full sm:w-2/3 md:w-1/3"
+            value={searchKeyword}
+            onChange={(e) => {
+              setSearchKeyword(e.target.value);
+              setCurrentPage(1); // reset to first page
+            }}
+          />
+          <Link to="/allcafes" className="w-full sm:w-auto">
+            <button className="w-full sm:w-auto bg-[#1B2021] text-[#E3DCC2] py-2 px-4 rounded-md hover:bg-[#51513D]">
+              Show All Cafes
+            </button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Page Title */}
+      <div className="px-4">
+        <h1 className="text-2xl font-bold text-[#E3DCC2] mb-4 lg:w-[90%] md:w-full sm:w-full mx-auto">
+          Menu {cafeName || `${cafeId}`}
+        </h1>
+      </div>
+
+      {/* Menu Grid */}
+      <div className="px-4 pb-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {currentMenus.map((item) => (
+            <div
+              key={item.id_menu}
+              className="bg-[#1B2021] p-4 rounded-lg shadow-md relative"
+            >
+              <button
+                onClick={() => toggleLike(item.id_menu)}
+                className="absolute top-2 right-2 text-red-500 text-xl"
+                aria-label="Like menu"
+              >
+                {likedMenus.has(item.id_menu) ? <FaHeart /> : <FaRegHeart />}
+              </button>
+              <h3 className="font-bold text-lg text-[#E3DCC2] mb-2">
+                {item.nama_menu}
+              </h3>
+              <p className="text-[#E3DCC2]">Harga: {item.harga}</p>
             </div>
-          )}
-        </section> */}
+          ))}
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (

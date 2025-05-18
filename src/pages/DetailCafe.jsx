@@ -69,46 +69,25 @@ const DetailCafe = () => {
     }
   }, [cafe, id]);
 
-  // --- Ambil Lokasi User ---
   useEffect(() => {
-    const getGPS = () =>
-      new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          return reject(new Error("Geolokasi tidak didukung"));
-        }
-        navigator.geolocation.getCurrentPosition(
-          (pos) =>
-            resolve({
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-            }),
-          (err) => reject(err),
-          { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-        );
-      });
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      setLoading(false);
+      return;
+    }
 
-    const getIPLocation = async () => {
-      const { data } = await axios.get("https://ipapi.co/json/");
-      return { latitude: data.latitude, longitude: data.longitude };
-    };
-
-    (async () => {
-      try {
-        const gpsPos = await getGPS();
-        setUserLocation(gpsPos);
-      } catch (gpsErr) {
-        console.warn("GPS gagal:", gpsErr.message);
-        try {
-          const ipPos = await getIPLocation();
-          setUserLocation(ipPos);
-        } catch (ipErr) {
-          console.error("IP lookup gagal:", ipErr);
-        }
-      }
-    })();
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const { latitude, longitude } = coords;
+        setUserLocation({ latitude, longitude });
+      },
+      (err) => {
+        setError("Failed to get location: " + err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   }, []);
 
-  // --- Ambil Preferensi User (dari API get_user_by_id) ---
   useEffect(() => {
     const fetchUserPreferences = async () => {
       const userId = CookieStorage.get(CookieKeys.UserToken);
@@ -118,14 +97,8 @@ const DetailCafe = () => {
       }
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": true,
-            },
-          }
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
         );
-        // Contoh response: { id_user: 3, username: "Kevin", cafe_telah_dikunjungi: "Meinewelt, Cafe XYZ", ... }
         setUserPreferences(response.data);
       } catch (err) {
         setError(err.message);
@@ -134,30 +107,59 @@ const DetailCafe = () => {
     fetchUserPreferences();
   }, []);
 
-  // --- Fetch Jarak untuk Cafe ---
   useEffect(() => {
     const fetchDistance = async () => {
-      if (userLocation && cafe) {
-        setDistanceLoading(true);
-        const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
-        const userLat = userLocation.latitude;
-        const userLong = userLocation.longitude;
-        const cafeLat = cafe.latitude;
-        const cafeLong = cafe.longitude;
-        const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?&destinations=${cafeLat} , ${cafeLong}&origins=${userLat} , ${userLong}&key=${apiKey}`;
-        try {
-          const response = await axios.get(url);
-          const data = response.data;
-          if (data.rows.length > 0 && data.rows[0].elements.length > 0) {
-            setDistance(data.rows[0].elements[0].distance.text);
-          }
-        } catch (error) {
-          console.error("Error mengambil data jarak:", error);
-        } finally {
-          setDistanceLoading(false);
+      if (!userLocation || !cafe) return;
+
+      const userLat = userLocation.latitude;
+      const userLong = userLocation.longitude;
+      const cafeLat = cafe.latitude;
+      const cafeLong = cafe.longitude;
+
+      if (
+        isNaN(userLat) ||
+        isNaN(userLong) ||
+        isNaN(cafeLat) ||
+        isNaN(cafeLong)
+      ) {
+        setError("Invalid coordinates. Distance calculation failed.");
+        setDistance("N/A");
+        setDistanceLoading(false);
+        return;
+      }
+
+      setDistanceLoading(true);
+      const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
+      const destinations = `${cafeLat},${cafeLong}`;
+      const origins = `${userLat},${userLong}`;
+      const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destinations}&origins=${origins}&key=${apiKey}`;
+
+      try {
+        const axiosInstance = axios.create({
+          timeout: 5000, // 5 seconds timeout
+        });
+
+        const response = await axiosInstance.get(url);
+        const data = response.data;
+
+        if (data.status !== "OK") {
+          throw new Error(`API Error: ${data.status}`);
         }
+
+        if (data.rows.length > 0 && data.rows[0].elements.length > 0) {
+          setDistance(data.rows[0].elements[0].distance.text);
+        } else {
+          setDistance("N/A");
+        }
+      } catch (error) {
+        console.error("Error fetching distance:", error.message);
+        setError("Failed to calculate distance. Please try again.");
+        setDistance("N/A");
+      } finally {
+        setDistanceLoading(false);
       }
     };
+
     fetchDistance();
   }, [userLocation, cafe]);
 
@@ -269,8 +271,8 @@ const DetailCafe = () => {
   return (
     <div className="overflow-hidden bg-[#2D3738]">
       {/* Navbar */}
-      <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
-        <div className="container w-[90%] text-[#E3DCC2] mx-auto flex justify-between items-center">
+      <div className="bg-[#1B2021] p-4 font-montserrat">
+        <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
           </Link>
@@ -282,7 +284,7 @@ const DetailCafe = () => {
               Profile
             </Link>
             <h1
-              className="hover:text-gray-200 hover:cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
                 CookieStorage.remove(CookieKeys.UserToken);
@@ -292,23 +294,31 @@ const DetailCafe = () => {
               Logout
             </h1>
           </div>
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="focus:outline-none text-[#E3DCC2]"
-            >
-              {isOpen ? "Close" : "Menu"}
-            </button>
-          </div>
+          <button
+            className="md:hidden focus:outline-none text-[#E3DCC2]"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? "Close" : "Menu"}
+          </button>
         </div>
         {isOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden w-[90%] mx-auto space-y-2">
             <Link to="/" className="block p-2 text-[#E3DCC2]">
               Home
             </Link>
             <Link to="/profile" className="block p-2 text-[#E3DCC2]">
               Profile
             </Link>
+            <h1
+              className="block p-2 text-[#E3DCC2] hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
           </div>
         )}
       </div>

@@ -6,13 +6,28 @@ import { ColorRing } from "react-loader-spinner";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 
+// Utility: pastikan rawFavorites selalu jadi array
+function normalizeFavorites(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 const MenuPage = () => {
   const { id: cafeId } = useParams();
-  const navigate = useNavigate(); // still used for logout
+  const navigate = useNavigate();
+  const userId = CookieStorage.get(CookieKeys.UserToken);
 
   const [cafeName, setCafeName] = useState("");
   const [menus, setMenus] = useState([]);
-  const [likedMenus, setLikedMenus] = useState(new Set());
+  const [likedMenus, setLikedMenus] = useState(new Set()); // Set of nama_menu
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,43 +36,56 @@ const MenuPage = () => {
 
   const itemsPerPage = 9;
 
-  // 1) fetch cafe name
+  // 1) fetch nama cafe
   useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`
-        );
-        setCafeName(data.nama_kafe);
-      } catch {
-        // ignore
-      }
-    })();
+    axios
+      .get(
+        `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`
+      )
+      .then(({ data }) => setCafeName(data.nama_kafe))
+      .catch(() => {});
   }, [cafeId]);
 
-  // 2) fetch menus
+  // 2) fetch daftar menu & daftar favorit user
   useEffect(() => {
-    (async () => {
+    async function load() {
       try {
-        const { data } = await axios.get(
+        // fetch menu
+        const { data: menuData } = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_MENU_BY_ID}${cafeId}`,
           { headers: { "ngrok-skip-browser-warning": true } }
         );
-        setMenus(data);
+        setMenus(menuData);
+
+        // fetch user record (termasuk field menu_yang_disukai)
+        const { data: user } = await axios.get(
+          `${process.env.REACT_APP_URL_SERVER}/api/users/${userId}`
+        );
+        const rawFavs = user.menu_yang_disukai;
+        const favArray = normalizeFavorites(rawFavs);
+
+        // ambil hanya yang id_cafe == cafeId, lalu ambil nama_menu
+        const initial = new Set(
+          favArray
+            .filter((e) => Number(e.id_cafe) === Number(cafeId))
+            .map((e) => e.nama_menu)
+        );
+        setLikedMenus(initial);
       } catch (e) {
         setError(e.message);
       } finally {
         setLoading(false);
       }
-    })();
-  }, [cafeId]);
+    }
+    load();
+  }, [cafeId, userId]);
 
-  // filter by nama_menu live
+  // live filter by nama_menu
   const filteredMenus = menus.filter((m) =>
     m.nama_menu.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  // pagination over filteredMenus
+  // pagination
   const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const currentMenus = filteredMenus.slice(startIdx, startIdx + itemsPerPage);
@@ -66,13 +94,24 @@ const MenuPage = () => {
   const handleNext = () =>
     currentPage < totalPages && setCurrentPage((p) => p + 1);
 
-  // toggle like a single menu by its unique id
-  const toggleLike = (menuId) => {
-    setLikedMenus((prev) => {
-      const next = new Set(prev);
-      next.has(menuId) ? next.delete(menuId) : next.add(menuId);
-      return next;
-    });
+  // hanya add favorite (no unlike)
+  const addFavorite = async (item) => {
+    if (likedMenus.has(item.nama_menu)) return;
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_URL_SERVER}/api/user/favorite_menu`,
+        {
+          user_id: userId,
+          id_cafe: cafeId,
+          nama_menu: item.nama_menu,
+          harga: item.harga,
+        },
+        { headers: { "ngrok-skip-browser-warning": true } }
+      );
+      setLikedMenus((prev) => new Set(prev).add(item.nama_menu));
+    } catch (e) {
+      console.error("Failed to add favorite:", e);
+    }
   };
 
   if (loading) {
@@ -95,7 +134,7 @@ const MenuPage = () => {
   return (
     <div className="bg-[#2D3738] min-h-screen overflow-hidden font-montserrat">
       {/* Navbar */}
-      <div className="bg-[#1B2021] p-4 font-montserrat">
+      <div className="bg-[#1B2021] p-4">
         <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
@@ -157,7 +196,7 @@ const MenuPage = () => {
             value={searchKeyword}
             onChange={(e) => {
               setSearchKeyword(e.target.value);
-              setCurrentPage(1); // reset to first page
+              setCurrentPage(1);
             }}
           />
           <Link to="/allcafes" className="w-full sm:w-auto">
@@ -170,8 +209,8 @@ const MenuPage = () => {
 
       {/* Page Title */}
       <div className="px-4">
-        <h1 className="text-2xl font-bold text-[#E3DCC2] mb-4 lg:w-[90%] md:w-full sm:w-full mx-auto">
-          Menu {cafeName || `${cafeId}`}
+        <h1 className="text-2xl font-bold text-[#E3DCC2] lg:w-[90%] md:w-full sm:w-full mb-4 mx-auto">
+          Menu {cafeName || `#${cafeId}`}
         </h1>
       </div>
 
@@ -184,11 +223,12 @@ const MenuPage = () => {
               className="bg-[#1B2021] p-4 rounded-lg shadow-md relative"
             >
               <button
-                onClick={() => toggleLike(item.id_menu)}
-                className="absolute top-2 right-2 text-red-500 text-xl"
+                onClick={() => addFavorite(item)}
+                disabled={likedMenus.has(item.nama_menu)}
+                className="absolute top-2 right-2 text-red-500 text-xl disabled:opacity-50"
                 aria-label="Like menu"
               >
-                {likedMenus.has(item.id_menu) ? <FaHeart /> : <FaRegHeart />}
+                {likedMenus.has(item.nama_menu) ? <FaHeart /> : <FaRegHeart />}
               </button>
               <h3 className="font-bold text-lg text-[#E3DCC2] mb-2">
                 {item.nama_menu}

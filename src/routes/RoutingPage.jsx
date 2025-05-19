@@ -12,6 +12,7 @@ import UserPreferences from "../pages/UserPreferences";
 import RecommendationCafes from "../pages/RecommendationCafes";
 import ProfilePage from "../pages/ProfilePage";
 import MenuPage from "../pages/MenuPage";
+import FeedbackPage from "../pages/FeedbackPage";
 
 const RoutingPage = () => {
   return (
@@ -80,6 +81,15 @@ const RoutingPage = () => {
           element={
             <ProtectedTokenUser>
               <MenuPage />
+            </ProtectedTokenUser>
+          }
+        />
+
+        <Route
+          path="/feedback"
+          element={
+            <ProtectedTokenUser>
+              <FeedbackPage />
             </ProtectedTokenUser>
           }
         />

@@ -250,7 +250,7 @@ def get_user_by_id(id_user):
             database="cafe_databases"
         )
         cursor = db.cursor()
-        query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas, cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s"
+        query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas, cafe_telah_dikunjungi, menu_yang_disukai FROM user_tables WHERE id_user = %s"
         cursor.execute(query, (id_user,))
         result = cursor.fetchone()
         db.close()
@@ -262,7 +262,8 @@ def get_user_by_id(id_user):
                 "preferensi_jarak_minimal": result[3],
                 "preferensi_jarak_maksimal": result[4],
                 "preferensi_fasilitas": result[5],
-                "cafe_telah_dikunjungi": result[6]
+                "cafe_telah_dikunjungi": result[6],
+                "menu_yang_disukai": result[7]
             }
         else:
             return None
@@ -377,8 +378,45 @@ def add_favorite_menu(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
+    
+# Feedback
+def add_user_feedback(data):
+    id_user = data.get("id_user")
+    user_feedback = data.get("user_feedback")
+
+    if not id_user or not user_feedback:
+        return {"error": "Field id_user dan user_feedback wajib diisi"}, 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+
+        query = """
+            INSERT INTO feedback_tables (id_user, user_feedback)
+            VALUES (%s, %s)
+        """
+        cursor.execute(query, (id_user, user_feedback))
+        db.commit()
+        db.close()
+
+        return {"message": "Feedback berhasil disimpan"}, 201
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
+# Feedback
+@app.route('/api/feedback', methods=['POST'])
+def api_add_feedback():
+    data = request.get_json()
+    result, status = add_user_feedback(data)
+    return jsonify(result), status
+
+# Menu
 @app.route('/api/user/favorite_menu', methods=['POST'])
 def api_add_favorite_menu():
     data = request.get_json()

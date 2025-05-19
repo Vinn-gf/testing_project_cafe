@@ -9,4 +9,6 @@ export const API_ENDPOINTS = {
   GET_DETAIL_CAFE: "/api/cafe/",
   VISITED_CAFES: "/api/user/visited",
   GET_MENU_BY_ID: "/api/menu/",
+  ADD_FAVORITE_MENU: "/api/user/favorite_menu",
+  ADD_FEEDBACK: "/api/feedback",
 };

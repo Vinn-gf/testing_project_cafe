@@ -4,9 +4,13 @@ import { API_ENDPOINTS } from "../utils/api_endpoints";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ColorRing } from "react-loader-spinner";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
+import {
+  FaRegHeart,
+  FaHeart,
+  FaSortAmountUpAlt,
+  FaSortAmountDownAlt,
+} from "react-icons/fa";
 
-// Utility: pastikan rawFavorites selalu jadi array
 function normalizeFavorites(raw) {
   if (Array.isArray(raw)) return raw;
   if (typeof raw === "string") {
@@ -27,16 +31,19 @@ const MenuPage = () => {
 
   const [cafeName, setCafeName] = useState("");
   const [menus, setMenus] = useState([]);
-  const [likedMenus, setLikedMenus] = useState(new Set()); // Set of nama_menu
+  const [likedMenus, setLikedMenus] = useState(new Set());
+  const [visitedCafes, setVisitedCafes] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all"); // all | Makanan | Minuman
+  const [sortOrder, setSortOrder] = useState(null); // 'asc' or 'desc'
   const [isOpen, setIsOpen] = useState(false);
 
   const itemsPerPage = 9;
 
-  // 1) fetch nama cafe
+  // 1) fetch cafe name
   useEffect(() => {
     axios
       .get(
@@ -46,31 +53,38 @@ const MenuPage = () => {
       .catch(() => {});
   }, [cafeId]);
 
-  // 2) fetch daftar menu & daftar favorit user
+  // 2) fetch menus + user’s favorites & visited cafes
   useEffect(() => {
     async function load() {
       try {
-        // fetch menu
+        // menus
         const { data: menuData } = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_MENU_BY_ID}${cafeId}`,
           { headers: { "ngrok-skip-browser-warning": true } }
         );
         setMenus(menuData);
 
-        // fetch user record (termasuk field menu_yang_disukai)
+        // user record
         const { data: user } = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}/api/users/${userId}`
         );
-        const rawFavs = user.menu_yang_disukai;
-        const favArray = normalizeFavorites(rawFavs);
 
-        // ambil hanya yang id_cafe == cafeId, lalu ambil nama_menu
-        const initial = new Set(
+        // favorites
+        const favArray = normalizeFavorites(user.menu_yang_disukai);
+        const favSet = new Set(
           favArray
             .filter((e) => Number(e.id_cafe) === Number(cafeId))
             .map((e) => e.nama_menu)
         );
-        setLikedMenus(initial);
+        setLikedMenus(favSet);
+
+        // visited cafes (comma-separated string)
+        const rawVisited = user.cafe_telah_dikunjungi || "";
+        const visitedList = rawVisited
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s);
+        setVisitedCafes(new Set(visitedList));
       } catch (e) {
         setError(e.message);
       } finally {
@@ -80,22 +94,44 @@ const MenuPage = () => {
     load();
   }, [cafeId, userId]);
 
-  // live filter by nama_menu
-  const filteredMenus = menus.filter((m) =>
-    m.nama_menu.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  // format currency
+  const formatRupiah = (number) =>
+    new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(number);
+
+  // 3) apply search + category filter
+  let filtered = menus
+    .filter((m) =>
+      m.nama_menu.toLowerCase().includes(searchKeyword.toLowerCase())
+    )
+    .filter((m) => {
+      if (categoryFilter === "all") return true;
+      return m.kategori === categoryFilter;
+    });
+
+  // 4) apply sort by price
+  if (sortOrder) {
+    filtered = [...filtered].sort((a, b) => {
+      const pa = Number(a.harga);
+      const pb = Number(b.harga);
+      return sortOrder === "asc" ? pa - pb : pb - pa;
+    });
+  }
 
   // pagination
-  const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
-  const currentMenus = filteredMenus.slice(startIdx, startIdx + itemsPerPage);
+  const currentMenus = filtered.slice(startIdx, startIdx + itemsPerPage);
 
   const handlePrev = () => currentPage > 1 && setCurrentPage((p) => p - 1);
   const handleNext = () =>
     currentPage < totalPages && setCurrentPage((p) => p + 1);
 
-  // hanya add favorite (no unlike)
+  // only add favorite, no unlike—and only if user has visited this cafe
   const addFavorite = async (item) => {
+    if (!visitedCafes.has(cafeName)) return;
     if (likedMenus.has(item.nama_menu)) return;
     try {
       await axios.post(
@@ -186,9 +222,9 @@ const MenuPage = () => {
         )}
       </div>
 
-      {/* Live Search & Show All Cafes */}
+      {/* Search & Show All */}
       <div className="px-4">
-        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-2">
+        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-6 flex flex-col justify-between sm:flex-row items-start sm:items-center gap-2">
           <input
             type="text"
             placeholder="Enter your menu..."
@@ -214,6 +250,46 @@ const MenuPage = () => {
         </h1>
       </div>
 
+      {/* Category + Sort Buttons */}
+      <div className="px-4 mb-4">
+        <div className="flex flex-wrap items-center gap-4 md:w-[95%] lg:w-[85%] sm:w-[90%] mx-auto">
+          {["all", "Makanan", "Minuman"].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setCategoryFilter(cat);
+                setCurrentPage(1);
+              }}
+              className={`py-1 px-4 rounded-full font-semibold ${
+                categoryFilter === cat
+                  ? "bg-[#E3DCC2] text-[#1B2021]"
+                  : "bg-[#1B2021] text-[#E3DCC2] hover:bg-[#51513D]"
+              }`}
+            >
+              {cat === "all"
+                ? "All"
+                : cat === "Makanan"
+                ? "Foods"
+                : "Beverages"}
+            </button>
+          ))}
+          <FaSortAmountUpAlt
+            onClick={() => setSortOrder("asc")}
+            className={`cursor-pointer text-xl ${
+              sortOrder === "asc" ? "text-[#E3DCC2]" : "text-gray-500"
+            }`}
+            title="Cheapest first"
+          />
+          <FaSortAmountDownAlt
+            onClick={() => setSortOrder("desc")}
+            className={`cursor-pointer text-xl ${
+              sortOrder === "desc" ? "text-[#E3DCC2]" : "text-gray-500"
+            }`}
+            title="Most expensive first"
+          />
+        </div>
+      </div>
+
       {/* Menu Grid */}
       <div className="px-4 pb-8">
         <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -224,7 +300,9 @@ const MenuPage = () => {
             >
               <button
                 onClick={() => addFavorite(item)}
-                disabled={likedMenus.has(item.nama_menu)}
+                disabled={
+                  !visitedCafes.has(cafeName) || likedMenus.has(item.nama_menu)
+                }
                 className="absolute top-2 right-2 text-red-500 text-xl disabled:opacity-50"
                 aria-label="Like menu"
               >
@@ -233,7 +311,9 @@ const MenuPage = () => {
               <h3 className="font-bold text-lg text-[#E3DCC2] mb-2">
                 {item.nama_menu}
               </h3>
-              <p className="text-[#E3DCC2]">Harga: {item.harga}</p>
+              <p className="text-[#E3DCC2]">
+                Harga: {formatRupiah(item.harga)}
+              </p>
             </div>
           ))}
         </div>

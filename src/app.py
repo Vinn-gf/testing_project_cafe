@@ -301,7 +301,34 @@ def update_user_preferences(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
-    
+
+# Visited Cafes
+def get_visited_cafe(id_user):
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        cursor.execute(
+            "SELECT cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s",
+            (id_user,)
+        )
+        row = cursor.fetchone()
+        db.close()
+
+        if not row:
+            return None
+
+        raw = row[0] or ""
+        visited = [c.strip() for c in raw.split(",") if c.strip()]
+        return visited
+
+    except Exception as e:
+        return {"error": str(e)}
+   
 def add_visited_cafe(data):
     user_id = data.get("user_id")
     cafe_name = data.get("cafe_name")
@@ -423,6 +450,15 @@ def api_add_favorite_menu():
     result, status = add_favorite_menu(data)
     return jsonify(result), status
 
+# Visited Cafes
+@app.route('/api/visited/<int:id_user>', methods=['GET'])
+def api_get_visited_cafe(id_user):
+    result = get_visited_cafe(id_user)
+    if result is None:
+        return jsonify({"error": "User not found"}), 404
+    if isinstance(result, dict) and result.get("error"):
+        return jsonify(result), 500
+    return jsonify({"visited_cafes": result}), 200
 
 @app.route('/api/user/visited', methods=['POST'])
 def api_add_visited_cafe():

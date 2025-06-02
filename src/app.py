@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 from collections import OrderedDict
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -97,34 +98,6 @@ def get_menu_by_id(id_cafe):
 
     return menus
 
-def get_user_rating(search_term=None):
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cafe_databases"
-    )
-    cursor = db.cursor()
-
-    cursor.execute("SHOW COLUMNS FROM user_rating_table")
-    columns = [col[0] for col in cursor.fetchall()]
-
-    if search_term:
-        query = "SELECT * FROM user_rating_table WHERE id_user LIKE %s OR id_user LIKE %s"
-        cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
-    else:
-        cursor.execute("SELECT * FROM user_rating_table")
-
-    data = cursor.fetchall()
-    db.close()
-    
-    results = []
-    for row in data:
-        od = OrderedDict()
-        for idx, col in enumerate(columns):
-            od[col] = row[idx]
-        results.append(od)
-    return results
 
 def get_data_by_id(nomor):
     db = mysql.connector.connect(
@@ -304,6 +277,82 @@ def update_user_preferences(data):
 
 # Visited Cafes
 def get_visited_cafe(id_user):
+    """
+    Ambil field cafe_telah_dikunjungi yang sudah berupa JSON array:
+    e.g. '[{"id_cafe":25},{"id_cafe":4},{"id_cafe":17}]'
+    Return: list of dicts [{ "id_cafe": …}, …]
+    """
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+        cursor.execute(
+            "SELECT cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s",
+            (id_user,)
+        )
+        row = cursor.fetchone()
+        db.close()
+
+        if row is None:
+            return None  # user tidak ditemukan
+
+        raw = row[0] or "[]"
+        try:
+            visited = json.loads(raw)
+            # pastikan formatnya list of dicts dengan key 'id_cafe'
+            if isinstance(visited, list):
+                return [v for v in visited if isinstance(v, dict) and "id_cafe" in v]
+            else:
+                return []
+        except json.JSONDecodeError:
+            return []  # JSON rusak, return empty
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def add_visited_cafe(data):
+    """
+    Tambah satu entry {"id_cafe":…} ke array JSON cafe_telah_dikunjungi.
+    Input JSON: { "id_user": 2, "id_cafe": 17 }
+    """
+    user_id = data.get("id_user")
+    cafe_id = data.get("id_cafe")
+
+    if user_id is None or cafe_id is None:
+        return {"error": "Field id_user dan id_cafe wajib diisi"}, 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+
+        # JSON_ARRAY_APPEND menambah object JSON {'id_cafe':…}
+        query = """
+            UPDATE user_tables
+            SET cafe_telah_dikunjungi = JSON_ARRAY_APPEND(
+                COALESCE(cafe_telah_dikunjungi, JSON_ARRAY()),
+                '$',
+                JSON_OBJECT('id_cafe', %s)
+            )
+            WHERE id_user = %s
+        """
+        cursor.execute(query, (cafe_id, user_id))
+        db.commit()
+        updated = cursor.rowcount
+        db.close()
+
+        if updated:
+            return {"message": "Visited cafe berhasil ditambahkan"}, 200
+        else:
+            return {"error": "User tidak ditemukan"}, 404
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+def get_favorite_menu(id_user):
     try:
         db = mysql.connector.connect(
             host="localhost",
@@ -313,7 +362,7 @@ def get_visited_cafe(id_user):
         )
         cursor = db.cursor()
         cursor.execute(
-            "SELECT cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s",
+            "SELECT menu_yang_disukai FROM user_tables WHERE id_user = %s",
             (id_user,)
         )
         row = cursor.fetchone()
@@ -328,41 +377,6 @@ def get_visited_cafe(id_user):
 
     except Exception as e:
         return {"error": str(e)}
-   
-def add_visited_cafe(data):
-    user_id = data.get("user_id")
-    cafe_name = data.get("cafe_name")
-    
-    if not user_id or not cafe_name:
-        return {"error": "User ID and Cafe Name are required"}, 400
-
-    try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
-        cursor = db.cursor()
-        query = """
-            UPDATE user_tables 
-            SET cafe_telah_dikunjungi = CASE 
-                WHEN TRIM(cafe_telah_dikunjungi) = '' THEN %s
-                ELSE CONCAT(cafe_telah_dikunjungi, ', ', %s)
-            END
-            WHERE id_user = %s
-        """
-        cursor.execute(query, (cafe_name, cafe_name, user_id))
-        db.commit()
-        db.close()
-        
-        if cursor.rowcount > 0:
-            return {"message": "Visited cafe added successfully"}, 200
-        else:
-            return {"error": "User not found or no changes made"}, 404
-
-    except Exception as e:
-        return {"error": str(e)}, 500
     
 def add_favorite_menu(data):
     user_id   = data.get("user_id")
@@ -444,6 +458,15 @@ def api_add_feedback():
     return jsonify(result), status
 
 # Menu
+@app.route('/api/favorite_menu/<int:id_user>', methods=['GET'])
+def api_get_favorite_menu(id_user):
+    result = get_favorite_menu(id_user)
+    if result is None:
+        return jsonify({"error": "User not found"}), 404
+    if isinstance(result, dict) and result.get("error"):
+        return jsonify(result), 500
+    return jsonify({"favorite menu": result}), 200
+
 @app.route('/api/user/favorite_menu', methods=['POST'])
 def api_add_favorite_menu():
     data = request.get_json()
@@ -455,10 +478,10 @@ def api_add_favorite_menu():
 def api_get_visited_cafe(id_user):
     result = get_visited_cafe(id_user)
     if result is None:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User tidak ditemukan"}), 404
     if isinstance(result, dict) and result.get("error"):
         return jsonify(result), 500
-    return jsonify({"visited_cafes": result}), 200
+    return jsonify(result), 200
 
 @app.route('/api/user/visited', methods=['POST'])
 def api_add_visited_cafe():
@@ -466,14 +489,48 @@ def api_add_visited_cafe():
     result, status = add_visited_cafe(data)
     return jsonify(result), status
 
-
 @app.route('/api/user/preferences', methods=['POST'])
 def api_update_user_preferences():
     data = request.get_json()
     result, status = update_user_preferences(data)
     return jsonify(result), status
 
-    
+# Users
+def get_all_users():
+    """Ambil semua user dari tabel user_tables."""
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        # Ambil semua kolom, atau pilih kolom yang Anda butuhkan
+        cursor.execute("SHOW COLUMNS FROM user_tables")
+        columns = [col[0] for col in cursor.fetchall()]
+
+        cursor.execute("SELECT * FROM user_tables")
+        rows = cursor.fetchall()
+        db.close()
+
+        results = []
+        for row in rows:
+            od = OrderedDict()
+            for idx, col in enumerate(columns):
+                od[col] = row[idx]
+            results.append(od)
+        return results
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.route('/api/users', methods=['GET'])
+def api_get_all_users():
+    users = get_all_users()
+    if isinstance(users, dict) and users.get("error"):
+        return jsonify(users), 500
+    return jsonify(users), 200    
+
 @app.route('/api/users/<int:id_user>', methods=['GET'])
 def api_user_by_id(id_user):
     user = get_user_by_id(id_user)
@@ -501,10 +558,6 @@ def api_menu_by_id(id_cafe):
     if menus is None:
         return jsonify({"error": "Menu not found"}), 404
     return jsonify(menus), 200
-
-@app.route('/api/user_rating', methods=['GET'])
-def api_user_rating():
-    return jsonify(get_user_rating())
 
 @app.route('/api/search/<keyword>', methods=['GET'])
 def api_search(keyword):

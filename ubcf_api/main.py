@@ -19,7 +19,7 @@ CORS(app)
 
 # ── 3) Konfigurasi BASE URL untuk REST API Front‐End ────────────────────────────────
 # Ganti BASE sesuai alamat penerbit data Anda (misal ngrok atau domain Anda)
-BASE = "https://9af1-140-213-10-73.ngrok-free.app"
+BASE = "https://fba9-140-213-10-73.ngrok-free.app"
 session = requests.Session()
 session.headers.update({"ngrok-skip-browser-warning": "true"})
 

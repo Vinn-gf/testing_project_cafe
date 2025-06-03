@@ -1,3 +1,5 @@
+// src/pages/SearchCafePage.jsx
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../utils/cookies";
@@ -12,8 +14,11 @@ const SearchCafePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const cafesPerPage = 6;
   const navigate = useNavigate();
 
+  // Fetch search results when `keyword` changes
   useEffect(() => {
     const fetchCafe = async () => {
       try {
@@ -31,16 +36,34 @@ const SearchCafePage = () => {
     fetchCafe();
   }, [keyword]);
 
+  // Handle the search form submission
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchKeyword.trim()) navigate(`/search/${searchKeyword}`);
+    if (searchKeyword.trim()) {
+      navigate(`/search/${searchKeyword}`);
+    }
+  };
+
+  // Pagination calculations
+  const totalCafes = results.length;
+  const totalPages = Math.ceil(totalCafes / cafesPerPage);
+  const indexOfLastCafe = currentPage * cafesPerPage;
+  const indexOfFirstCafe = indexOfLastCafe - cafesPerPage;
+  const currentCafes = results.slice(indexOfFirstCafe, indexOfLastCafe);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-[#2D3738]">
         <ColorRing
-          visible
+          visible={true}
           height="80"
           width="80"
           ariaLabel="color-ring-loading"
@@ -55,101 +78,103 @@ const SearchCafePage = () => {
   }
 
   return (
-    <div className="w-full h-screen bg-[#2D3738]">
-      <div className="bg-[#2D3738] overflow-hidden">
-        {/* Navbar */}
-        <div className="bg-[#1B2021] p-4 font-montserrat">
-          <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
-            <Link to="/" className="text-xl font-bold tracking-widest">
-              Vinn.
+    <div className="w-full min-h-screen bg-[#2D3738]">
+      {/* Navbar */}
+      <div className="bg-[#1B2021] p-4 font-montserrat">
+        <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
+          <Link to="/" className="text-xl font-bold tracking-widest">
+            Vinn.
+          </Link>
+          <div className="hidden md:flex space-x-10">
+            <Link to="/" className="hover:text-gray-200">
+              Home
             </Link>
-            <div className="hidden md:flex space-x-10">
-              <Link to="/" className="hover:text-gray-200">
-                Home
-              </Link>
-              <Link to="/profile" className="hover:text-gray-200">
-                Profile
-              </Link>
-              <h1
-                className="hover:text-gray-200 cursor-pointer"
-                onClick={() => {
-                  CookieStorage.remove(CookieKeys.AuthToken);
-                  CookieStorage.remove(CookieKeys.UserToken);
-                  navigate("/login");
-                }}
-              >
-                Logout
-              </h1>
-            </div>
-            <button
-              className="md:hidden focus:outline-none text-[#E3DCC2]"
-              onClick={() => setIsOpen(!isOpen)}
+            <Link to="/profile" className="hover:text-gray-200">
+              Profile
+            </Link>
+            <h1
+              className="hover:text-gray-200 cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
             >
-              {isOpen ? "Close" : "Menu"}
-            </button>
+              Logout
+            </h1>
           </div>
-          {isOpen && (
-            <div className="md:hidden w-[90%] mx-auto space-y-2">
-              <Link to="/" className="block p-2 text-[#E3DCC2]">
-                Home
-              </Link>
-              <Link to="/profile" className="block p-2 text-[#E3DCC2]">
-                Profile
-              </Link>
-              <h1
-                className="block p-2 text-[#E3DCC2] hover:cursor-pointer"
-                onClick={() => {
-                  CookieStorage.remove(CookieKeys.AuthToken);
-                  CookieStorage.remove(CookieKeys.UserToken);
-                  navigate("/login");
-                }}
-              >
-                Logout
-              </h1>
-            </div>
-          )}
-        </div>
-
-        {/* Search Section */}
-        <div className="px-4">
-          <form
-            onSubmit={handleSearch}
-            className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-2 font-montserrat"
+          <button
+            className="md:hidden focus:outline-none text-[#E3DCC2]"
+            onClick={() => setIsOpen(!isOpen)}
           >
-            <input
-              type="text"
-              placeholder="Enter your cafe..."
-              className="search-input p-2 rounded-md outline-none bg-[#1B2021] text-[#E3DCC2] w-full sm:w-2/3 md:w-1/3"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="search-btn bg-[#1B2021] text-[#E3DCC2] py-2 px-4 rounded-md hover:bg-[#51513D] w-full sm:w-auto"
-            >
-              Search
-            </button>
-            <Link to="/allcafes" className="w-full sm:w-auto">
-              <button className="check-cafe-btn bg-[#1B2021] text-[#E3DCC2] py-2 px-4 rounded-md hover:bg-[#51513D] w-full sm:w-auto">
-                Show All Cafes
-              </button>
-            </Link>
-          </form>
+            {isOpen ? "Close" : "Menu"}
+          </button>
         </div>
+        {isOpen && (
+          <div className="md:hidden w-[90%] mx-auto space-y-2">
+            <Link to="/" className="block p-2 text-[#E3DCC2]">
+              Home
+            </Link>
+            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
+              Profile
+            </Link>
+            <h1
+              className="block p-2 text-[#E3DCC2] hover:cursor-pointer"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
+            >
+              Logout
+            </h1>
+          </div>
+        )}
+      </div>
+      {/* /Navbar */}
 
-        {/* Results Section */}
-        <div className="px-4 pb-8">
-          <h1 className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto font-montserrat font-bold text-[1.4rem] text-[#e3dcc2] mb-4">
-            Search Results for "{keyword}"
-          </h1>
+      {/* Search + Show All Cafes */}
+      <div className="px-4">
+        <form
+          onSubmit={handleSearch}
+          className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-2 font-montserrat"
+        >
+          <input
+            type="text"
+            placeholder="Enter your cafe..."
+            className="search-input p-2 rounded-md outline-none bg-[#1B2021] text-[#E3DCC2] w-full sm:w-2/3 md:w-1/3"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="search-btn bg-[#1B2021] text-[#E3DCC2] py-2 px-4 rounded-md hover:bg-[#51513D] w-full sm:w-auto"
+          >
+            Search
+          </button>
+          <Link to="/allcafes" className="w-full sm:w-auto">
+            <button className="check-cafe-btn bg-[#1B2021] text-[#E3DCC2] py-2 px-4 rounded-md hover:bg-[#51513D] w-full sm:w-auto">
+              Show All Cafes
+            </button>
+          </Link>
+        </form>
+      </div>
+      {/* /Search }
 
-          {results.length === 0 ? (
-            <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto">
-              <p className="text-[#e3dcc2]">No results found.</p>
-            </div>
-          ) : (
+      {/* Results Section */}
+      <div className="px-4 pb-8">
+        <h1 className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto font-montserrat font-bold text-[1.4rem] text-[#e3dcc2] mb-4">
+          Search Results for "{keyword}"
+        </h1>
+
+        {results.length === 0 ? (
+          <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto">
+            <p className="text-[#e3dcc2]">No results found.</p>
+          </div>
+        ) : (
+          <>
             <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {results.map((cafe, idx) => {
+              {currentCafes.map((cafe, idx) => {
                 let backgroundImageUrl;
                 try {
                   backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
@@ -182,9 +207,31 @@ const SearchCafePage = () => {
                 );
               })}
             </div>
-          )}
-        </div>
+
+            {/* Pagination Section */}
+            <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto flex flex-col sm:flex-row justify-center items-center mt-8 gap-4">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-700 text-[#E3DCC2] rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="text-[#e3dcc2]">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-700 text-[#E3DCC2] rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
+      {/* /Results Section */}
     </div>
   );
 };

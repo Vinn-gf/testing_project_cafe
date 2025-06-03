@@ -311,25 +311,16 @@ def get_visited_cafe(id_user):
     except Exception as e:
         return {"error": str(e)}
 
-
-def add_visited_cafe(data):
-    """
-    Tambah satu entry {"id_cafe":…} ke array JSON cafe_telah_dikunjungi.
-    Input JSON: { "id_user": 2, "id_cafe": 17 }
-    """
-    user_id = data.get("id_user")
-    cafe_id = data.get("id_cafe")
-
-    if user_id is None or cafe_id is None:
-        return {"error": "Field id_user dan id_cafe wajib diisi"}, 400
-
+def add_visited_cafe(id_user, cafe_id):
     try:
         db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
         )
         cursor = db.cursor()
 
-        # JSON_ARRAY_APPEND menambah object JSON {'id_cafe':…}
         query = """
             UPDATE user_tables
             SET cafe_telah_dikunjungi = JSON_ARRAY_APPEND(
@@ -339,7 +330,7 @@ def add_visited_cafe(data):
             )
             WHERE id_user = %s
         """
-        cursor.execute(query, (cafe_id, user_id))
+        cursor.execute(query, (cafe_id, id_user))
         db.commit()
         updated = cursor.rowcount
         db.close()
@@ -351,6 +342,7 @@ def add_visited_cafe(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
+
 
 def get_favorite_menu(id_user):
     try:
@@ -483,11 +475,23 @@ def api_get_visited_cafe(id_user):
         return jsonify(result), 500
     return jsonify(result), 200
 
-@app.route('/api/user/visited', methods=['POST'])
-def api_add_visited_cafe():
+@app.route('/api/visited/<int:id_user>', methods=['POST'])
+def api_add_visited_cafe(id_user):
+    # 1. Ambil JSON body
     data = request.get_json()
-    result, status = add_visited_cafe(data)
-    return jsonify(result), status
+    if not data:
+        return jsonify({"error": "Request body harus berformat JSON"}), 400
+
+    # 2. Pastikan field "id_cafe" ada
+    cafe_id = data.get("id_cafe")
+    if cafe_id is None:
+        return jsonify({"error": "Field id_cafe wajib diisi"}), 400
+
+    # 3. Panggil helper untuk menambah cafe ke array JSON
+    payload, status_code = add_visited_cafe(id_user, cafe_id)
+
+    # 4. Wrap hasil helper dengan jsonify dan kembalikan status code-nya
+    return jsonify(payload), status_code
 
 @app.route('/api/user/preferences', methods=['POST'])
 def api_update_user_preferences():

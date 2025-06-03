@@ -7,7 +7,6 @@ import { CookieKeys, CookieStorage } from "../utils/cookies";
 import axios from "axios";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 
-// Jika di .env: REACT_APP_URL_SERVER=http://localhost:5000
 const BASE_API_URL = "http://localhost:5000";
 
 const RecommendationPage = () => {

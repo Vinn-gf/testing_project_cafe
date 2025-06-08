@@ -62,8 +62,8 @@ const ProfilePage = () => {
   return (
     <div className="overflow-hidden bg-[#2D3738] min-h-screen">
       {/* Navbar */}
-      <div className="nav-section bg-[#1B2021] p-4 font-montserrat">
-        <div className="container w-[90%] mx-auto flex justify-between items-center text-[#E3DCC2]">
+      <div className="p-4 bg-[#1B2021] font-montserrat">
+        <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
           </Link>
@@ -71,11 +71,14 @@ const ProfilePage = () => {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
+            <Link to="/recommendation" className="hover:text-gray-200">
+              Recommendations
+            </Link>
             <Link to="/profile" className="hover:text-gray-200">
               Profile
             </Link>
             <h1
-              className="hover:text-gray-200 hover:cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
                 CookieStorage.remove(CookieKeys.UserToken);
@@ -85,22 +88,43 @@ const ProfilePage = () => {
               Logout
             </h1>
           </div>
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="focus:outline-none text-[#E3DCC2]"
-            >
-              {isOpen ? "Close" : "Menu"}
-            </button>
-          </div>
+          <button
+            className="md:hidden text-[#E3DCC2] focus:outline-none"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? "Close" : "Menu"}
+          </button>
         </div>
         {isOpen && (
-          <div className="md:hidden">
-            <Link to="/" className="block p-2 text-[#E3DCC2]">
+          <div className="md:hidden mx-auto w-[90%] space-y-2">
+            <Link
+              to="/"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
               Home
             </Link>
-            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
+            <Link
+              to="/recommendation"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
+              Recommendations
+            </Link>
+            <Link
+              to="/profile"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
               Profile
+            </Link>
+            <Link
+              to="#"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+              onClick={() => {
+                CookieStorage.remove(CookieKeys.AuthToken);
+                CookieStorage.remove(CookieKeys.UserToken);
+                navigate("/login");
+              }}
+            >
+              Logout
             </Link>
           </div>
         )}

@@ -192,6 +192,9 @@ const HomePage = () => {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
+            <Link to="/recommendation" className="hover:text-gray-200">
+              Recommendations
+            </Link>
             <Link to="/profile" className="hover:text-gray-200">
               Profile
             </Link>
@@ -215,15 +218,27 @@ const HomePage = () => {
         </div>
         {isOpen && (
           <div className="md:hidden mx-auto w-[90%] space-y-2">
-            <Link to="/" className="block p-2 text-[#E3DCC2]">
+            <Link
+              to="/"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
               Home
             </Link>
-            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
+            <Link
+              to="/recommendation"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
+              Recommendations
+            </Link>
+            <Link
+              to="/profile"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
               Profile
             </Link>
             <Link
               to="#"
-              className="block p-2 text-[#E3DCC2]"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
                 CookieStorage.remove(CookieKeys.UserToken);
@@ -235,6 +250,7 @@ const HomePage = () => {
           </div>
         )}
       </div>
+      {/* Navbar */}
 
       {/* Hero */}
       <div

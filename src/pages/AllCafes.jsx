@@ -74,14 +74,17 @@ const AllCafes = () => {
   return (
     <div className="bg-[#2D3738] overflow-hidden">
       {/* Navbar */}
-      <div className="bg-[#1B2021] p-4 font-montserrat">
-        <div className="container mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
+      <div className="p-4 bg-[#1B2021] font-montserrat">
+        <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
           </Link>
           <div className="hidden md:flex space-x-10">
             <Link to="/" className="hover:text-gray-200">
               Home
+            </Link>
+            <Link to="/recommendation" className="hover:text-gray-200">
+              Recommendations
             </Link>
             <Link to="/profile" className="hover:text-gray-200">
               Profile
@@ -98,22 +101,35 @@ const AllCafes = () => {
             </h1>
           </div>
           <button
-            className="md:hidden focus:outline-none text-[#E3DCC2]"
+            className="md:hidden text-[#E3DCC2] focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? "Close" : "Menu"}
           </button>
         </div>
         {isOpen && (
-          <div className="md:hidden w-[90%] mx-auto space-y-2">
-            <Link to="/" className="block p-2 text-[#E3DCC2]">
+          <div className="md:hidden mx-auto w-[90%] space-y-2">
+            <Link
+              to="/"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
               Home
             </Link>
-            <Link to="/profile" className="block p-2 text-[#E3DCC2]">
+            <Link
+              to="/recommendation"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
+              Recommendations
+            </Link>
+            <Link
+              to="/profile"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
               Profile
             </Link>
-            <h1
-              className="block p-2 text-[#E3DCC2] hover:cursor-pointer"
+            <Link
+              to="#"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
                 CookieStorage.remove(CookieKeys.UserToken);
@@ -121,10 +137,11 @@ const AllCafes = () => {
               }}
             >
               Logout
-            </h1>
+            </Link>
           </div>
         )}
       </div>
+      {/* Navbar */}
 
       {/* Search Section */}
       <div className="px-4">

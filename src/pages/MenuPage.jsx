@@ -49,7 +49,7 @@ const MenuPage = () => {
       .get(
         `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`
       )
-      .then(({ data }) => setCafeName(data.nama_kafe))
+      .then(({ data }) => setCafeName(cafeId))
       .catch(() => {});
   }, [cafeId]);
 

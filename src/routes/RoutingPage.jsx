@@ -9,10 +9,11 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import ProtectedTokenUser from "../components/ProtectedComponents/ProtectedTokenUser";
 import UserPreferences from "../pages/UserPreferences";
-import RecommendationCafes from "../pages/RecommendationCafes";
+// import RecommendationCafes from "../pages/RecommendationCafes";
 import ProfilePage from "../pages/ProfilePage";
 import MenuPage from "../pages/MenuPage";
 import FeedbackPage from "../pages/FeedbackPage";
+import RecommendationPage from "../pages/RecommendationPage";
 
 const RoutingPage = () => {
   return (
@@ -72,7 +73,7 @@ const RoutingPage = () => {
           path="/recommendation"
           element={
             <ProtectedTokenUser>
-              <RecommendationCafes />
+              <RecommendationPage />
             </ProtectedTokenUser>
           }
         />

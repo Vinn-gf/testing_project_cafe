@@ -1,10 +1,6 @@
 # main.py
 
-# ── 1) Install & import ───────────────────────────────────────────────────────────
-# Pastikan di virtual environment Anda sudah ter‐install:
-# flask, flask-cors, pandas, numpy, scikit-learn, requests, tabulate
-
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import requests
 import pandas as pd
@@ -13,340 +9,207 @@ import json
 from sklearn.neighbors import NearestNeighbors
 from collections import defaultdict
 
-# ── 2) Inisialisasi Flask App & CORS ───────────────────────────────────────────────
 app = Flask(__name__)
 CORS(app)
 
-# ── 3) Konfigurasi BASE URL untuk REST API Front‐End ────────────────────────────────
-# Ganti BASE sesuai alamat penerbit data Anda (misal ngrok atau domain Anda)
 BASE = "http://127.0.0.1:8080"
 session = requests.Session()
 session.headers.update({"ngrok-skip-browser-warning": "true"})
 
 
-# ── 4) Helper untuk mengambil data dari Front‐End API ──────────────────────────────
 def fetch_all_user_ids():
-    """
-    GET /api/users  →  [{'id_user':1,...}, ...]
-    return: [1,2,3,...]
-    """
-    r = session.get(f"{BASE}/api/users")
-    r.raise_for_status()
-    users = r.json()
-    return [int(u["id_user"]) for u in users if isinstance(u, dict) and "id_user" in u]
+    r = session.get(f"{BASE}/api/users"); r.raise_for_status()
+    return [int(u["id_user"]) for u in r.json()]
 
 
-def fetch_user(user_id):
-    """
-    GET /api/users/{user_id} → detail user (termasuk menu_yang_disukai, cafe_telah_dikunjungi)
-    return: dict
-    """
-    r = session.get(f"{BASE}/api/users/{user_id}")
-    r.raise_for_status()
+def fetch_user(uid):
+    r = session.get(f"{BASE}/api/users/{uid}"); r.raise_for_status()
     return r.json()
 
 
-def fetch_visited(user_id):
-    """
-    GET /api/visited/{user_id} → { "visited_cafes": [ { "id_cafe": ... }, ... ] }
-    return: list of { "id_cafe": int }
-    """
-    r = session.get(f"{BASE}/api/visited/{user_id}")
-    r.raise_for_status()
+def fetch_visited(uid):
+    r = session.get(f"{BASE}/api/visited/{uid}"); r.raise_for_status()
     data = r.json()
-    if isinstance(data, dict):
-        return data.get("visited_cafes", [])
-    return data if isinstance(data, list) else []
+    return data if isinstance(data, list) else data.get("visited_cafes", [])
 
 
-def fetch_cafe(cafe_id):
-    """
-    GET /api/cafe/{cafe_id} → detail kafe, misal {
-       "cafe_id":..., "nama_kafe":..., "rating":..., "alamat":..., dsb.
-    }
-    return: dict
-    """
-    r = session.get(f"{BASE}/api/cafe/{cafe_id}")
-    r.raise_for_status()
+def fetch_cafe(cid):
+    r = session.get(f"{BASE}/api/cafe/{cid}"); r.raise_for_status()
     return r.json()
 
 
-# ── 5) Bangun User–Item Matrix dari menu_yang_disukai ───────────────────────────────
+# ── 1) Build user–item matrix from menu_yang_disukai ─────────────────────────────
 records = []
-all_user_ids = fetch_all_user_ids()
-
-for uid in all_user_ids:
-    u = fetch_user(uid)
+for uid in fetch_all_user_ids():
+    u   = fetch_user(uid)
     raw = u.get("menu_yang_disukai") or "[]"
     try:
         favs = json.loads(raw) if isinstance(raw, str) else raw
     except:
         favs = []
+    for m in (favs if isinstance(favs, list) else []):
+        if isinstance(m, dict) and "id_cafe" in m and "harga" in m:
+            try:
+                records.append({
+                    "user_id": uid,
+                    "cafe_id": int(m["id_cafe"]),
+                    "harga":   int(str(m["harga"]).replace(".", ""))
+                })
+            except:
+                pass
 
-    if isinstance(favs, list):
-        for m in favs:
-            if isinstance(m, dict) and "harga" in m and "id_cafe" in m:
-                try:
-                    price = int(str(m["harga"]).replace(".", ""))
-                    cid = int(m["id_cafe"])
-                    records.append({
-                        "user_id": uid,
-                        "cafe_id": cid,
-                        "harga": price
-                    })
-                except:
-                    # Lewati entri yang tidak valid
-                    pass
-
-df_menu = pd.DataFrame(records)
-if df_menu.empty:
-    mat = pd.DataFrame()  # Tidak ada data menu_yang_disukai
+df = pd.DataFrame(records)
+if df.empty:
+    mat = pd.DataFrame()
 else:
-    mat = df_menu.pivot_table(
-        index="user_id",
-        columns="cafe_id",
-        values="harga",
-        fill_value=0
+    mat = df.pivot_table(
+        index="user_id", columns="cafe_id", values="harga", fill_value=0
     )
 
-
-# ── 6) Hitung Adjusted Cosine Similarity & Bangun KNN ──────────────────────────────
+# ── 2) Compute adjusted cosine similarity + build KNN ───────────────────────────
+NEIGHBORS = 10
 if not mat.empty and mat.shape[0] > 1:
-    # Centering: X = mat - rata2 per baris
-    X = mat.sub(mat.mean(axis=1), axis=0)
-    # Numerator = X · X^T
-    num = X.dot(X.T)
-    # Denominator = ||X_i|| · ||X_j|| + ε
-    norm = np.sqrt((X**2).sum(axis=1).to_numpy())
-    den = np.outer(norm, norm) + 1e-8
-    # sim_vals = num / den
-    sim_vals = np.divide(
-        num.values,
-        den,
-        out=np.zeros_like(num.values),
-        where=den > 0
-    )
-    sim = pd.DataFrame(
-        np.clip(sim_vals, -1, 1),
-        index=mat.index,
-        columns=mat.index
-    )
-    # Distance matrix = 1 - similarity
-    dist_matrix = 1 - sim
-    # Fit KNN dengan metric precomputed
-    knn = NearestNeighbors(
-        metric="precomputed",
-        n_neighbors=min(5, len(dist_matrix))
-    )
-    knn.fit(dist_matrix.values)
+    X    = mat.sub(mat.mean(axis=1), axis=0)
+    num  = X.dot(X.T)
+    norm = np.sqrt((X**2).sum(axis=1))
+    den  = np.outer(norm, norm) + 1e-8
+    sim_vals = np.divide(num.values, den, out=np.zeros_like(num.values), where=den>0)
+    sim = pd.DataFrame(np.clip(sim_vals, -1,1), index=mat.index, columns=mat.index)
+    dist = 1 - sim
+    knn  = NearestNeighbors(metric="precomputed",
+                            n_neighbors=min(NEIGHBORS, len(sim)))
+    knn.fit(dist.values)
 else:
-    sim = pd.DataFrame()
-    knn = None
+    sim = pd.DataFrame(); knn = None
 
 
-# ── 7) Fungsi Menghitung Weighted‐Sum Score (Alur “menu_yang_disukai”) ─────────────────
-def get_menu_scores(user_id):
-    """
-    Hitung skor weighted‐sum untuk setiap cafe: 
-    Σ( kemiripan(user,user_neigh) * harga_neigh(cafe) ) / Σ(|kemiripan|)
-    return: dict { cafe_id: score }, hanya untuk cid dengan skor>0
-    """
-    if knn is None or user_id not in sim.index:
-        return {}
-
-    # Cari K+1 neighbor (termasuk diri sendiri)
-    n_nb = min(len(sim), sim.shape[0])  # ambil sebanyak mungkin kalau <6
-    dists, idxs = knn.kneighbors(
-        (1 - sim).loc[[user_id]].values,
-        n_neighbors=n_nb
-    )
-    neigh = sim.index[idxs[0][1:]]  # skip diri sendiri
-
+# ── 3) rec_menu (CF) for items not yet rated ────────────────────────────────────
+def rec_menu(uid, K=10):
+    if knn is None or uid not in sim.index:
+        return []
+    _, idxs = knn.kneighbors((1-sim).loc[[uid]].values,
+                              n_neighbors=min(len(sim), K+1))
+    neigh = sim.index[idxs[0][1:]]  # exclude self
     scores = {}
     for cid in mat.columns:
-        if mat.loc[user_id, cid] == 0:
-            numerator = 0.0
-            denominator = 0.0
-            for u in neigh:
-                similarity_score = sim.loc[user_id, u]
-                neighbor_rating = mat.loc[u, cid]
-                numerator += similarity_score * neighbor_rating
-                denominator += abs(similarity_score)
-            val = numerator / denominator if denominator > 0 else 0.0
-            if val > 0:
-                scores[cid] = val
-    return scores
+        if mat.loc[uid, cid] == 0:
+            num_ = sum(sim.loc[uid, u] * mat.loc[u, cid] for u in neigh)
+            den_ = sum(abs(sim.loc[uid, u]) for u in neigh)
+            val = num_/den_ if den_>0 else 0
+            if val>0: scores[cid] = val
+    return sorted(scores, key=scores.get, reverse=True)[:K]
 
 
-# ── 8) Fungsi Rekomendasi dari “Transisi Kunjungan” ─────────────────────────────────
-def rec_visited(user_id, K=6):
-    """
-    Dari urutan cafe_telah_dikunjungi setiap user lain, bentuk transisi a→b,
-    lalu untuk tiap a yang user_id kunjungi, kumpulkan b, hitung frekuensi,
-    filter yang sudah dikunjungi, ambil K teratas.
-    return: list of cafe_id
-    """
-    seq = [int(v["id_cafe"]) for v in fetch_visited(user_id) if isinstance(v, dict)]
+# ── 4) rec_visited (transition freq) ────────────────────────────────────────────
+def rec_visited(uid):
+    seq = [int(v["id_cafe"]) for v in fetch_visited(uid) if isinstance(v, dict)]
     trans = defaultdict(list)
-    for uid in fetch_all_user_ids():
-        if uid == user_id:
-            continue
-        seq_u = [int(v["id_cafe"]) for v in fetch_visited(uid) if isinstance(v, dict)]
-        for a, b in zip(seq_u, seq_u[1:]):
+    for other in fetch_all_user_ids():
+        if other == uid: continue
+        seq2 = [int(v["id_cafe"]) for v in fetch_visited(other) if isinstance(v, dict)]
+        for a,b in zip(seq2, seq2[1:]):
             trans[a].append(b)
-
-    cands = []
-    for a in seq:
-        cands += trans.get(a, [])
-    freq = pd.Series(cands).value_counts().index.tolist()
-    return [c for c in freq if c not in seq][:K]
+    flat = sum((trans[a] for a in seq), [])
+    return pd.Series(flat).value_counts().to_dict() if flat else {}
 
 
-# ── 9) Gabung Composite + Sort by Rating ─────────────────────────────────────────────
-def get_top6_composite(user_id):
-    """
-    1) Hitung skor menu-based untuk semua cid → get_menu_scores(user_id)
-    2) Ambil K*2 kandidat teratas berdasarkan skor (urut descending)
-    3) Ambil K*2 kandidat teratas berdasarkan rec_visited
-    4) Gabungkan pool, filter yang sudah dikunjungi
-    5) Dari pool → ambil detail nama, rating, alamat, lalu
-       sort primary by menu_score descending, kemudian by rating descending
-    6) Ambil 6 teratas
-    Return: DataFrame kolom ['cafe_id','nama_kafe','alamat','rating','score']
-    """
-    # 9.1) Hitung semua skor menu-based
-    menu_scores = get_menu_scores(user_id)
-    # 9.2) Urutkan descending berdasarkan skor, ambil K*2
-    top_menu = sorted(menu_scores, key=menu_scores.get, reverse=True)[:12]
-
-    # 9.3) Ambil kandidat dari visited‐based
-    top_visited = rec_visited(user_id, 12)
-
-    # 9.4) Gabungkan pool sambil hilangkan duplikat
-    pool = list(dict.fromkeys(top_menu + top_visited))
-
-    # 9.5) Buang yang sudah user_id kunjungi
-    visited_seq = [int(v["id_cafe"]) for v in fetch_visited(user_id) if isinstance(v, dict)]
-    visited_set = set(visited_seq)
-    pool = [cid for cid in pool if cid not in visited_set]
-
-    # 9.6) Tarik detail (nama_kafe, alamat, rating) dan sertakan menu_score (0 jika tidak ada)
-    rows = []
-    for cid in pool:
-        info = fetch_cafe(cid)
-        if not isinstance(info, dict):
-            continue
-        nama = info.get("nama_kafe", "Unknown")
-        alamat_val = info.get("alamat", "")  # <<— ambil alamat di sini
-        try:
-            rating_val = float(info.get("rating", 0))
-        except:
-            rating_val = 0.0
-        score_val = menu_scores.get(cid, 0.0)
-        rows.append({
-            "cafe_id":   cid,
-            "nama_kafe": nama,
-            "alamat":    alamat_val,    # <<— tambahkan field alamat
-            "rating":    rating_val,
-            "score":     score_val
-        })
-
-    dfc = pd.DataFrame(rows)
-    if dfc.empty:
-        return dfc
-
-    # 9.7) Sort descending by composite score, lalu by rating
-    dfc_sorted = dfc.sort_values(["score", "rating"], ascending=[False, False])
-    return dfc_sorted.head(6).reset_index(drop=True)
-
-
-# ── 10) API Endpoint: Rekomendasi Composite untuk satu user ─────────────────────────
-@app.route("/api/recommend/<int:user_id>", methods=["GET"])
-def api_recommend(user_id):
-    """
-    GET /api/recommend/{user_id}
-    Return: JSON { 
-      "recommendations": [ 
-         { "cafe_id":..., "nama_kafe":..., "alamat":..., "rating":..., "score":... }, 
-         … 
-      ] 
-    }
-    """
+# ── 5) Composite recommendation endpoint ────────────────────────────────────────
+@app.route("/api/recommend/<int:uid>")
+def api_recommend(uid):
     try:
-        # Pastikan user ada
-        u = fetch_user(user_id)
-        if not u or "error" in u:
-            return jsonify({"error": "User not found"}), 404
+        _ = fetch_user(uid)
+        K_rec = 10
+        pool_factor = 3  # pool size = 3 * K_rec
+        α, β, γ = 0.5, 0.4, 0.1
 
-        # Ambil top6 composite
-        df_top6 = get_top6_composite(user_id)
-        if df_top6.empty:
-            return jsonify({"recommendations": []}), 200
+        menu_cands = rec_menu(uid, pool_factor*K_rec)
+        visit_freq = rec_visited(uid)
+        visit_cands = sorted(visit_freq, key=visit_freq.get, reverse=True)[:pool_factor*K_rec]
 
-        recs = df_top6.to_dict(orient="records")
-        return jsonify({"recommendations": recs}), 200
+        pool = list(dict.fromkeys(menu_cands + visit_cands))
+        seen = {v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)}
+        pool = [c for c in pool if c not in seen]
 
-    except requests.exceptions.HTTPError as e:
-        return jsonify({"error": "Failed fetching data from upstream API", "details": str(e)}), 502
+        rows = []
+        max_freq = max(visit_freq.values()) if visit_freq else 1
+        for cid in pool:
+            info = fetch_cafe(cid)
+            if not isinstance(info, dict): continue
+            # menu_score = 1/rank
+            menu_score = (1.0/(menu_cands.index(cid)+1)
+                          if cid in menu_cands else 0.0)
+            # visited_score = freq/max_freq
+            visited_score = (visit_freq.get(cid,0)/max_freq)
+            # rating_score = normalized [0..1]
+            rating_score = float(info.get("rating",0))/5.0
+            score = α*menu_score + β*visited_score + γ*rating_score
+            rows.append({
+                "cafe_id":   cid,
+                "nama_kafe": info.get("nama_kafe",""),
+                "alamat":    info.get("alamat",""),
+                "rating":    float(info.get("rating",0)),
+                "score":     score
+            })
+
+        dfc = pd.DataFrame(rows)
+        if dfc.empty:
+            return jsonify({"recommendations": []})
+        dfc = dfc.sort_values(["score","rating"], ascending=[False,False]).head(K_rec)
+        out = dfc.to_dict("records")
+        for r in out: r["score"] = float(round(r["score"],6))
+        return jsonify({"recommendations": out})
     except Exception as e:
-        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
-# ── 11) Evaluasi Next‐Item (leave‐one‐out) ──────────────────────────────────────────
-def recommend_next(user_id, history, K=6):
-    """
-    Untuk evaluasi: prediksi item berikutnya berdasar transisi visited.
-    """
-    trans = defaultdict(list)
-    for uid in fetch_all_user_ids():
-        seq = [int(v["id_cafe"]) for v in fetch_visited(uid) if isinstance(v, dict)]
-        for a, b in zip(seq, seq[1:]):
-            trans[a].append(b)
-
-    last = history[-1]
-    freq = pd.Series(trans.get(last, [])).value_counts().index.tolist()
-    return [c for c in freq if c not in history][:K]
-
-
-def evaluate_next(K=6):
-    """
-    Hitung HitRate & MRR dengan leave‐one‐out:
-    - history = semua visited kecuali terakhir, test = item terakhir
-    - panggil recommend_next, hitung metrik
-    """
-    hits, mrrs = [], []
-    for uid in fetch_all_user_ids():
-        seq = [int(v["id_cafe"]) for v in fetch_visited(uid) if isinstance(v, dict)]
-        if len(seq) < 2:
-            continue
-        hist, test = seq[:-1], seq[-1]
-        recs = recommend_next(uid, hist, K)
-        hits.append(1 if test in recs else 0)
-        if test in recs:
-            rank = recs.index(test) + 1
-            mrrs.append(1.0 / rank)
-        else:
-            mrrs.append(0.0)
-
-    return {
-        "HitRate": np.mean(hits) if hits else 0.0,
-        "MRR":     np.mean(mrrs) if mrrs else 0.0
-    }
-
-
-@app.route("/api/evaluate", methods=["GET"])
+# ── 6) Composite Next‐Item evaluation ───────────────────────────────────────────
+@app.route("/api/evaluate")
 def api_evaluate():
-    """
-    GET /api/evaluate
-    Return: { "HitRate": ..., "MRR": ... }
-    """
     try:
-        metrics = evaluate_next(K=6)
-        return jsonify(metrics), 200
+        K_eval = 10
+        α, β, γ = 0.5, 0.4, 0.1
+        hits, mrrs = [], []
+
+        for uid in fetch_all_user_ids():
+            seq = [int(v["id_cafe"]) for v in fetch_visited(uid) if isinstance(v, dict)]
+            if len(seq)<2: continue
+            test = seq[-1]
+            hist = seq[:-1]
+
+            # build pool same as recommend, but filter only seen_before_test
+            pool_factor=3
+            menu_cands = rec_menu(uid, pool_factor*K_eval)
+            visit_freq = rec_visited(uid)
+            visit_cands = sorted(visit_freq, key=visit_freq.get, reverse=True)[:pool_factor*K_eval]
+            pool = list(dict.fromkeys(menu_cands + visit_cands))
+            seen_before = set(hist)
+            pool = [c for c in pool if c not in seen_before]
+
+            # score them
+            max_freq = max(visit_freq.values()) if visit_freq else 1
+            scored=[]
+            for cid in pool:
+                menu_score = (1.0/(menu_cands.index(cid)+1) if cid in menu_cands else 0.0)
+                visited_score = visit_freq.get(cid,0)/max_freq
+                rating_score = float(fetch_cafe(cid).get("rating",0))/5.0
+                scored.append((cid, α*menu_score+β*visited_score+γ*rating_score))
+            if not scored:
+                hits.append(0); mrrs.append(0.0); continue
+
+            ranked = [cid for cid,_ in sorted(scored, key=lambda x:-x[1])]
+            if test in ranked:
+                hits.append(1)
+                mrrs.append(1.0/(ranked.index(test)+1))
+            else:
+                hits.append(0); mrrs.append(0.0)
+
+        return jsonify({
+            "HitRate": round(np.mean(hits),4),
+            "MRR":     round(np.mean(mrrs),4)
+        })
     except Exception as e:
-        return jsonify({"error": "Evaluation failed", "details": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
-# ── 12) Jalankan Flask ──────────────────────────────────────────────────────────────
-if __name__ == "__main__":
+if __name__=="__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

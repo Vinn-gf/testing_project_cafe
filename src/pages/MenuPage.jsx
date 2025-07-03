@@ -1,3 +1,5 @@
+// src/pages/MenuPage.jsx
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../utils/api_endpoints";
@@ -49,8 +51,8 @@ const MenuPage = () => {
       .get(
         `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`
       )
-      .then(({ data }) => setCafeName(cafeId))
-      .catch(() => {});
+      .then(({ data }) => setCafeName(data.nama_kafe)) // ambil nama_kafe
+      .catch((e) => console.error(e));
   }, [cafeId]);
 
   // 2) fetch menus + user’s favorites & visited cafes
@@ -78,13 +80,21 @@ const MenuPage = () => {
         );
         setLikedMenus(favSet);
 
-        // visited cafes (comma-separated string)
-        const rawVisited = user.cafe_telah_dikunjungi || "";
-        const visitedList = rawVisited
-          .split(",")
-          .map((s) => s.trim())
-          .filter((s) => s);
-        setVisitedCafes(new Set(visitedList));
+        // visited cafes: sekarang user.cafe_telah_dikunjungi adalah JSON array of { id_cafe }
+        let visitedArray = [];
+        if (Array.isArray(user.cafe_telah_dikunjungi)) {
+          visitedArray = user.cafe_telah_dikunjungi;
+        } else if (typeof user.cafe_telah_dikunjungi === "string") {
+          try {
+            const parsed = JSON.parse(user.cafe_telah_dikunjungi);
+            if (Array.isArray(parsed)) visitedArray = parsed;
+          } catch {}
+        }
+        // buat set of numeric ids
+        const visitedSet = new Set(
+          visitedArray.map((v) => Number(v.id_cafe)).filter((n) => !isNaN(n))
+        );
+        setVisitedCafes(visitedSet);
       } catch (e) {
         setError(e.message);
       } finally {
@@ -131,7 +141,7 @@ const MenuPage = () => {
 
   // only add favorite, no unlike—and only if user has visited this cafe
   const addFavorite = async (item) => {
-    if (!visitedCafes.has(cafeName)) return;
+    if (!visitedCafes.has(Number(cafeId))) return; // cek by cafeId
     if (likedMenus.has(item.nama_menu)) return;
     try {
       await axios.post(
@@ -170,8 +180,8 @@ const MenuPage = () => {
   return (
     <div className="bg-[#2D3738] min-h-screen overflow-hidden font-montserrat">
       {/* Navbar */}
-      <div className="p-4 bg-[#1B2021] font-montserrat">
-        <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
+      <div className="p-4 bg-[#1B2021]">
+        <div className="mx-auto w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
             Vinn.
           </Link>
@@ -197,8 +207,8 @@ const MenuPage = () => {
             </h1>
           </div>
           <button
-            className="md:hidden text-[#E3DCC2] focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden text-[#E3DCC2]"
+            onClick={() => setIsOpen((o) => !o)}
           >
             {isOpen ? "Close" : "Menu"}
           </button>
@@ -223,9 +233,8 @@ const MenuPage = () => {
             >
               Profile
             </Link>
-            <Link
-              to="#"
-              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            <h1
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200 cursor-pointer"
               onClick={() => {
                 CookieStorage.remove(CookieKeys.AuthToken);
                 CookieStorage.remove(CookieKeys.UserToken);
@@ -233,15 +242,14 @@ const MenuPage = () => {
               }}
             >
               Logout
-            </Link>
+            </h1>
           </div>
         )}
       </div>
-      {/* Navbar */}
 
       {/* Search & Show All */}
       <div className="px-4">
-        <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto mt-4 mb-6 flex flex-col justify-between sm:flex-row items-start sm:items-center gap-2">
+        <div className="w-[90%] mx-auto mt-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <input
             type="text"
             placeholder="Enter your menu..."
@@ -262,14 +270,14 @@ const MenuPage = () => {
 
       {/* Page Title */}
       <div className="px-4">
-        <h1 className="text-2xl font-bold text-[#E3DCC2] lg:w-[90%] md:w-full sm:w-full mb-4 mx-auto">
+        <h1 className="text-2xl font-bold text-[#E3DCC2] w-[90%] mx-auto mb-4">
           Menu {cafeName || `#${cafeId}`}
         </h1>
       </div>
 
-      {/* Category + Sort Buttons */}
+      {/* Category + Sort */}
       <div className="px-4 mb-4">
-        <div className="flex flex-wrap items-center gap-4 md:w-[95%] lg:w-[85%] sm:w-[90%] mx-auto">
+        <div className="flex flex-wrap items-center gap-4 w-[90%] mx-auto">
           {["all", "Makanan", "Minuman"].map((cat) => (
             <button
               key={cat}
@@ -318,7 +326,8 @@ const MenuPage = () => {
               <button
                 onClick={() => addFavorite(item)}
                 disabled={
-                  !visitedCafes.has(cafeName) || likedMenus.has(item.nama_menu)
+                  !visitedCafes.has(Number(cafeId)) ||
+                  likedMenus.has(item.nama_menu)
                 }
                 className="absolute top-2 right-2 text-red-500 text-xl disabled:opacity-50"
                 aria-label="Like menu"

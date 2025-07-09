@@ -61,7 +61,6 @@ const RecommendationPage = () => {
       })
       .catch((err) => {
         console.error(err);
-        setError("Failed to load recommendations");
       })
       .finally(() => setLoading(false));
   }, [userId]);
@@ -256,8 +255,16 @@ const RecommendationPage = () => {
                     <p>{cafe.rating} / 5</p>
                   </div>
                   <div className="text-[#e3dcc2] text-[.95rem]">
+                    Score : <strong>{cafe.score}</strong>
+                  </div>
+                  <div className="text-[#e3dcc2] text-[.95rem]">
                     Berjarak <strong>{distText}</strong> dari lokasi Anda
                   </div>
+                  {cafe.matched_menu && cafe.matched_menu.length > 0 && (
+                    <div className="text-[#e3dcc2] text-[.95rem]">
+                      Menu: <strong>{cafe.matched_menu.join(", ")}</strong>
+                    </div>
+                  )}
                 </div>
               </div>
             );

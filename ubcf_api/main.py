@@ -1,3 +1,5 @@
+# main.py
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 import requests
@@ -32,7 +34,7 @@ def fetch_cafe(cid):
     return r.json()
 
 # ────────────────────────────────────────────────────────────────────────────────
-# 1) Membangun ulang model CF dari data terbaru
+# 1) Build user–item matrix from menu_yang_disukai
 def build_cf_model():
     records = []
     for uid in fetch_all_user_ids():
@@ -60,25 +62,38 @@ def build_cf_model():
     mat = df.pivot_table(
         index="user_id", columns="cafe_id", values="harga", fill_value=0
     )
-    X    = mat.sub(mat.mean(axis=1), axis=0)
+    # Adjusted cosine centering
+    X    = mat.sub(mat.mean(axis=1), axis=0)        # <-- mean-centering
     num  = X.dot(X.T)
     norm = np.sqrt((X**2).sum(axis=1))
     den  = np.outer(norm, norm) + 1e-8
-    sim_vals = np.divide(num.values, den, out=np.zeros_like(num.values), where=den>0)
-    sim = pd.DataFrame(np.clip(sim_vals, -1,1), index=mat.index, columns=mat.index)
+    sim_vals = np.divide(
+        num.values, den,
+        out=np.zeros_like(num.values),
+        where=den>0
+    )
+    sim  = pd.DataFrame(
+        np.clip(sim_vals, -1, 1),
+        index=mat.index, columns=mat.index
+    )
     dist = 1 - sim
-    knn  = NearestNeighbors(metric="precomputed", n_neighbors=min(5, len(sim)))
-    knn.fit(dist.values)
+    knn  = NearestNeighbors(
+        metric="precomputed",
+        n_neighbors=min(5, len(sim))
+    )
+    knn.fit(dist.values)                             # <-- KNN on 1−similarity
 
     return mat, sim, knn
 
 # ────────────────────────────────────────────────────────────────────────────────
-# 2) Collaborative Filtering (prediksi “harga”)
+# 2) Pure CF predictions (price-based)
 def rec_menu_scores(uid, mat, sim, knn):
     if knn is None or uid not in sim.index:
         return {}
-    _, idxs = knn.kneighbors((1 - sim).loc[[uid]].values,
-                              n_neighbors=min(len(sim), 6))
+    _, idxs = knn.kneighbors(
+        (1 - sim).loc[[uid]].values,
+        n_neighbors=min(len(sim), 6)
+    )
     neigh = sim.index[idxs[0][1:]]
     scores = {}
     for cid in mat.columns:
@@ -91,7 +106,7 @@ def rec_menu_scores(uid, mat, sim, knn):
     return scores
 
 # ────────────────────────────────────────────────────────────────────────────────
-# 3) Visited Frequency (transisi A→B)
+# 3) Visited-Frequency (sequence transitions)
 def rec_visited_freq(uid):
     seq   = [v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)]
     trans = defaultdict(list)
@@ -104,29 +119,37 @@ def rec_visited_freq(uid):
     return pd.Series(flat).value_counts().to_dict() if flat else {}
 
 # ────────────────────────────────────────────────────────────────────────────────
-# 4) Co‑occurrence menu (suka menu sama di kafe beda)
+# 4) Menu co‑occurrence (Alur 2)
 def rec_menu_cooccur(uid):
     me = fetch_user(uid)
     raw = me.get("menu_yang_disukai") or "[]"
     try:
-        my_favs = {m["nama_menu"] for m in json.loads(raw) if isinstance(m, dict)}
+        my_list = json.loads(raw) if isinstance(raw, str) else raw
     except:
-        my_favs = set()
-    cooc = defaultdict(int)
+        my_list = []
+    my_menus = {m["nama_menu"] for m in my_list if isinstance(m, dict)}
+
+    cooc = defaultdict(set)
     for other in fetch_all_user_ids():
         if other == uid: continue
         u2 = fetch_user(other)
+        raw2 = u2.get("menu_yang_disukai") or "[]"
         try:
-            favs2 = json.loads(u2.get("menu_yang_disliked") or "[]")
+            favs2 = json.loads(raw2) if isinstance(raw2, str) else raw2
         except:
             favs2 = []
         for m in (favs2 if isinstance(favs2, list) else []):
-            if isinstance(m, dict) and m["nama_menu"] in my_favs:
-                cooc[int(m["id_cafe"])] += 1
-    return dict(cooc)
+            if not isinstance(m, dict):
+                continue
+            if m["nama_menu"] in my_menus:
+                cid = int(m["id_cafe"])
+                cooc[cid].add(m["nama_menu"])
+
+    # return list of matched menus per cafe
+    return {cid: sorted(list(menus)) for cid, menus in cooc.items()}
 
 # ────────────────────────────────────────────────────────────────────────────────
-# API Hybrid UBCF + VF + CO
+# 5) Hybrid endpoint: UBCF + VF + CO
 @app.route("/api/recommend/<int:uid>")
 def api_recommend(uid):
     mat, sim, knn = build_cf_model()
@@ -137,7 +160,7 @@ def api_recommend(uid):
 
     max_cf = max(cf_raw.values()) if cf_raw else 1.0
     max_vf = max(vf_raw.values()) if vf_raw else 1.0
-    max_co = max(co_raw.values()) if co_raw else 1.0
+    max_co = max((len(v) for v in co_raw.values()), default=1)
 
     pool = set(cf_raw) | set(vf_raw) | set(co_raw)
     seen = {v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)}
@@ -146,94 +169,25 @@ def api_recommend(uid):
     α, β, γ = 0.6, 0.2, 0.2
     rows = []
     for cid in pool:
-        info     = fetch_cafe(cid)
-        cf_n     = cf_raw.get(cid, 0) / max_cf
-        vf_n     = vf_raw.get(cid, 0) / max_vf
-        co_n     = co_raw.get(cid, 0) / max_co
+        info = fetch_cafe(cid)
+        cf_n = cf_raw.get(cid, 0) / max_cf
+        vf_n = vf_raw.get(cid, 0) / max_vf
+        co_n = len(co_raw.get(cid, [])) / max_co
         combined = α*cf_n + β*vf_n + γ*co_n
+
         rows.append({
-            "cafe_id":   cid,
-            "nama_kafe": info.get("nama_kafe",""),
-            "alamat":    info.get("alamat",""),
-            "rating":    float(info.get("rating",0)),
-            "score":     round(combined, 6)
+            "cafe_id":      cid,
+            "nama_kafe":    info.get("nama_kafe", ""),
+            "alamat":       info.get("alamat", ""),
+            "rating":       float(info.get("rating", 0)),
+            "score":        round(combined, 6),
+            "matched_menu": co_raw.get(cid, [])
         })
 
     dfc = pd.DataFrame(rows)
-    # 1) Top‑6 berdasarkan score DESC, rating DESC
-    top6 = dfc.sort_values(["score","rating"], ascending=[False,False]).head(6)
-    # 2) Resort 6 itu by rating DESC
-    top6 = top6.sort_values("rating", ascending=False)
-
+    top6 = dfc.sort_values("score", ascending=False).head(6)
     return jsonify({"recommendations": top6.to_dict("records")})
 
 # ────────────────────────────────────────────────────────────────────────────────
-# API Pure UBCF
-@app.route("/api/recommend_ubcf/<int:uid>")
-def api_recommend_ubcf(uid):
-    mat, sim, knn = build_cf_model()
-    cf_raw = rec_menu_scores(uid, mat, sim, knn)
-    if not cf_raw:
-        return jsonify({"recommendations": []})
-
-    max_cf = max(cf_raw.values())
-    seen   = {v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)}
-
-    rows = []
-    for cid, score in cf_raw.items():
-        if cid in seen: continue
-        info = fetch_cafe(cid)
-        rows.append({
-            "cafe_id":   cid,
-            "nama_kafe": info.get("nama_kafe",""),
-            "alamat":    info.get("alamat",""),
-            "rating":    float(info.get("rating",0)),
-            "score":     round(score / max_cf, 6)
-        })
-
-    df = pd.DataFrame(rows)
-    top6 = df.sort_values(["score","rating"], ascending=[False,False]).head(6)
-    top6 = top6.sort_values("rating", ascending=False)
-
-    return jsonify({"recommendations": top6.to_dict("records")})
-
-# ────────────────────────────────────────────────────────────────────────────────
-# API Evaluate (leave–one–out)
-@app.route("/api/evaluate")
-def api_evaluate():
-    mat, sim, knn = build_cf_model()
-    hits, mrrs = [], []
-
-    for uid in fetch_all_user_ids():
-        seq = [v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)]
-        if len(seq) < 2: continue
-        test, hist = seq[-1], seq[:-1]
-
-        cf_raw = rec_menu_scores(uid, mat, sim, knn)
-        vf_raw = rec_visited_freq(uid)
-        co_raw = rec_menu_cooccur(uid)
-
-        max_cf = max(cf_raw.values()) if cf_raw else 1.0
-        max_vf = max(vf_raw.values()) if vf_raw else 1.0
-        max_co = max(co_raw.values()) if co_raw else 1.0
-
-        pool = (set(cf_raw) | set(vf_raw) | set(co_raw)) - set(hist)
-        α, β, γ = 0.6, 0.2, 0.2
-        scored = []
-        for cid in pool:
-            cf_n = cf_raw.get(cid, 0) / max_cf
-            vf_n = vf_raw.get(cid, 0) / max_vf
-            co_n = co_raw.get(cid, 0) / max_co
-            scored.append((cid, α*cf_n + β*vf_n + γ*co_n))
-
-        ranked = [cid for cid, _ in sorted(scored, key=lambda x: -x[1])]
-        hits.append(1 if test in ranked else 0)
-        mrrs.append(1.0/(ranked.index(test)+1) if test in ranked else 0.0)
-
-    return jsonify({
-        "HitRate": round(np.mean(hits),4),
-        "MRR":      round(np.mean(mrrs),4)
-    })
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

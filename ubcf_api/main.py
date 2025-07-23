@@ -174,12 +174,12 @@ def api_recommend(uid):
     return jsonify({"recommendations": top6.to_dict("records")})
 
 # ────────────────────────────────────────────────────────────────────────────────
-# 6) Evaluate: MAE, Prec@6 & MAP@6 using hybrid recommendations
+# 6) Evaluate:Prec@6 & MAP@6 using hybrid recommendations
 @app.route("/api/evaluate")
 def api_evaluate():
     mat, sim, knn = build_cf_model()
 
-    # —— MAE on actually‑rated items via CF‑predictions
+    # —— on actually‑rated items via CF‑predictions
     abs_err, sq_err = [], []
     for uid in mat.index:
         preds = rec_menu_scores(uid, mat, sim, knn)
@@ -189,7 +189,6 @@ def api_evaluate():
                 diff = true_price - pred_price
                 abs_err.append(abs(diff))
                 sq_err.append(diff**2)
-    mae  = float(np.mean(abs_err))  if abs_err else 0.0
     
     # —— Precision@6, MAP@6 (leave‑one‑out) via HYBRID ranking
     precisions, average_precisions = [], []
@@ -233,7 +232,6 @@ def api_evaluate():
     map6  = float(np.mean(average_precisions))   if average_precisions   else 0.0
 
     return jsonify({
-        "MAE":    round(mae,   4),
         "Prec@6": round(prec6, 4),
         "MAP@6":  round(map6,  4),
     })

@@ -1,11 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from sentiment import SentimentAnalyzer
 import mysql.connector
 from collections import OrderedDict
 import json
 
 app = Flask(__name__)
 CORS(app)
+
+sentiment_analyzer = SentimentAnalyzer("svm_sentiment_pipeline.joblib", force_retrain=False)
 
 def get_data(search_term=None):
     db = mysql.connector.connect(
@@ -547,6 +550,14 @@ def api_user_by_id(id_user):
 def api_reviews(id_kafe):
     return jsonify(get_reviews(id_kafe))
 
+@app.route('/api/sentiment/<int:id_kafe>', methods=['GET'])
+def api_sentiment(id_kafe):
+    reviews = get_reviews(id_kafe)
+    if not isinstance(reviews, list):
+        return jsonify({"error": "Failed to fetch reviews"}), 500
+
+    summary = sentiment_analyzer.summary_for_cafe(reviews)
+    return jsonify(summary), 200
 
 @app.route('/api/data', methods=['GET'])
 def api_data():

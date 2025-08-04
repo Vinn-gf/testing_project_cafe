@@ -173,32 +173,27 @@ def api_recommend(uid):
     top6 = dfc.sort_values("score", ascending=False).head(6)
     return jsonify({"recommendations": top6.to_dict("records")})
 
+# … (semua import dan fungsi sebelumnya tetap sama)
+
 # ────────────────────────────────────────────────────────────────────────────────
-# 6) Evaluate:Prec@6 & MAP@6 using hybrid recommendations
+# 6) Evaluate: Recall@6 & nDCG@6 menggunakan hybrid recommendations
 @app.route("/api/evaluate")
 def api_evaluate():
     mat, sim, knn = build_cf_model()
 
-    # —— on actually‑rated items via CF‑predictions
-    abs_err, sq_err = [], []
-    for uid in mat.index:
-        preds = rec_menu_scores(uid, mat, sim, knn)
-        for cid, true_price in mat.loc[uid].items():
-            if true_price > 0:
-                pred_price = preds.get(cid, 0.0)
-                diff = true_price - pred_price
-                abs_err.append(abs(diff))
-                sq_err.append(diff**2)
-    
-    # —— Precision@6, MAP@6 (leave‑one‑out) via HYBRID ranking
-    precisions, average_precisions = [], []
+    recalls = []
+    ndcgs   = []
     K = 6
-    for uid in fetch_all_user_ids():
-        seq = [v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)]
-        if len(seq) < 2: continue
-        test_cafe = seq[-1]
 
-        # rebuild hybrid signals
+    for uid in fetch_all_user_ids():
+        # ambil daftar history; skip jika kurang dari 2
+        seq = [v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)]
+        if len(seq) < 2:
+            continue
+        test_cafe = seq[-1]        # ground truth: item yang kita prediksi
+        seen_hist = set(seq[:-1])
+
+        # 1) hitung sinyal hybrid ulang
         cf_raw = rec_menu_scores(uid, mat, sim, knn)
         vf_raw = rec_visited_freq(uid)
         co_raw = rec_menu_cooccur(uid)
@@ -206,35 +201,41 @@ def api_evaluate():
         max_vf = max(vf_raw.values()) if vf_raw else 1.0
         max_co = max((len(v) for v in co_raw.values()), default=1)
 
-        # composite pool & scores
-        pool = (set(cf_raw) | set(vf_raw) | set(co_raw)) - set(seq[:-1])
+        # 2) kumpulkan kandidat & skor hybrid
+        pool = (set(cf_raw) | set(vf_raw) | set(co_raw)) - seen_hist
         scores = {}
         for cid in pool:
-            cf_n = cf_raw.get(cid,0)/max_cf
-            vf_n = vf_raw.get(cid,0)/max_vf
-            co_n = len(co_raw.get(cid,[]))/max_co
+            cf_n = cf_raw.get(cid, 0) / max_cf
+            vf_n = vf_raw.get(cid, 0) / max_vf
+            co_n = len(co_raw.get(cid, [])) / max_co
             scores[cid] = 0.6*cf_n + 0.2*vf_n + 0.2*co_n
 
+        # 3) ranking top-K
         ranked = sorted(scores, key=lambda x: -scores[x])[:K]
 
-        # precision@6
-        precisions.append(1.0/K if test_cafe in ranked else 0.0)
+        # — Recall@K: (berapa banyak relevan di top-K) / (total relevan)
+        #   Di leave-one-out total relevan = 1 (test_cafe), jadi Recall@6 = 1 jika test_cafe di ranked
+        recall = 1.0 if test_cafe in ranked else 0.0
+        recalls.append(recall)
 
-        # AP@6: only one relevant (test_cafe)
-        if test_cafe in ranked:
-            idx = ranked.index(test_cafe) + 1
-            ap = 1.0 / idx
-        else:
-            ap = 0.0
-        average_precisions.append(ap)
+        # — nDCG@K
+        dcg = 0.0
+        for i, cid in enumerate(ranked, start=1):
+            rel = 1 if cid == test_cafe else 0
+            dcg += (2**rel - 1) / np.log2(i + 1)
+        # ideal DCG kalau relevan selalu di posisi pertama:
+        idcg = (2**1 - 1) / np.log2(1 + 1)
+        ndcgs.append(dcg / idcg if idcg > 0 else 0.0)
 
-    prec6 = float(np.mean(precisions))           if precisions           else 0.0
-    map6  = float(np.mean(average_precisions))   if average_precisions   else 0.0
+    recall6 = float(np.mean(recalls)) if recalls else 0.0
+    ndcg6   = float(np.mean(ndcgs))    if ndcgs    else 0.0
 
     return jsonify({
-        "Prec@6": round(prec6, 4),
-        "MAP@6":  round(map6,  4),
+        "Recall@6":  round(recall6, 4),
+        "nDCG@6":    round(ndcg6,   4)
     })
 
-if __name__=="__main__":
+
+# ────────────────────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

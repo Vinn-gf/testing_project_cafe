@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-sentiment_analyzer = SentimentAnalyzer("svm_sentiment_pipeline.joblib", force_retrain=False)
+sentiment_analyzer = SentimentAnalyzer()
 
 def get_data(search_term=None):
     db = mysql.connector.connect(
@@ -135,21 +135,19 @@ def get_reviews(id_kafe=None):
         database="cafe_databases"
     )
     cursor = db.cursor()
-
     cursor.execute("SHOW COLUMNS FROM review_tables")
     columns = [col[0] for col in cursor.fetchall()]
 
     if id_kafe:
-        query = "SELECT * FROM review_tables WHERE id_kafe = %s"
-        cursor.execute(query, (id_kafe,))
+        cursor.execute("SELECT * FROM review_tables WHERE id_kafe = %s", (id_kafe,))
     else:
         cursor.execute("SELECT * FROM review_tables")
 
-    data = cursor.fetchall()
+    rows = cursor.fetchall()
     db.close()
 
     results = []
-    for row in data:
+    for row in rows:
         od = OrderedDict()
         for idx, col in enumerate(columns):
             od[col] = row[idx]
@@ -555,9 +553,8 @@ def api_sentiment(id_kafe):
     reviews = get_reviews(id_kafe)
     if not isinstance(reviews, list):
         return jsonify({"error": "Failed to fetch reviews"}), 500
-
-    summary = sentiment_analyzer.summary_for_cafe(reviews)
-    return jsonify(summary), 200
+    analyzed = sentiment_analyzer.analyze_reviews(reviews, id_kafe)
+    return jsonify(analyzed), 200
 
 @app.route('/api/data', methods=['GET'])
 def api_data():

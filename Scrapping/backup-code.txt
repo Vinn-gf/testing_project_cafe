@@ -1,0 +1,193 @@
+# ── 1) Install & import ───────────────────────────────────────────────────────────
+!pip install pandas requests scikit-learn tabulate --quiet
+
+import requests
+import pandas as pd
+import numpy as np
+import json
+from sklearn.neighbors import NearestNeighbors
+from tabulate import tabulate
+from collections import defaultdict
+
+# ── 2) Konfigurasi API & session ───────────────────────────────────────────────────
+BASE = "https://0425-140-213-10-0.ngrok-free.app/"
+session = requests.Session()
+session.headers.update({"ngrok-skip-browser-warning": "true"})
+
+# ── 3) Helper untuk fetch ─────────────────────────────────────────────────────────
+def fetch_all_user_ids():
+    r = session.get(f"{BASE}/api/users"); r.raise_for_status()
+    return [int(u["id_user"]) for u in r.json()]
+
+def fetch_visited(user_id):
+    r = session.get(f"{BASE}/api/visited/{user_id}"); r.raise_for_status()
+    data = r.json()
+    if isinstance(data, dict):
+        return data.get("visited_cafes", [])
+    return data if isinstance(data, list) else []
+
+def fetch_user(user_id):
+    r = session.get(f"{BASE}/api/users/{user_id}"); r.raise_for_status()
+    return r.json()
+
+def fetch_cafe(cafe_id):
+    r = session.get(f"{BASE}/api/cafe/{cafe_id}"); r.raise_for_status()
+    return r.json()
+
+# ── 4) Build user–item matrix dari menu_yang_disukai ───────────────────────────────
+records = []
+for uid in fetch_all_user_ids():
+    u = fetch_user(uid)
+    raw = u.get("menu_yang_disukai") or "[]"
+    try:
+        favs = json.loads(raw) if isinstance(raw, str) else raw
+    except:
+        favs = []
+    for m in favs if isinstance(favs, list) else []:
+        if isinstance(m, dict) and "harga" in m and "id_cafe" in m:
+            try:
+                price = int(str(m["harga"]).replace(".", ""))
+                cid   = int(m["id_cafe"])
+                records.append({"user_id": uid, "cafe_id": cid, "harga": price})
+            except:
+                pass
+
+df_menu = pd.DataFrame(records)
+if df_menu.empty:
+    mat = pd.DataFrame()
+else:
+    mat = df_menu.pivot_table(index="user_id",
+                              columns="cafe_id",
+                              values="harga",
+                              fill_value=0)
+
+# ── 5) Compute adjusted cosine similarity + KNN ───────────────────────────────────
+if not mat.empty and mat.shape[0] > 1:
+    X = mat.sub(mat.mean(axis=1), axis=0)
+    num = X.dot(X.T)
+    norm = np.sqrt((X**2).sum(axis=1).to_numpy())
+    den  = np.outer(norm, norm) + 1e-8
+    sim_vals = np.divide(num.values, den, out=np.zeros_like(num.values), where=den>0)
+    sim = pd.DataFrame(sim_vals.clip(-1,1),
+                       index=mat.index,
+                       columns=mat.index)
+    dist_matrix = 1 - sim
+    knn = NearestNeighbors(metric="precomputed",
+                           n_neighbors=min(5, len(dist_matrix)))
+    knn.fit(dist_matrix.values)
+else:
+    sim = pd.DataFrame()
+    knn = None
+
+# ── 6) Recommendation functions ────────────────────────────────────────────────────
+def recommend_by_menu(user_id, K=6):
+    if knn is None or user_id not in sim.index:
+        return []
+    n_nb = min(K+1, len(sim))
+    dists, idxs = knn.kneighbors((1-sim).loc[[user_id]].values,
+                                  n_neighbors=n_nb)
+    neigh = sim.index[idxs[0][1:]]
+    scores = {}
+    for cid in mat.columns:
+        if mat.loc[user_id, cid] == 0:
+            num_ = sum(sim.loc[user_id, u] * mat.loc[u, cid] for u in neigh)
+            den_ = sum(abs(sim.loc[user_id, u]) for u in neigh)
+            scores[cid] = num_/den_ if den_ > 0 else 0
+    return sorted(scores, key=scores.get, reverse=True)[:K]
+
+def recommend_by_visited(user_id, K=6):
+    seq = [int(v["id_cafe"]) for v in fetch_visited(user_id)
+           if isinstance(v, dict)]
+    trans = defaultdict(list)
+    for uid in fetch_all_user_ids():
+        vs = [int(v["id_cafe"]) for v in fetch_visited(uid)
+              if isinstance(v, dict)]
+        for a, b in zip(vs, vs[1:]):
+            trans[a].append(b)
+    cands = []
+    for a in seq:
+        cands += trans.get(a, [])
+    freq = pd.Series(cands).value_counts().index.tolist()
+    return [c for c in freq if c not in seq][:K]
+
+def get_topK(user_id, K=6):
+    # --- 1) Pool kandidat dari dua alur ---
+    pool = list(dict.fromkeys(
+        recommend_by_menu(user_id, K*2) +
+        recommend_by_visited(user_id, K*2)
+    ))
+
+    # --- 2) Ambil set kafe yg sudah dikunjungi user ---
+    visited_seq = [int(v["id_cafe"]) for v in fetch_visited(user_id)
+                   if isinstance(v, dict)]
+    visited_set = set(visited_seq)
+
+    # --- 3) Filter pool: buang yang sudah dikunjungi ---
+    pool = [cid for cid in pool if cid not in visited_set]
+
+    # --- 4) Tarik detail & rating, urutkan & ambil top K ---
+    rows = []
+    for cid in pool:
+        info = fetch_cafe(cid)
+        if isinstance(info, dict) and "nama_kafe" in info and "rating" in info:
+            rows.append({
+                "cafe_id":   cid,
+                "nama_kafe": info["nama_kafe"],
+                "rating":    info["rating"]
+            })
+
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df["rating"] = pd.to_numeric(df["rating"],
+                                     errors="coerce").fillna(0)
+        return df.sort_values("rating",
+                              ascending=False).head(K)
+    return df
+
+# ── 7) Next‐item evaluator (leave‐one‐out) ─────────────────────────────────────────
+def recommend_next(user_id, history, K=6):
+    trans = defaultdict(list)
+    for uid in fetch_all_user_ids():
+        seq = [int(v["id_cafe"]) for v in fetch_visited(uid)
+               if isinstance(v, dict)]
+        for a, b in zip(seq, seq[1:]):
+            trans[a].append(b)
+    last = history[-1]
+    freq = pd.Series(trans.get(last, [])).value_counts().index.tolist()
+    return [c for c in freq if c not in history][:K]
+
+def evaluate_next(K=6):
+    hits, mrrs = [], []
+    for uid in fetch_all_user_ids():
+        seq = [int(v["id_cafe"]) for v in fetch_visited(uid)
+               if isinstance(v, dict)]
+        if len(seq) < 2:
+            continue
+        hist, test = seq[:-1], seq[-1]
+        recs = recommend_next(uid, hist, K)
+        hits.append(1 if test in recs else 0)
+        mrrs.append(1.0/(recs.index(test)+1) if test in recs else 0.0)
+    return {
+        "HitRate": np.mean(hits) if hits else 0.0,
+        "MRR":     np.mean(mrrs) if mrrs else 0.0
+    }
+
+# ── 8) Main: Cetak rekomendasi + evaluasi ──────────────────────────────────────────
+if __name__ == "__main__":
+    users = fetch_all_user_ids()
+    if users:
+        target = users[5]  # contoh user
+        print(f"\nTop 6 rekomendasi untuk user {target}:")
+        top6 = get_topK(target, 6)
+        if not top6.empty:
+            print(tabulate(top6,
+                           headers="keys",
+                           tablefmt="github",
+                           showindex=False))
+        else:
+            print("Tidak ada rekomendasi.")
+
+    print("\n=== Evaluasi Next-Item (leave-one-out) ===")
+    metrics = evaluate_next(6)
+    for k, v in metrics.items():
+        print(f"{k}: {v:.4f}")

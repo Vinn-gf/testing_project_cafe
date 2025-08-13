@@ -1,0 +1,4 @@
+evaluasi : map, mae, rmse
+minimal 2
+masukan paper evaluasi di bab 2
+rampungkan web baru laporan

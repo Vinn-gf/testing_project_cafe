@@ -1,0 +1,3787 @@
+﻿1;1;Makanan;Chicken Katsu;24000
+2;1;Makanan;Ayam Rica;25000
+3;1;Makanan;Ayam Kalasan;25000
+4;1;Makanan;Bebek Bumbu Hitam khas Madura;42000
+5;1;Makanan;Chicken Hotplate;30000
+6;1;Makanan;Special Chicken Hotplate;32000
+7;1;Makanan;Rice Bowl Beef Teriyaki;32000
+8;1;Makanan;Rice Bowl Baby Cumi;30000
+9;1;Makanan;Nasi Telur Dadar;15000
+10;1;Makanan;Indomie+ Telur;12000
+11;1;Makanan;Cireng;16000
+12;1;Makanan;Onion Ring;16000
+13;1;Makanan;Singkong Goreng;16000
+14;1;Makanan;Tahu Gejrot;16000
+15;1;Makanan;Lumpia;16000
+16;1;Makanan;French Fries;18000
+17;1;Makanan;Potato Wedges;18000
+18;1;Makanan;Pisang Keju;18000
+19;1;Makanan;Roti Bakar;18000
+20;1;Makanan;Sandwich (Chicken/Tuna);18000
+21;1;Makanan;Crispy Enoki;18000
+22;1;Makanan;Risol Mayo;18000
+23;1;Makanan;Tahu Walik;24000
+24;1;Makanan;Dimsum (Kukus/Goreng);24000
+25;1;Makanan;Sistaget;24000
+26;1;Makanan;Fish & Fries;30000
+27;1;Minuman;Lavanilla ;21000
+28;1;Minuman;Lamocha ;21000
+29;1;Minuman;Carmella ;23000
+30;1;Minuman;Danilla ;23000
+31;1;Minuman;Americano ;19000
+32;1;Minuman;Tubruk ;15000
+33;1;Minuman;V 60 ;25000
+34;1;Minuman;Japanese ;25000
+35;1;Minuman;Cappucino ;25000
+36;1;Minuman;Caffe Latte ;25000
+37;1;Minuman;Hazelnut Latte ;25000
+38;1;Minuman;Vanilla Latte ;25000
+39;1;Minuman;Susu Regal ;21000
+40;1;Minuman;Choco Oreo ;21000
+41;1;Minuman;Red Velvet ;19000
+42;1;Minuman;Taro ;19000
+43;1;Minuman;Bubble Gum ;19000
+44;1;Minuman;Basic Tea ;10000
+45;1;Minuman;Green Tea ;17000
+46;1;Minuman;Thai Tea ;17000
+47;1;Minuman;Lemon Tea ;21000
+48;1;Minuman;Lychee Tea ;23000
+49;1;Minuman;Wedang Uwuh ;17000
+50;2;Makanan;Nasi Goreng Kampung;22000
+51;2;Makanan;Nasi Teri Mercon;30000
+52;2;Makanan;Nasi Goreng Hongkong;25000
+53;2;Makanan;Ayam Hangry;27000
+54;2;Makanan;Bakmie Godok Jawa;22000
+55;2;Makanan;Mie Goreng Hangry;25000
+56;2;Makanan;Sapo Tahu;28000
+57;2;Makanan;Tom Yum Udang;38000
+58;2;Makanan;Pangsit Kuah;26000
+59;2;Makanan;Pangsit Goreng ;26000
+60;2;Makanan;Singkong Goreng;18000
+61;2;Makanan;French Fries;20000
+62;2;Makanan;Sosis Goreng;20000
+63;2;Makanan;Pisang Manis Legit;20000
+64;2;Makanan;Lumpia Bihun;20000
+65;2;Makanan;Risoles;25000
+66;2;Makanan;Dimsum Kukus;25000
+67;2;Makanan;Tahu Walik;25000
+68;2;Makanan;Cireng;20000
+69;2;Makanan;Patata Mini Ball;18000
+70;2;Makanan;Patata Ball Manis Legit;25000
+71;2;Makanan;Patata Ball Family Pack;25000
+72;2;Makanan;Chicken Wings (Original);25000
+73;2;Makanan;Chicken Wings (BBQ Spicy/Thousand Island);28000
+74;2;Makanan;Mix Platter;50000
+75;2;Makanan;Nasi Rawon;35000
+76;2;Makanan;Gultik;28000
+77;2;Makanan;Tom Yam Gong;33000
+78;2;Makanan;Chicken Salted Egg;24000
+79;2;Makanan;Udang Salted Egg;28000
+80;2;Makanan;Nasi Goreng Ayam;24000
+81;2;Makanan;Nasi Goreng Sosis;25000
+82;2;Makanan;Nasi Goreng Seafood;27000
+83;2;Makanan;Nasi Goreng Banjar;23000
+84;2;Makanan;Barbeque;18000
+85;2;Makanan;BBQ Spicy;18000
+86;2;Makanan;Teriyaki;18000
+87;2;Makanan;Black Pepper;18000
+88;2;Makanan;Mayo Sauce;18000
+89;2;Minuman;Hangry Salted Caramel;20000
+90;2;Minuman;Hangry Aren;20000
+91;2;Minuman;Extra Hangry Double Shoot;22000
+92;2;Minuman;Hangry Hazelnut;22000
+93;2;Minuman;Damn It's Good Rum Flavour;23000
+94;2;Minuman;Hey Honey Madu Flavour;23000
+95;2;Minuman;Spanish Latte;28000
+96;2;Minuman;Cappucino Hot;26000
+97;2;Minuman;Latte Hot;26000
+98;2;Minuman;Americano ;23000
+99;2;Minuman;Strawberry Tea Mocktail;25000
+100;2;Minuman;Mango Tea Mocktail;25000
+101;2;Minuman;Merry Guana;23000
+102;2;Minuman;Merry Lonely;25000
+103;2;Minuman;Black Tea;8000
+104;2;Minuman;Es Teh Jeruk Nipis;13000
+105;2;Minuman;Leciti (Ice Lychee Tea);20000
+106;2;Minuman;Lemon;19000
+107;2;Minuman;Cherry Blossoms;25000
+108;2;Minuman;Sakura Cream;25000
+109;2;Minuman;Sweet Milk Tea;20000
+110;2;Minuman;Matcha Cream;25000
+111;2;Minuman;Rose Cream;25000
+112;2;Minuman;Choco Cream;25000
+113;3;Makanan;Sop Buntut;60000
+114;3;Makanan;Nasi Goreng Kampung;31000
+115;3;Makanan;Nasi Goreng Salmon ;37000
+116;3;Makanan;Nasi Goreng Special;31000
+117;3;Makanan;Special Rice Sweet Chilli Meat Ball;31000
+118;3;Makanan;Aglio Olio;33000
+119;3;Makanan;Beef Burger;55000
+120;3;Makanan;Chicken Snitzel;39000
+121;3;Makanan;Grilled Chicken;55000
+122;3;Makanan;Grilled Dory;55000
+123;3;Makanan;Fish and Chip;55000
+124;3;Makanan;Katsu Rice Original;30000
+125;3;Makanan;Katsu Rice Blackpepper;30000
+126;3;Makanan;Katsu Rice Sambal Batah;35000
+127;3;Makanan;Soup Salmon;70000
+128;3;Makanan;Chicken Buritos;32000
+129;3;Makanan;Chicken Brusetta;30000
+130;3;Makanan;Chicken Nachos;31000
+131;3;Makanan;Tahu Gejrot;28000
+132;3;Makanan;Dr. Creamy Tortilla Pizza;39000
+133;3;Makanan;Dr. Mix Snack;60000
+134;3;Makanan;French Fries;25000
+135;3;Makanan;Roti Kukus Cokelat;22000
+136;3;Makanan;Special Pancake;28000
+137;3;Makanan;Choco Lava;28000
+138;3;Makanan;Toast Bread;22000
+139;3;Makanan;Toast Egg;28000
+140;3;Makanan;Tiramisu Banana;25000
+141;3;Makanan;Caesar Salad;35000
+142;3;Minuman;Banana Late;28000
+143;3;Minuman;Cranberry Tea;28000
+144;3;Minuman;Chocolate Piece;28000
+145;3;Minuman;Split Coffee;28000
+146;3;Minuman;Picolo Latte;28000
+147;3;Minuman;Café Lattee;31000
+148;3;Minuman;Mocha Lattee;31000
+149;3;Minuman;Espresso;26000
+150;3;Minuman;Americano;28000
+151;3;Minuman;On The Rock;28000
+152;3;Minuman;Dr. Sugar Browning;28000
+153;3;Minuman;Dr. Mocha Prappe;31000
+154;3;Minuman;Dr. Vanilla Prappe;31000
+155;3;Minuman;Afogatto Coffee;31000
+156;3;Minuman;Dr. Black Rose Coffee;31000
+157;3;Minuman;Dr. Creamy Fruity Coffee;31000
+158;3;Minuman;Filter Coffee;30000
+159;3;Minuman;Vietnam Drip;30000
+160;3;Minuman;Berry Biscous;28000
+161;3;Minuman;Delicious Green Tea;28000
+162;3;Minuman;Breakfast Tea;28000
+163;3;Minuman;Platinum White Tea;28000
+164;3;Minuman;Lemon Tea;28000
+165;3;Minuman;Dr. Raspberry Tea;28000
+166;3;Minuman;Dr. Yellow Sunrise Tea;28000
+167;3;Minuman;Cholate Vanilla;28000
+168;3;Minuman;Dr. Red Lavella;28000
+169;3;Minuman;Dr. Lemojito;28000
+170;3;Minuman;Dr. Heavy Greenery;28000
+171;3;Minuman;Dr. Blue Ocean;28000
+172;3;Minuman;Dr. Me Gusta tu;28000
+173;3;Minuman;Dr. Navillera;28000
+174;3;Minuman;Dr. Cookies and Cream;28000
+175;3;Minuman;Dr. Strawberry Crunchy;28000
+176;3;Minuman;Dr. Milky Smooth Crunchy;28000
+177;3;Minuman;Green Matcha;28000
+178;3;Minuman;Red Velvet;28000
+179;3;Minuman;Taro Pure;28000
+180;4;Makanan;Nasi Goreng Seafood;31000
+181;4;Makanan;Nasi Goreng Kala Rindu;27000
+182;4;Makanan;Fish N' Chips;36000
+183;4;Makanan;Peda Balado;27000
+184;4;Makanan;Nila Goreng;27000
+185;4;Makanan;Nila Steamed;31000
+186;4;Makanan;Tongkol Suwir Balado;29000
+187;4;Makanan;Rawon Ayam;27000
+188;4;Makanan;Rawon Sapi;26000
+189;4;Makanan;Ayam Goreng Serundeng;29000
+190;4;Makanan;Ayam Betutu;31000
+191;4;Makanan;Ayam Bakar;31000
+192;4;Makanan;Ayam Penyet Cabe Ijo;31000
+193;4;Makanan;Ayam Kaloke;31000
+194;4;Makanan;Chicken Katsu Cabe Garam;29000
+195;4;Makanan;Chicken Katsu Blackpepper;29000
+196;4;Makanan;Chicken Katsu Teriyaki;29000
+197;4;Makanan;Chicken Katsu Geprek;29000
+198;4;Makanan;Chicken Katsu Curry;29000
+199;4;Makanan;Cumi Cabe Ijo;31000
+200;4;Makanan;Cumi Asam Manis;31000
+201;4;Makanan;Cumi Cabe Garam;31000
+202;4;Makanan;Spaghetti Bolognese;31000
+203;4;Makanan;Spaghetti Aglio E Olio;31000
+204;4;Makanan;Beef Yakiniku;34000
+205;4;Makanan;Burbeng Max;36000
+206;4;Makanan;Nasi Gila;22000
+207;4;Makanan;Nasi Langgi;27000
+208;4;Makanan;Ayam Kare;27000
+209;4;Makanan;Nasi Telur;18000
+210;4;Makanan;Nasi Kuning;20000
+211;4;Makanan;Chicken Wings;22000
+212;4;Makanan;Singkong Popcorn;20000
+213;4;Makanan;Tahu Popcorn Crispy;20000
+214;4;Makanan;Banana Crunchy;24000
+215;4;Makanan;Mix Platter;27000
+216;4;Makanan;Onion Ring;20000
+217;4;Makanan;French Fries;20000
+218;4;Makanan;Cireng Kala Rindu;20000
+219;4;Makanan;Risoles;20000
+220;4;Makanan;Tempe Mendoan;20000
+221;4;Minuman;Keganangan;20000
+222;4;Minuman;Keganangan Banar;22000
+223;4;Minuman;Es Kopi Pandan;25000
+224;4;Minuman;Es Kopi Susu Peppermint;25000
+225;4;Minuman;Es Kopi Susu Banana;25000
+226;4;Minuman;Es Kopi Susu Rum;25000
+227;4;Minuman;Sea Salt Coffee;25000
+228;4;Minuman;Kala Rindu Hawa;22000
+229;4;Minuman;Kala Rindu Dahaga;22000
+230;4;Minuman;Pure Flower;29000
+231;4;Minuman;Black Rose;29000
+232;4;Minuman;Minion Punch;29000
+233;4;Minuman;Citrus Fizz;29000
+234;4;Minuman;Espresso;13000
+235;4;Minuman;Americano;20000
+236;4;Minuman;Vietnam;22000
+237;4;Minuman;Cappucino;27000
+238;4;Minuman;Piccolo;27000
+239;4;Minuman;Café Latte;27000
+240;4;Minuman;Café Latte Hazelnut;30000
+241;4;Minuman;Café Latte Vanilla;30000
+242;4;Minuman;Café Latte Caramel;30000
+243;4;Minuman;Café Latte Apple;30000
+244;4;Minuman;Mocha Latte;30000
+245;4;Minuman;Espresse Split;34000
+246;4;Minuman;Americano Mango ;22000
+247;4;Minuman;Americano Strawberry ;22000
+248;4;Minuman;Caramel Macchiato ;27000
+249;4;Minuman;V 60 (Local Beans);29000
+250;4;Minuman;Japanese Coffee (Local Beans);29000
+251;4;Minuman;Matcha Greentea;22000
+252;4;Minuman;Chocolate Yummy;22000
+253;4;Minuman;Taro Perfecto;22000
+254;4;Minuman;Bubblegum Sensation;22000
+255;4;Minuman;Tiramisu Sensation;22000
+256;4;Minuman;Premium Rel Velvet;22000
+257;4;Minuman;Milky Regal;22000
+258;4;Minuman;Milky Ways;27000
+259;4;Minuman;Cookies N' Cream;22000
+260;4;Minuman;Basic Tea;11000
+261;4;Minuman;Lemon Tea;20000
+262;4;Minuman;Mint Tea;18000
+263;4;Minuman;Peach Tea;20000
+264;4;Minuman;Lychee Tea;20000
+265;4;Minuman;Mango Tea;20000
+266;4;Minuman;Apple Tea;18000
+267;5;Makanan;Rice Beef;31000
+268;5;Makanan;Tongseng Daging;38000
+269;5;Makanan;Ayam Kremes;37000
+270;5;Makanan;Ayam Sambal Matah;37000
+271;5;Makanan;Ayam Penyet;37000
+272;5;Makanan;Ayam Telur Asin;33000
+273;5;Makanan;Ayam Cabe Garam;33000
+274;5;Makanan;Kulit Sambalado;26000
+275;5;Makanan;Indomie Spesial;22000
+276;5;Makanan;Nasi Goreng Oriental;22000
+277;5;Makanan;Banana Split;22000
+278;5;Makanan;Dimsum;26000
+279;5;Makanan;Samosa;26000
+280;5;Makanan;French Fries ;20000
+281;5;Makanan;Tahu Crispy;20000
+282;5;Makanan;Risol Mayo;20000
+283;5;Makanan;Tempe Mendoan;20000
+284;5;Makanan;Churros;22000
+285;5;Makanan;Sweet Lemonade Pancake;26000
+286;5;Minuman;Espresso;22000
+287;5;Minuman;Split;39000
+288;5;Minuman;On The Rock;26000
+289;5;Minuman;Americano;20000
+290;5;Minuman;Cappucino;28000
+291;5;Minuman;Caffe Latte;28000
+292;5;Minuman;Moka Latte;28000
+293;5;Minuman;Popcorn Latte;26000
+294;5;Minuman;Vanilla Latte;31000
+295;5;Minuman;Caramel Latte;31000
+296;5;Minuman;Caramel Macchiato;33000
+297;5;Minuman;Cream Cheese Latte;33000
+298;5;Minuman;Chocolate;20000
+299;5;Minuman;Red Velvet;20000
+300;5;Minuman;Green Tea;20000
+301;5;Minuman;Taro;20000
+302;5;Minuman;Susu Regal;22000
+303;5;Minuman;Vanilla Cookies;22000
+304;5;Minuman;Power Pop Girl;26000
+305;5;Minuman;Sundul;20000
+306;5;Minuman;Sundul Pandan;26000
+307;5;Minuman;Sundul Gedang;26000
+308;5;Minuman;Sweger;22000
+309;5;Minuman;Summer Sweet;22000
+310;5;Minuman;Mercy;22000
+311;5;Minuman;Nite Marine;26000
+312;5;Minuman;The Old Fizzy;26000
+313;5;Minuman;Cheezy Berry;26000
+314;5;Minuman;Lela;26000
+315;5;Minuman;Jeruk Lemon;26000
+316;5;Minuman;Jeruk Kelapa;26000
+317;6;Makanan;Bakmie Piring Komplit;31000
+318;6;Makanan;Bakmie Piring Kulit Crispy;28000
+319;6;Makanan;Bakmie Piring Mix Dumpling;28000
+320;6;Makanan;Bakmie Piring Sosis;29000
+321;6;Makanan;Bakmie Piring Pangsit;26000
+322;6;Makanan;Bakmie Piring Nanika;23000
+323;6;Makanan;Karage Sambal Matah;28000
+324;6;Makanan;Karage Mentai;28000
+325;6;Makanan;Nasi Ayam Goreng Sambal Mattah;32000
+326;6;Makanan;Nasi Kulit Sambal Mattah;23000
+327;6;Makanan;Nasi Ayam Goreng Kremes;32000
+328;6;Makanan;Nasi Ayam Teriyaki;23000
+329;6;Makanan;Nasi Ayam Bakar Bumbu Rempah;32000
+330;6;Makanan;Pangsit Goreng ;20000
+331;6;Makanan;Mix Platter;32000
+332;6;Makanan;Udang Rambutan;23000
+333;6;Makanan;Roti Panggang (Srikaya/Cokelat);23000
+334;6;Makanan;Potato Wedges;26000
+335;6;Makanan;Dimsum Mentai (Kukus/Goreng);23000
+336;6;Makanan;Dimsum Original (Kukus/Goreng);19000
+337;6;Makanan;Udang Keju;26000
+338;6;Makanan;Chicken Popcorn;23000
+339;6;Makanan;French Fries ;19000
+340;6;Makanan;Softdoh Choco;19000
+341;6;Makanan;Softdoh Cheese;19000
+342;6;Makanan;Choco Nut Cookies;10000
+343;6;Makanan;Brownies;16000
+344;6;Minuman;Kopi Susu Nanika;18000
+345;6;Minuman;Kopi Susu Geisha;18000
+346;6;Minuman;Kopi Susu Gula Aren;18000
+347;6;Minuman;Hazelnut Latte;22000
+348;6;Minuman;Fruits Bomb;20000
+349;6;Minuman;Exotic Floral;20000
+350;6;Minuman;Matcha Wangi;22000
+351;6;Minuman;Strawberry Sigma;20000
+352;6;Minuman;Ichigo Matcha;23000
+353;6;Minuman;Cookies n Cream;20000
+354;6;Minuman;Taro;20000
+355;6;Minuman;Matcha;20000
+356;6;Minuman;Dark Choco;20000
+357;6;Minuman;Milk Tea;20000
+358;6;Minuman;Lychee Ocha;17000
+359;6;Minuman;Ohaiyou;17000
+360;6;Minuman;Sunset 707;19000
+361;6;Minuman;Black Tea;16000
+362;6;Minuman;Ocha;15000
+363;6;Minuman;Espresso;16000
+364;6;Minuman;Americano;19000
+365;6;Minuman;Cappucino/Latte;19000
+366;6;Minuman;Affogato;20000
+367;7;Makanan;Spicy Baby Cumi;33000
+368;7;Makanan;Sweet & Sour Chicken;30000
+369;7;Makanan;Chicken Blackpepper;31000
+370;7;Makanan;Beef Blackpepper;39000
+371;7;Makanan;Lumpia Tahu;16000
+372;7;Makanan;Tahu Gejrot;19000
+373;7;Makanan;Cireng Sambal Rujak;21000
+374;7;Makanan;French Fries ;22000
+375;7;Makanan;Kerupuk Basah;22000
+376;7;Makanan;Cilong Goang NW;25000
+377;7;Makanan;Mini Wonton Goreng;30000
+378;7;Makanan;Mac & Cheese;31000
+379;7;Makanan;Dimsum Ori;22000
+380;7;Makanan;Dimsum Cheesemelt;27000
+381;7;Makanan;Dimsum Mentai;27000
+382;7;Makanan;Mix Platter;45000
+383;7;Makanan;Roti Bakar Cheesecream;27000
+384;7;Makanan;Roti Bakar Chococrunchy;27000
+385;7;Makanan;Roti Bakar Tiramisu;27000
+386;7;Makanan;Banana Rolls Chocolate;20000
+387;7;Makanan;Banana Rolls Matcha;20000
+388;7;Makanan;Banana Rolls Tiramisu;20000
+389;7;Makanan;NW Noodles;22000
+390;7;Makanan;Ayam Goreng Ketumbar;44000
+391;7;Makanan;Nila Goreng Sambal Jeruk;35000
+392;7;Makanan;Bebek Goreng NW;50000
+393;7;Makanan;Soto Banjar;27000
+394;7;Makanan;Nasi Butter Sosis Mayo;20000
+395;7;Makanan;Nasi Nugget Sambal Matah;20000
+396;7;Makanan;Nasi Tahu Cabe Garam;20000
+397;7;Makanan;Insomiea Goreng;17000
+398;7;Makanan;Insomiea Kuah;17000
+399;7;Minuman;Waltz Coffee;20000
+400;7;Minuman;Carmeltz;25000
+401;7;Minuman;Peppermint Iced;24000
+402;7;Minuman;Roasted Almond;25000
+403;7;Minuman;Kopi Klepon;25000
+404;7;Minuman;Nocturne Cheese Coffee;26000
+405;7;Minuman;Banawaltz;25000
+406;7;Minuman;Americano;28000
+407;7;Minuman;Cappucino;30000
+408;7;Minuman;Caffe Latte;30000
+409;7;Minuman;Moccacino;31000
+410;7;Minuman;Red Velvet;24000
+411;7;Minuman;Taro;26000
+412;7;Minuman;Chocolate;26000
+413;7;Minuman;Matcha;27000
+414;7;Minuman;Kiwi Mojito;27000
+415;7;Minuman;Lemon Squash;27000
+416;7;Minuman;Apple Squash;27000
+417;7;Minuman;Manggo Squash;27000
+418;7;Minuman;V60;26000
+419;7;Minuman;Japanese Ice;27000
+420;7;Minuman;Vitenam Drip;22000
+421;7;Minuman;Basic Tea;10000
+422;7;Minuman;Lemon Tea;20000
+423;7;Minuman;Peach Tea;24000
+424;7;Minuman;Lychee Tea;24000
+425;7;Minuman;Virgin Marry;32000
+426;7;Minuman;Purple Rain;28000
+427;7;Minuman;Twilight;28000
+428;7;Minuman;Fun Peach;28000
+429;7;Minuman;Mocha Float;25000
+430;7;Minuman;Lychee Float;25000
+431;7;Minuman;Mango Float;27000
+432;8;Makanan;Ayam Sambal Matah;28000
+433;8;Makanan;Chicken Teriyaki;28000
+434;8;Makanan;Chicken Katsu;28000
+435;8;Makanan;Beef Teriyaki;31000
+436;8;Makanan;Nasi Telur Vertiga;20000
+437;8;Makanan;Ayam Woku Kemangi;28000
+438;8;Makanan;Ayam Cabe Garam;28000
+439;8;Makanan;Ayam Asam Manis;28000
+440;8;Makanan;Nasi Goreng Vertiga;28000
+441;8;Makanan;Soto Lamongan;30000
+442;8;Makanan;Spaghetti Bolognese;28000
+443;8;Makanan;Spaghetti Aglio Olio;28000
+444;8;Makanan;Spaghetti Carbonara;28000
+445;8;Makanan;Cookies;8000
+446;8;Makanan;Bola Ubi;20000
+447;8;Makanan;Banana Choco Roll;20000
+448;8;Makanan;Crispy Banana;20000
+449;8;Makanan;Churros Caramel;20000
+450;8;Makanan;Cireng;20000
+451;8;Makanan;French Fries ;20000
+452;8;Makanan;Singkong Goreng;20000
+453;8;Makanan;Nugget Goreng;20000
+454;8;Makanan;Tahu Cabe Garam;20000
+455;8;Makanan;Potato Pom Pom;20000
+456;8;Makanan;Risol Mayo Smoked Beef;24000
+457;8;Makanan;Mix Platter;31000
+458;8;Minuman;Espresso;20000
+459;8;Minuman;Americano;20000
+460;8;Minuman;Affogato;22000
+461;8;Minuman;Cappucino;30000
+462;8;Minuman;Caffe Latte;30000
+463;8;Minuman;Piccolo ;25000
+464;8;Minuman;Split Shot ;33000
+465;8;Minuman;Vanilla Latte;28000
+466;8;Minuman;Hazelnut Latte;28000
+467;8;Minuman;Mocha Latte;30000
+468;8;Minuman;Caramel Macchiato;30000
+469;8;Minuman;Butter Scotch;30000
+470;8;Minuman;Kopiver;20000
+471;8;Minuman;Kopiver 2.0;22000
+472;8;Minuman;Kopipan;24000
+473;8;Minuman;Sweet Corn;24000
+474;8;Minuman;Irish Crème;24000
+475;8;Minuman;Queen Brulee;24000
+476;8;Minuman;Vietnam Drip;18000
+477;8;Minuman;Funky Orange;22000
+478;8;Minuman;Fresh Fruity Mint;22000
+479;8;Minuman;Bloody Diamond;24000
+480;8;Minuman;Coco Peach;24000
+481;8;Minuman;Freshpresso Mint;28000
+482;8;Minuman;Taro;20000
+483;8;Minuman;Red Velvet;20000
+484;8;Minuman;Dark Chocolate;20000
+485;8;Minuman;Verum Regal;22000
+486;8;Minuman;Matcha;22000
+487;8;Minuman;Black Charcoal;22000
+488;8;Minuman;Milo Lava;22000
+489;8;Minuman;Choco Hazelnut;30000
+490;8;Minuman;Strawberry Creamy Latte;33000
+491;8;Minuman;Cookies n Cream;33000
+492;8;Minuman;Lotus Creamy Latte;33000
+493;8;Minuman;Klepon Latte;33000
+494;8;Minuman;Sweet Tea;8000
+495;8;Minuman;Lemon Tea;20000
+496;8;Minuman;Lychee Tea;20000
+497;8;Minuman;Mango Tea;20000
+498;8;Minuman;Peach Tea;20000
+499;8;Minuman;Air Mineral;7000
+500;9;Makanan;Karage Cabe Garam;26000
+501;9;Makanan;Karage Sambal Matah;23000
+502;9;Makanan;Karage Salted Egg;32000
+503;9;Makanan;Mie Gomu;19000
+504;9;Makanan;Nasi Ayam Teriyaki;23000
+505;9;Makanan;Nasi Ayam Bawang;23000
+506;9;Makanan;Nasi Tongkol Suwir;23000
+507;9;Makanan;Bekal SiKecil;23000
+508;9;Makanan;Choco Dino;20000
+509;9;Makanan;Udang Keju;26000
+510;9;Makanan;Risol Homemade;23000
+511;9;Makanan;Mix Platter;37000
+512;9;Makanan;Kentang Goreng Gurih;22000
+513;9;Makanan;Kentang Goreng Gurih Large;44000
+514;9;Makanan;Potato Wedges;28000
+515;9;Makanan;Harus Tahu;22000
+516;9;Makanan;Sempol Homemade;22000
+517;9;Makanan;Roti Panggang;22000
+518;9;Makanan;Cheesecake Slice;27000
+519;9;Makanan;Cheese Cuit;25000
+520;9;Makanan;Miniburnt Cheesecake;40000
+521;9;Makanan;Miniburnt Oreo Cheesecake;43000
+522;9;Makanan;Banana Bread;17000
+523;9;Makanan;Cinnamon Roll;17000
+524;9;Makanan;Cinnamon Roll Tiramisu;20000
+525;9;Makanan;Roti Tutul;19000
+526;9;Makanan;Brownies Espresso;17000
+527;9;Makanan;Choco Nut Cookie;11000
+528;9;Makanan;Donut;11000
+529;9;Minuman;Kopi Susu Sekut;20000
+530;9;Minuman;Sekut Cloud Foam;23000
+531;9;Minuman;Sekut Pake Banget;23000
+532;9;Minuman;Sekut Legit;22000
+533;9;Minuman;Sekut Pake Jelly;24000
+534;9;Minuman;Sekut Pake Milo;24000
+535;9;Minuman;Kopi Susu Alpukat;23000
+536;9;Minuman;Kopi Moka;23000
+537;9;Minuman;Espresso;20000
+538;9;Minuman;Americano;20000
+539;9;Minuman;Cappucino/Latte;23000
+540;9;Minuman;Peachpresso;23000
+541;9;Minuman;Single Origin Filter;22000
+542;9;Minuman;Es Kopi Jepang;22000
+543;9;Minuman;Teh Keluarga;20000
+544;9;Minuman;Sumpah Seger;21000
+545;9;Minuman;Choco Banana;23000
+546;9;Minuman;Lemon Yeahhh;20000
+547;9;Minuman;Dark Coco;20000
+548;9;Minuman;Taro Sayang;20000
+549;9;Minuman;Red Velvet;20000
+550;9;Minuman;Black Latte;21000
+551;9;Minuman;Matcha Sayang;21000
+552;9;Minuman;Black Latte Legit;22000
+553;10;Makanan;Nasi Kulit Ayam Original;25000
+554;10;Makanan;Nasi Kulit Ayam Yakiniku;28000
+555;10;Makanan;Nasi Kulit Sambal Sereh;28000
+556;10;Makanan;Nasi Kulit Curry Saus;28000
+557;10;Makanan;Ramen Katsu Original;30000
+558;10;Makanan;Ramen Katsu Spicy;33000
+559;10;Makanan;Ramen Katsu Curry;33000
+560;10;Makanan;Ramen Beef Original;33000
+561;10;Makanan;Ramen Beef Spicy;35000
+562;10;Makanan;Ramen Beef Curry;35000
+563;10;Makanan;Ramyun Katsu Original;33000
+564;10;Makanan;Ramyun Katsu Spicy;33000
+565;10;Makanan;Ramyun Beef Original;35000
+566;10;Makanan;Ramyun Beef Spicy;35000
+567;10;Makanan;Chicken Katsu Curry;28000
+568;10;Makanan;Chicken Katsu Yakiniku;28000
+569;10;Makanan;Ayam Bakar Taliwang;35000
+570;10;Makanan;Ayam Sambal Sereh;30000
+571;10;Makanan;Ayam Mentega;35000
+572;10;Makanan;Rawon Daging;35000
+573;10;Makanan;Soto Daging Madura;35000
+574;10;Makanan;Nasi Goreng Daging Rempah;33000
+575;10;Makanan;Nasi Goreng Banjar;28000
+576;10;Makanan;Bakmie Goreng Bumi;33000
+577;10;Makanan;Nasi Telor Ponti;20000
+578;10;Makanan;Fish and Chips;38000
+579;10;Makanan;Chicken Steak;60000
+580;10;Makanan;Beef Meltique;95000
+581;10;Makanan;Potato Nugget;23000
+582;10;Makanan;Fun Sampler;38000
+583;10;Makanan;Mix Fries;35000
+584;10;Makanan;Jamur Enoki;23000
+585;10;Makanan;Tahu Cabe Garam;25000
+586;10;Makanan;French Fries;20000
+587;10;Makanan;Cireng;30000
+588;10;Makanan;Kebab Daging;35000
+589;10;Makanan;Chicken Wings Original;30000
+590;10;Makanan;Chicken Wings;35000
+591;10;Makanan;Strawberry Salad Sesame with Bread;33000
+592;10;Makanan;American Pancake;35000
+593;10;Makanan;Toasted Bread;20000
+594;10;Makanan;Croffle;25000
+595;10;Makanan;Mile Crepes;25000
+596;10;Makanan;Basque Burnt Cheese Cake;18000
+597;10;Makanan;Cheese Cake;28000
+598;10;Minuman;Espresso ;10000
+599;10;Minuman;Americano;13000
+600;10;Minuman;Café Latte;15000
+601;10;Minuman;Magic Latte;15000
+602;10;Minuman;Caramel Latte;18000
+603;10;Minuman;Hazelnut Latte;18000
+604;10;Minuman;Banana Latte;18000
+605;10;Minuman;Pandan Latte;18000
+606;10;Minuman;Vanilla Latte;18000
+607;10;Minuman;Butterscotch Sea Salt;20000
+608;10;Minuman;Kopi Susu Raka;10000
+609;10;Minuman;Amerigo;15000
+610;10;Minuman;Amerly;15000
+611;10;Minuman;Filter A;10000
+612;10;Minuman;Filter B;15000
+613;10;Minuman;Kopi Hitam;10000
+614;10;Minuman;Kopi Susu Tubruk;15000
+615;10;Minuman;Teh Hangat;10000
+616;10;Minuman;Air Mineral;7000
+617;10;Minuman;Ice Tea;10000
+618;10;Minuman;Lecy tea;15000
+619;10;Minuman;Lemon Tea;15000
+620;10;Minuman;Peach Tea;15000
+621;10;Minuman;Matcha;15000
+622;10;Minuman;Chocolate;15000
+623;10;Minuman;Taro;15000
+624;10;Minuman;Red Velvet;15000
+625;10;Minuman;Kembali;20000
+626;10;Minuman;Lagi-Lagi;20000
+627;10;Minuman;Pilihanku;20000
+628;10;Minuman;Niscaya;20000
+629;10;Minuman;Rehat;20000
+630;10;Minuman;Singgah Sana;20000
+631;10;Minuman;Kopi Susu Bimi;33000
+632;10;Minuman;Butterscotch;33000
+633;10;Minuman;Salted Caramel;33000
+634;10;Minuman;Black Coffee Mango;33000
+635;10;Minuman;Black Coffee Strawberry;33000
+636;11;Makanan;Nasi Teri Medan;30000
+637;11;Makanan;Ayam Sambal Matah;28000
+638;11;Makanan;Ayam Serundeng;28000
+639;11;Makanan;Nasi Sambal Cumi;35000
+640;11;Makanan;Chicken Katsu;28000
+641;11;Makanan;Fire Chicken Rice Bowl;28000
+642;11;Makanan;Indomie Goreng;15000
+643;11;Makanan;Dimsum;28000
+644;11;Makanan;Patty Burger;25000
+645;11;Makanan;Pastel;23000
+646;11;Makanan;Chicken Bite;22000
+647;11;Makanan;French Fries;22000
+648;11;Makanan;Singkong Goreng;20000
+649;11;Makanan;Cireng;20000
+650;11;Makanan;Mix Platter;28000
+651;11;Makanan;Risol;23000
+652;11;Makanan;Banana Lava;23000
+653;11;Minuman;Kopi Cucu;21000
+654;11;Minuman;Kopi Tuman;23000
+655;11;Minuman;Kopi Ndan;22000
+656;11;Minuman;Milochino;22000
+657;11;Minuman;Lychee Splash Delight;22000
+658;11;Minuman;Good Mood;22000
+659;11;Minuman;Moe Sapphire;22000
+660;11;Minuman;Matcha;23000
+661;11;Minuman;Red Velvet;22000
+662;11;Minuman;Taro;22000
+663;11;Minuman;Chocolate;22000
+664;11;Minuman;Tuman Chocoreo;22000
+665;11;Minuman;Merry;23000
+666;11;Minuman;Cheesecake Latte;22000
+667;11;Minuman;Tiramisu Latte;22000
+668;11;Minuman;Butterscotch Latte;22000
+669;11;Minuman;Fusion Tea;20000
+670;11;Minuman;Lychee Tea;18000
+671;11;Minuman;Espresso;18000
+672;11;Minuman;Affogato;20000
+673;11;Minuman;Americano;22000
+674;11;Minuman;Cappucino;22000
+675;11;Minuman;Salted Caramel;22000
+676;11;Minuman;Caffe Latte;23000
+677;11;Minuman;Dolce Latte;22000
+678;11;Minuman;Vanilla Latte;22000
+679;11;Minuman;Caramel Latte;22000
+680;11;Minuman;Hazelnut Latte;22000
+681;11;Minuman;Air Mineral;8000
+682;12;Makanan;Ayam Ungkep Sambal Matah;39000
+683;12;Makanan;Ayam Ungkep Sambel Ijo;35000
+684;12;Makanan;Ayam Goreng Bumbu Woku;40000
+685;12;Makanan;Ayam Suwir Gulai Kemangi;35000
+686;12;Makanan;Patin Cabe Garam;28000
+687;12;Makanan;Patin Goreng Sambal Terasi;31000
+688;12;Makanan;Ayam Penyet Sambel Pecak;37000
+689;12;Makanan;Nila Goreng Sambel Pecak;39000
+690;12;Makanan;Telur Gulai Sambel Merah;33000
+691;12;Makanan;Dendeng Batokok;42000
+692;12;Makanan;Ayam Pop;42000
+693;12;Makanan;Nasi Goreng Kampung 1960;29000
+694;12;Makanan;Nasi Goreng Rempah Daging Sapi;44000
+695;12;Makanan;Mie Goreng 1960;38000
+696;12;Makanan;Nasi Goreng Ikan Teri;31000
+697;12;Makanan;Nasi Goreng Ayam Kari;33000
+698;12;Makanan;Spaghetti Carbonara;36000
+699;12;Makanan;Spaghetti Aglio E Olio;35000
+700;12;Makanan;Spaghetti Beef Bolognese;37000
+701;12;Makanan;Nusantara Pasta Saus Laksa (Kari);33000
+702;12;Makanan;Nusantara Pasta Mie Tektek;35000
+703;12;Makanan;Creamy Brown Tomato Pasta with Chicken Katsu;35000
+704;12;Makanan;Ayam Teriyaki;35000
+705;12;Makanan;Ayam Cabe Garam;31000
+706;12;Makanan;Chicken Blackpepper;35000
+707;12;Makanan;Soto Betawi;33000
+708;12;Makanan;Chicken Salted Egg;36000
+709;12;Makanan;Ayam Saos Bangkok;35000
+710;12;Makanan;Chicken Mentai;33000
+711;12;Makanan;Mie Nyemek;33000
+712;12;Makanan;Tahu Gejrot;22000
+713;12;Makanan;Potato Wedges;28000
+714;12;Makanan;French Fries;25000
+715;12;Makanan;Share Big Bucket;64000
+716;12;Makanan;Pisang Goreng;28000
+717;12;Makanan;Banana Bread;11000
+718;12;Makanan;1960 Traditional Bucket;44000
+719;12;Makanan;Beef Bolognese Crispy Nachos;30000
+720;12;Makanan;Tempe Mendoan;22000
+721;12;Makanan;Crispy Chicken Monton;28000
+722;12;Makanan;Tahu Cabe Garam;28000
+723;12;Makanan;Tahu Crispy Saus Keju;28000
+724;12;Minuman;Split Shot ;33000
+725;12;Minuman;Espresso Single;22000
+726;12;Minuman;Espresso Double;28000
+727;12;Minuman;Americano;28000
+728;12;Minuman;Long Black;28000
+729;12;Minuman;On The Rock;28000
+730;12;Minuman;Café Latte;28000
+731;12;Minuman;Piccolo Latte;28000
+732;12;Minuman;Cappucino;28000
+733;12;Minuman;Flat White;28000
+734;12;Minuman;Magic;28000
+735;12;Minuman;Vanilla;31000
+736;12;Minuman;Caramel Latte;31000
+737;12;Minuman;Hazelnut Latte;31000
+738;12;Minuman;Caramel Macchiato;33000
+739;12;Minuman;Moccacino;33000
+740;12;Minuman;1960 Latte;28000
+741;12;Minuman;Spanish Latte;28000
+742;12;Minuman;Vintage;28000
+743;12;Minuman;Kopi Susu Klasik;28000
+744;12;Minuman;Kopi Susu Rumah Sangrai;28000
+745;12;Minuman;Flower Fresh;31000
+746;12;Minuman;Fruity Candy;31000
+747;12;Minuman;Night Sexy;31000
+748;12;Minuman;Black Boost;31000
+749;12;Minuman;Cut Mutia;31000
+750;12;Minuman;Dewi Sartika;31000
+751;12;Minuman;Puncak Jaya Wijaya;31000
+752;12;Minuman;Lychee Tea;28000
+753;12;Minuman;Lime Tea;28000
+754;12;Minuman;Chocolate;28000
+755;12;Minuman;Matcha;28000
+756;12;Minuman;Red Velvet;28000
+757;13;Makanan;Beef Mentai Sandwich;39000
+758;13;Makanan;Mushroom Truffle Sandwich;42000
+759;13;Makanan;Cheesy Tuna Sandwich;39000
+760;13;Makanan;Chicken Teriyaki Sandwich;39000
+761;13;Makanan;Smoked Beef & Cheese Sandwich;39000
+762;13;Makanan;Smoke Beef & Cheese Croissant;36000
+763;13;Makanan;Triple Cheese Danish;36000
+764;13;Makanan;Almond Croissant;36000
+765;13;Makanan;Banana Chocolate Cake;27000
+766;13;Makanan;Butter Croissant;24000
+767;13;Makanan;Pain au Chocolat;29000
+768;13;Makanan;Kouign-Amann;29000
+769;13;Makanan;Cakalang Quiche;36000
+770;13;Makanan;Pain au Tiramisu;36000
+771;13;Makanan;Matcha Strawberry Cake;27000
+772;13;Makanan;Blueberry Cheese Muffin;36000
+773;13;Makanan;Choco Melt Muffin;36000
+774;13;Makanan;Cempedak Cake;27000
+775;13;Minuman;Iced Americano;21000
+776;13;Minuman;Hot Americano;21000
+777;13;Minuman;Iced Manuka Americano;29000
+778;13;Minuman;Hot Manuka Americano;29000
+779;13;Minuman;Triple Peach Americano;29000
+780;13;Minuman;Berry Manuka Americano;29000
+781;13;Minuman;Iced Bumi Latte;24000
+782;13;Minuman;Iced Cappucino;29000
+783;13;Minuman;Hot Cappucino;29000
+784;13;Minuman;Double Iced Shaken Latte;33000
+785;13;Minuman;Iced Café Latte;29000
+786;13;Minuman;Hot Café Latte;29000
+787;13;Minuman;Nutty Oat Latte;39000
+788;13;Minuman;Iced Buttercream Tiramisu Latte;33000
+789;13;Minuman;Hot Espresso;19000
+790;13;Minuman;Iced Caramel Praline Macchiato;33000
+791;13;Minuman;Hot Caramel Praline Macchiato;33000
+792;13;Minuman;Iced Aceh Gayo;21000
+793;13;Minuman;Hot Aceh Gayo;21000
+794;13;Minuman;Iced Toraja Sapan;21000
+795;13;Minuman;Hot Toraja Sapan;21000
+796;13;Minuman;Iced Bali Kintamani;21000
+797;13;Minuman;Hot Bali Kintamani;21000
+798;13;Minuman;Iced Butterscotch Milk Crumble;29000
+799;13;Minuman;Iced Vanilla O' Crumbs;29000
+800;13;Minuman;Iced Choco Caramel Cloud;29000
+801;13;Minuman;Iced Kopi Dari Tani;24000
+802;13;Minuman;Iced Butterscotch Sea Salt Latte;31000
+803;13;Minuman;Iced Buttercream Latte;29000
+804;13;Minuman;Iced Aren Latte;29000
+805;13;Minuman;Hot Aren Latte;29000
+806;13;Minuman;Iced Pandan Latte;29000
+807;13;Minuman;Hot Pandan Latte;29000
+808;13;Minuman;Caramel Praline Coffee Ice Blended;33000
+809;13;Minuman;Matcha Ice Blended;33000
+810;13;Minuman;Strawberry Ice Blended;33000
+811;13;Minuman;Chocolate Ice Blended;33000
+812;13;Minuman;Iced Dark Chocolate;33000
+813;13;Minuman;Hot Dark Chocolate;33000
+814;13;Minuman;Iced Almond Choco;39000
+815;13;Minuman;Hot Almond Choco;39000
+816;13;Minuman;Iced Matcha Green Tea;33000
+817;13;Minuman;Hot Matcha Green Tea;33000
+818;13;Minuman;Iced Classic Milo;24000
+819;13;Minuman;Hot Classic Milo;24000
+820;13;Minuman;Iced English Breakfast;29000
+821;13;Minuman;Hot English Breakfast;29000
+822;13;Minuman;Iced Green Tea Jasmine;29000
+823;13;Minuman;Hot Green Tea Jasmine;29000
+824;13;Minuman;Iced Pure Chamomile;29000
+825;13;Minuman;Hot Pure Chamomile;29000
+826;13;Minuman;Iced Crème Caramel Tea;29000
+827;13;Minuman;Hot Crème Caramel Tea;29000
+828;13;Minuman;Iced Green Tea Mint;29000
+829;13;Minuman;Hot Green Tea Mint;29000
+830;14;Makanan;Indomie Rebus;10000
+831;14;Makanan;Indomie Goreng;10000
+832;14;Makanan;Indomie Goreng Telur;13000
+833;14;Makanan;Indomie Rebus Telur;13000
+834;14;Makanan;Indomie Rebus Special;17000
+835;14;Makanan;Indomie Goreng Special;17000
+836;14;Makanan;Tentang Platter;37000
+837;14;Makanan;Fried Wings;27000
+838;14;Makanan;Double Crunch Duet;27000
+839;14;Makanan;Crispy Squid Squad;27000
+840;14;Makanan;Onion Ring;27000
+841;14;Makanan;French Fries Original;19000
+842;14;Makanan;French Fries Thai Sauce;22000
+843;14;Makanan;French Fries Mentai Sauce;22000
+844;14;Makanan;Chicken Korean BBQ;22000
+845;14;Makanan;Hot Tuna Mentai;24000
+846;14;Makanan;Beef Steak Toast;27000
+847;14;Makanan;Egg Tentang Toast;20000
+848;14;Makanan;Eggsis Toast;20000
+849;14;Makanan;Thai Toast Chicken;26000
+850;14;Makanan;Chicken Mexican;26000
+851;14;Makanan;Beef Mexican;28000
+852;14;Makanan;Fried Banana Roll;20000
+853;14;Makanan;Crispy Banana;19000
+854;14;Makanan;Pisang Bakar Polosan;15000
+855;14;Makanan;Pisang Bakar Coklat;15000
+856;14;Makanan;Pisang Bakar Keju;17000
+857;14;Makanan;Pisang Bakar Coklat Keju;19000
+858;14;Makanan;Roti Bakar Coklat;17000
+859;14;Makanan;Roti Bakar Coklat Keju;20000
+860;14;Makanan;Roti Bakar Keju;19000
+861;14;Makanan;Fruit Toast;20000
+862;14;Makanan;Brownies Ice Cream;25000
+863;14;Makanan;Creamy Ragout Risoles;22000
+864;14;Makanan;Ayam Jamur;22000
+865;14;Makanan;Ayam Goreng Laos;29000
+866;14;Makanan;Nasi Goreng Special;27000
+867;14;Makanan;Nasi Goreng Special;25000
+868;14;Makanan;Crispy Chicken Matah;26000
+869;14;Makanan;Chicken Teriyaki;24000
+870;14;Makanan;Beef Blackpepper;29000
+871;14;Makanan;Rice Bowl Tongkol Pedas;22000
+872;14;Minuman;Espresso;16000
+873;14;Minuman;Double Espresso;19000
+874;14;Minuman;Affogato;22000
+875;14;Minuman;Hot Americano;18000
+876;14;Minuman;Iced Americano;19000
+877;14;Minuman;Kopi Tubruk;16000
+878;14;Minuman;Hot Kopi Susu Aren;22000
+879;14;Minuman;Iced Kopi Susu Aren;23000
+880;14;Minuman;Hot Cappucino;20000
+881;14;Minuman;Iced Cappucino;21000
+882;14;Minuman;Hot Café Latte;19000
+883;14;Minuman;Iced Café Latte;20000
+884;14;Minuman;Hot Moccachino;23000
+885;14;Minuman;Iced Moccachino;24000
+886;14;Minuman;Hot Caramel Latte;23000
+887;14;Minuman;Iced Caramel Latte;24000
+888;14;Minuman;Hot Hazelnut Latte;23000
+889;14;Minuman;Iced Hazelnut Latte;24000
+890;14;Minuman;Hot Vanilla Latte;23000
+891;14;Minuman;Iced Vanilla Latte;24000
+892;14;Minuman;Hot Tiramisu Latte;23000
+893;14;Minuman;Iced Tiramisu Latte;24000
+894;14;Minuman;Lemontea;18000
+895;14;Minuman;Lychee Ice Tea;22000
+896;14;Minuman;Peachtea Blossom;22000
+897;14;Minuman;Red Roselle Ice Tea;22000
+898;14;Minuman;Butterpea Lemonade;22000
+899;14;Minuman;Ice Tea;19000
+900;14;Minuman;Single Cup;19000
+901;14;Minuman;Sharing Tea (Teapot);25000
+902;14;Minuman;Morelands;26000
+903;14;Minuman;Graces Secret;26000
+904;14;Minuman;Santana Island;26000
+905;14;Minuman;Lime Mojito;24000
+906;14;Minuman;Lemon Mojito;24000
+907;14;Minuman;Strawberry Mojito;25000
+908;14;Minuman;Violeta;26000
+909;14;Minuman;Cucumber Lime;24000
+910;14;Minuman;Hot Matcha;23000
+911;14;Minuman;Iced Matcha;24000
+912;14;Minuman;Hot Red Velvet;19000
+913;14;Minuman;Iced Red Velvet;20000
+914;14;Minuman;Hot Chocolate;20000
+915;14;Minuman;Iced Chocolate;21000
+916;14;Minuman;Brown Sugar Bobamilk;22000
+917;14;Minuman;Brown Sugar Bobamilk Tea;22000
+918;14;Minuman;Salted Caramel Boba;26000
+919;14;Minuman;Orange Squash;16000
+920;14;Minuman;Melon Squash;16000
+921;14;Minuman;Cocopandan Squash;16000
+922;14;Minuman;Lychee Squash;16000
+923;14;Minuman;Strawberry Squash;16000
+924;15;Makanan;Nasi Tempong Ayam;30000
+925;15;Makanan;Nasi Tempong Empal Daging;35000
+926;15;Makanan;Nasi Tempong Bandeng Presto;35000
+927;15;Makanan;Nasi Tempong Paru Goreng;33000
+928;15;Makanan;Ayam Gogo;35000
+929;15;Makanan;Ayam Sambal Ijo;33000
+930;15;Makanan;Ayam Bakar;33000
+931;15;Makanan;Ayam Kari;33000
+932;15;Makanan;Nasi Goreng Ayam;25000
+933;15;Makanan;Nasi Goreng Sapi;30000
+934;15;Makanan;Chicken Karage;28000
+935;15;Makanan;Kulit Ayam;28000
+936;15;Makanan;Cumi Tepung;33000
+937;15;Makanan;Paru;33000
+938;15;Makanan;Beef Blackpepper;33000
+939;15;Makanan;Corn Ribs;20000
+940;15;Makanan;Cireng;20000
+941;15;Makanan;Otak-Otak;20000
+942;15;Makanan;Sweet Potato;20000
+943;15;Makanan;French Fries;20000
+944;15;Makanan;Pisang Goreng Wijen;25000
+945;15;Makanan;Chicken Wings;25000
+946;15;Makanan;Cheeze Roll;25000
+947;15;Makanan;Sweet Pancake;25000
+948;15;Makanan;Dimsum;30000
+949;15;Makanan;Tempe Goreng;20000
+950;15;Makanan;Tahu Gejrot;20000
+951;15;Makanan;Tahu Isi;23000
+952;15;Makanan;Bakwan Jagung;25000
+953;15;Makanan;Risoles;25000
+954;15;Makanan;Indonesia Platter;40000
+955;15;Makanan;Mix Platter;55000
+956;15;Makanan;Beef Patty Burger;28000
+957;15;Minuman;Espresso;20000
+958;15;Minuman;Americano;25000
+959;15;Minuman;Long Black;25000
+960;15;Minuman;Spanish Latte;25000
+961;15;Minuman;Piccolo;28000
+962;15;Minuman;Caffe Latte;28000
+963;15;Minuman;Cappucino;28000
+964;15;Minuman;Split Shot ;40000
+965;15;Minuman;Caramel Macchiato;33000
+966;15;Minuman;Vanilla Latte;30000
+967;15;Minuman;Caramel Latte;30000
+968;15;Minuman;Taro;23000
+969;15;Minuman;Matcha;23000
+970;15;Minuman;Chocolate;23000
+971;15;Minuman;Red Velvet;23000
+972;15;Minuman;Black Charcoal;23000
+973;15;Minuman;Milk Bery;23000
+974;15;Minuman;Basic Tea;10000
+975;15;Minuman;Lemon Tea;20000
+976;15;Minuman;Lychee Tea;20000
+977;15;Minuman;Ruby Lime;28000
+978;15;Minuman;Pina Bangga;28000
+979;15;Minuman;Berry Bliss;28000
+980;15;Minuman;Nitro Flowery;25000
+981;15;Minuman;Selly;25000
+982;15;Minuman;Lullaby;28000
+983;15;Minuman;Harren;18000
+984;15;Minuman;Hamell;20000
+985;15;Minuman;Karamella;25000
+986;15;Minuman;Speacial Oatmilk;35000
+987;16;Makanan;Ayam Goreng Lengkuas;37000
+988;16;Makanan;Ayam Bakar Taliwang;37000
+989;16;Makanan;Beef Fried Rice;37000
+990;16;Makanan;Indonesian Fried Rice;33000
+991;16;Makanan;Daging Cabe Ijo;40000
+992;16;Makanan;Chicken Salted Egg;33000
+993;16;Makanan;Chicken Blackpepper;33000
+994;16;Makanan;Kare Raisu;33000
+995;16;Makanan;Mentaiko Kokku;33000
+996;16;Makanan;Niwatori Teriyaki;33000
+997;16;Makanan;Spaghetti Aglio Olio;40000
+998;16;Makanan;Spaghetti Chicken Mushroom;45000
+999;16;Makanan;Spaghetti Creamy Carbonara;40000
+1000;16;Makanan;Potato Wedges;25000
+1001;16;Makanan;French Fries;25000
+1002;16;Makanan;Pisang Goreng Nusantara;25000
+1003;16;Makanan;Caramelized Pancake;25000
+1004;16;Makanan;Club Sandwich;40000
+1005;16;Makanan;Chicken Wings;40000
+1006;16;Makanan;New York Cheesecake;32000
+1007;16;Makanan;Sponge Cake;25000
+1008;16;Makanan;Napoleon Cake;32000
+1009;16;Makanan;Donuts;12000
+1010;16;Makanan;Choco Brownies;12000
+1011;16;Minuman;Kool Odds;35000
+1012;16;Minuman;Himawari;35000
+1013;16;Minuman;Mix Feeling;35000
+1014;16;Minuman;Momiji;30000
+1015;16;Minuman;Sweet Orenji Mango;30000
+1016;16;Minuman;Aromatic Pineapple Tea;37000
+1017;16;Minuman;Strawberry Tea with Cream;37000
+1018;16;Minuman;Long Black;28000
+1019;16;Minuman;Americano;28000
+1020;16;Minuman;Café Latte;33000
+1021;16;Minuman;Classic Creamy Latte;35000
+1022;16;Minuman;Sweet Cookies Latte;35000
+1023;16;Minuman;Tiramisu Latte;38000
+1024;16;Minuman;Caramel Macchiato;38000
+1025;16;Minuman;Flavored Latte;35000
+1026;16;Minuman;Moccacino;35000
+1027;16;Minuman;Cappucino;33000
+1028;16;Minuman;Espresso;24000
+1029;16;Minuman;Piccolo;33000
+1030;16;Minuman;Flat White;33000
+1031;16;Minuman;Split Shot ;40000
+1032;16;Minuman;Filter Coffee;30000
+1033;16;Minuman;Rose Chil;32000
+1034;16;Minuman;Vanilla Cookies & Cream;32000
+1035;16;Minuman;Matcha Blossom Cream;38000
+1036;16;Minuman;Chocolate;25000
+1037;16;Minuman;Matcha Latte;25000
+1038;16;Minuman;Taro Latte;25000
+1039;16;Minuman;Red Velvet;25000
+1040;16;Minuman;Lychee Tea;25000
+1041;16;Minuman;Lemon Tea;25000
+1042;16;Minuman;Peach Tea;25000
+1043;17;Makanan;Beef Rice Bowl;32000
+1044;17;Makanan;Ayam Goreng Serundeng;30000
+1045;17;Makanan;Ayam Goreng Cabe Ijo;30000
+1046;17;Makanan;Chicken Katsu;28000
+1047;17;Makanan;Chicken Rice Bowl;25000
+1048;17;Makanan;Rice Bowl Kulit Cabe Garam;25000
+1049;17;Makanan;Nasi Goreng Samudera;25000
+1050;17;Makanan;Shimei Dimsum Original;27000
+1051;17;Makanan;Bitter Ballen;23000
+1052;17;Makanan;Churros;20000
+1053;17;Makanan;Mix Platter;45000
+1054;17;Makanan;Cayo Costa Corndog;25000
+1055;17;Makanan;Risol Mayo;23000
+1056;17;Makanan;Piscok Keju / Original;20000
+1057;17;Makanan;Bondy French Fries;20000
+1058;17;Makanan;Ralay Tahu Baso;18000
+1059;17;Makanan;Madasari Cireng;18000
+1060;17;Minuman;Antartica;25000
+1061;17;Minuman;Artic;23000
+1062;17;Minuman;Atlantic;23000
+1063;17;Minuman;Pacific;20000
+1064;17;Minuman;Hindia;20000
+1065;17;Minuman;Crème Brulee;25000
+1066;17;Minuman;Cheese Cake;25000
+1067;17;Minuman;Pop Corn;25000
+1068;17;Minuman;Esmeralda;28000
+1069;17;Minuman;Imagine;25000
+1070;17;Minuman;Cordelia;25000
+1071;17;Minuman;Butterfly;25000
+1072;17;Minuman;Sea Of Clouds;25000
+1073;17;Minuman;Rossie;25000
+1074;17;Minuman;Split Shot ;28000
+1075;17;Minuman;Café Latte;28000
+1076;17;Minuman;Cappucino;28000
+1077;17;Minuman;Americano;23000
+1078;17;Minuman;Affogato;25000
+1079;17;Minuman;Matcha;20000
+1080;17;Minuman;Red Velvet;18000
+1081;17;Minuman;Taro;18000
+1082;17;Minuman;Chocolate;18000
+1083;17;Minuman;Lychee Tea;18000
+1084;17;Minuman;Lemon Tea;18000
+1085;17;Minuman;Air Mineral;7000
+1086;17;Minuman;Basic Tea;8000
+1087;18;Makanan;Ayam Kalasan Goreng;28000
+1088;18;Makanan;Ayam Kalasan Bakar;28000
+1089;18;Makanan;Beef Blackpepper;28000
+1090;18;Makanan;Beef Barbeque;28000
+1091;18;Makanan;Indomie Kuah;15000
+1092;18;Makanan;Indomie Goreng;15000
+1093;18;Makanan;Indomie Goreng Katsu;25000
+1094;18;Makanan;Nasi Goreng Telur;18000
+1095;18;Makanan;Nasi Goreng Katsu;28000
+1096;18;Makanan;Chicken Katsu Blackpepper;25000
+1097;18;Makanan;Chicken Katsu Barbeque;25000
+1098;18;Makanan;Chicken Katsu Mayo;25000
+1099;18;Makanan;French Fries;15000
+1100;18;Makanan;Otak-Otak;15000
+1101;18;Makanan;Cireng;18000
+1102;18;Makanan;Kerupuk Basah;18000
+1103;18;Makanan;Bitter Ballen;18000
+1104;18;Makanan;Risol Mayo;20000
+1105;18;Makanan;Risol Ayam Pedas;20000
+1106;18;Makanan;Mix Platter;25000
+1107;18;Makanan;Pisang Kripsi Coklat;18000
+1108;18;Makanan;Pisang Krispi Matcha;18000
+1109;18;Makanan;Pisang Krispi Tiramisu;18000
+1110;18;Makanan;Pisang Krispi Mix;20000
+1111;18;Makanan;Churros Coklat;18000
+1112;18;Makanan;Churros Matcha;18000
+1113;18;Makanan;Churros Tiramisu;18000
+1114;18;Makanan;Roti Bakar Coklat;12000
+1115;18;Makanan;Roti Bakar Matcha;12000
+1116;18;Makanan;Roti Bakar Tiramisu;12000
+1117;18;Minuman;Espresso;20000
+1118;18;Minuman;Americano;22000
+1119;18;Minuman;Piccolo;22000
+1120;18;Minuman;Caffe Latte;25000
+1121;18;Minuman;Moccacino;25000
+1122;18;Minuman;Cappucino;25000
+1123;18;Minuman;Kopi Susu Japut;20000
+1124;18;Minuman;Kopi Susu Pandan;20000
+1125;18;Minuman;Kopi Susu Gula Aren;18000
+1126;18;Minuman;Vanilla Latte;23000
+1127;18;Minuman;Caramel Latte;23000
+1128;18;Minuman;Hazelnut Latte;23000
+1129;18;Minuman;Lychee Tea;15000
+1130;18;Minuman;Lemon Tea;12000
+1131;18;Minuman;Ice Tea;5000
+1132;18;Minuman;Taro;20000
+1133;18;Minuman;Coklat;20000
+1134;18;Minuman;Matcha;20000
+1135;18;Minuman;Red Velvet;20000
+1136;18;Minuman;Cookies and Cream;20000
+1137;18;Minuman;Mango Milky;20000
+1138;18;Minuman;Strawberry Milky;20000
+1139;18;Minuman;Sweet Cheesecake;20000
+1140;18;Minuman;Strawberry Candy;25000
+1141;18;Minuman;Hot Taro;22000
+1142;18;Minuman;Hot Chocolate;22000
+1143;18;Minuman;Hot Matcha;22000
+1144;18;Minuman;Hot Red Velvet;22000
+1145;18;Minuman;Mango Squash;20000
+1146;18;Minuman;Strawberry Squash;20000
+1147;18;Minuman;Holly Mocktail;25000
+1148;18;Minuman;Green Tropical;25000
+1149;18;Minuman;Sweet Fantasy;25000
+1150;18;Minuman;Bloody Larry;25000
+1151;18;Minuman;Sunrise Tail;25000
+1152;19;Makanan;Mie Kuah Volte;15000
+1153;19;Makanan;Mie Goreng Volte;15000
+1154;19;Makanan;Mie Nyemek Volte;17000
+1155;19;Makanan;Chicken Teriyaki;35000
+1156;19;Makanan;Chicken Blackpepper;35000
+1157;19;Makanan;Chicken Salted Egg;35000
+1158;19;Makanan;Ayam Goreng Cabe Ijo;35000
+1159;19;Makanan;Ayam Goreng Sambal Matah;35000
+1160;19;Makanan;Telur Dadar Tahu;18000
+1161;19;Makanan;Telor Kecap;18000
+1162;19;Makanan;Slice Bulgogy;44000
+1163;19;Makanan;Slice Barbeque;44000
+1164;19;Makanan;Baby Cumi Saus Padang;37000
+1165;19;Makanan;French Fries;20000
+1166;19;Makanan;Dimsum;20000
+1167;19;Makanan;Enoki Crispy;20000
+1168;19;Makanan;Banana Roll;22000
+1169;19;Makanan;Cheesy French Toast;23000
+1170;19;Makanan;Strawberry French Toast;24000
+1171;19;Makanan;Tahu Cabe Garam;24000
+1172;19;Makanan;Gyoza;25000
+1173;19;Makanan;Hot Chicken Wings;28000
+1174;19;Makanan;Mix Platter;38000
+1175;19;Minuman;Espresso;18000
+1176;19;Minuman;Americano;20000
+1177;19;Minuman;Long Black;20000
+1178;19;Minuman;Caramel Macchiato;28000
+1179;19;Minuman;Flat White;30000
+1180;19;Minuman;Caffe Latte;30000
+1181;19;Minuman;Cappucino;30000
+1182;19;Minuman;Moccacino;30000
+1183;19;Minuman;Volt (Basic Kopsu);20000
+1184;19;Minuman;Arenika;22000
+1185;19;Minuman;Bancoff;22000
+1186;19;Minuman;Hana;22000
+1187;19;Minuman;Hazelin;23000
+1188;19;Minuman;Tirami;23000
+1189;19;Minuman;Fani;23000
+1190;19;Minuman;Caramello;24000
+1191;19;Minuman;Cheessa;25000
+1192;19;Minuman;Jordan;25000
+1193;19;Minuman;Scotts;25000
+1194;19;Minuman;Chocolate;22000
+1195;19;Minuman;Taro;22000
+1196;19;Minuman;Matcha;22000
+1197;19;Minuman;Red Velvet;22000
+1198;19;Minuman;Oreo and Cream;22000
+1199;19;Minuman;Choco Banana;24000
+1200;19;Minuman;Sto Matcha;24000
+1201;19;Minuman;Voltea (Basic Tea);16000
+1202;19;Minuman;Lychee Tea;20000
+1203;19;Minuman;Lemon Tea;20000
+1204;19;Minuman;Apple Tea;20000
+1205;19;Minuman;Teresa;23000
+1206;19;Minuman;Natasha;23000
+1207;19;Minuman;Pepita;23000
+1208;19;Minuman;Grace;23000
+1209;19;Minuman;Atlantis;24000
+1210;20;Makanan;Nastlehu;15000
+1211;20;Makanan;Nasi Goreng;20000
+1212;20;Makanan;Mie Goreng;20000
+1213;20;Makanan;Mie Bancir;25000
+1214;20;Makanan;Ayam Cabe Garam;18000
+1215;20;Makanan;Ayam Sambal Matah;18000
+1216;20;Makanan;Ayam Kecap;20000
+1217;20;Makanan;Ayam Balado;20000
+1218;20;Makanan;Ayam Lada Hitam;23000
+1219;20;Makanan;Ayam Teriyaki;23000
+1220;20;Makanan;Udang Cabe Garam;25000
+1221;20;Makanan;udang Sambal Matah;25000
+1222;20;Makanan;Cumi Cabe Garam;30000
+1223;20;Makanan;Cumi Sambal Matah;30000
+1224;20;Makanan;Sweet Meat Balls;30000
+1225;20;Makanan;Beef Lada Hitam;33000
+1226;20;Makanan;Beef Yakiniku;33000
+1227;20;Makanan;Tahu Cabe Garam;10000
+1228;20;Minuman;Kopi Susu Taguk.Ha;18000
+1229;20;Minuman;Kopi Susu Bahari;18000
+1230;20;Minuman;Kopi Hitam Manis;15000
+1231;20;Minuman;Kopi Datu;15000
+1232;20;Minuman;Caffe Latte;18000
+1233;20;Minuman;Kopi Susu Cheese;20000
+1234;20;Minuman;Kopi Susu Jelly;20000
+1235;20;Minuman;Coffee Mocca;20000
+1236;20;Minuman;Coffee Avocado;20000
+1237;20;Minuman;Coffee Pandan;23000
+1238;20;Minuman;Coffee Caramel;23000
+1239;20;Minuman;Coffee Salted Caramel;23000
+1240;20;Minuman;Coffee Cheese Cake;23000
+1241;20;Minuman;Coffee Crème Brulee;23000
+1242;20;Minuman;Coffee Tiramisu;23000
+1243;20;Minuman;Coffee Hazelnut;23000
+1244;20;Minuman;Coffee Vanilla;23000
+1245;20;Minuman;Jasmine Tea;5000
+1246;20;Minuman;Green Tea;8000
+1247;20;Minuman;Thai Tea;8000
+1248;20;Minuman;Orange Tea;10000
+1249;20;Minuman;Lychee Tea;10000
+1250;20;Minuman;Strawberry Tea;10000
+1251;20;Minuman;Lemon Tea;10000
+1252;20;Minuman;Chocolate;15000
+1253;20;Minuman;Red Velvet;15000
+1254;20;Minuman;Matcha Latte;15000
+1255;20;Minuman;Taro;15000
+1256;20;Minuman;Oreo;15000
+1257;20;Minuman;Avocado;15000
+1258;20;Minuman;Lemonade;10000
+1259;20;Minuman;Orange Bliss;10000
+1260;20;Minuman;Hulk Punch;20000
+1261;20;Minuman;Berry Berry Blast;20000
+1262;20;Minuman;Blue Sunrise;20000
+1263;20;Minuman;Red Sunrise;20000
+1264;20;Minuman;Thai Tea Brown Sugar;13000
+1265;20;Minuman;Original Brown Sugar;15000
+1266;20;Minuman;Milt Tea;15000
+1267;20;Minuman;Salted Caramel;18000
+1268;20;Minuman;Creme Brulee Macchiato;18000
+1269;20;Minuman;Strawberry Cheese Cake;20000
+1270;21;Makanan;Wagyu Meltique Tenderloin;160000
+1271;21;Makanan;Wagyu Meltique Ribeye;155000
+1272;21;Makanan;Wagyu Meltique Sirloin;150000
+1273;21;Makanan;Kahayan Grilled Chicken;70000
+1274;21;Makanan;Combo Wagyu Meltique Ribeye;210000
+1275;21;Makanan;Combo Wagyu Meltique Sirloin;210000
+1276;21;Makanan;Old Gravy Chicken;70000
+1277;21;Makanan;Chicken O-Flakes;55000
+1278;21;Makanan;Oxtail Soup;100000
+1279;21;Makanan;Rawon Buntut;100000
+1280;21;Makanan;Beef Meltique Pastrami and Potato Wedges;65000
+1281;21;Makanan;Chicken Parmagiano;60000
+1282;21;Makanan;Bebek Ireng Mahardika;54000
+1283;21;Makanan;Ayam Goreng Pejantan;44000
+1284;21;Makanan;Aglio Olio;50000
+1285;21;Makanan;Parmagiano;55000
+1286;21;Makanan;Nasi Goreng Mahardika;50000
+1287;21;Makanan;Nasi Goreng Ikan Asin;40000
+1288;21;Makanan;Nasi Goreng Kambing;50000
+1289;21;Makanan;Nasi Goreng Seafoof;45000
+1290;21;Makanan;Mie Goreng Ayam;30000
+1291;21;Makanan;Mie Kuah Ayam;30000
+1292;21;Makanan;Mie Goreng Seafood;35000
+1293;21;Makanan;Mie Kuah Seafood;35000
+1294;21;Makanan;Bihun Goreng Ayam;30000
+1295;21;Makanan;Bihun Kuah Ayam;30000
+1296;21;Makanan;Bihun Goreng Seafood;35000
+1297;21;Makanan;Bihun Kuaf Seafood;35000
+1298;21;Makanan;Fuyung Hay;50000
+1299;21;Makanan;Ayam Saus Mentega;50000
+1300;21;Makanan;Capcay;40000
+1301;21;Makanan;Kwetiau Siram;40000
+1302;21;Makanan;Ayam Koloke;50000
+1303;21;Makanan;Kwetiau Goreng;40000
+1304;21;Makanan;Ayam Goreng Mahardika;50000
+1305;21;Makanan;Tom Yum Goong Seafood;50000
+1306;21;Makanan;Tom Yum Goong Chicken;45000
+1307;21;Makanan;Buffalo Chicken O Flakes;40000
+1308;21;Makanan;Sosis Solo;30000
+1309;21;Makanan;Bitter Ballen;30000
+1310;21;Makanan;Crispy Calamary;40000
+1311;21;Makanan;Fried Tofu Meatballs;35000
+1312;21;Makanan;Sweet Cassava Stick Roll;30000
+1313;21;Makanan;Banana Choco Roll;30000
+1314;21;Makanan;Potato Wedges;35000
+1315;21;Makanan;Garlic Bread;30000
+1316;21;Makanan;Crispy Cassava;30000
+1317;21;Makanan;French Fries;30000
+1318;21;Makanan;Mashed Potato;35000
+1319;21;Minuman;Cappucino;30000
+1320;21;Minuman;Caffe Latte;28000
+1321;21;Minuman;Piccolo;28000
+1322;21;Minuman;Flat White;30000
+1323;21;Minuman;Mocca Latte;30000
+1324;21;Minuman;Espresso;25000
+1325;21;Minuman;Americano;30000
+1326;21;Minuman;Reguler Beans;25000
+1327;21;Minuman;Special Beans;35000
+1328;21;Minuman;Afogatto;30000
+1329;21;Minuman;Cheesy Rounded;28000
+1330;21;Minuman;Originale;28000
+1331;21;Minuman;Caramel;28000
+1332;21;Minuman;Vanilla;28000
+1333;21;Minuman;Hazelnut;28000
+1334;21;Minuman;Chocolate;28000
+1335;21;Minuman;Red Velvet;28000
+1336;21;Minuman;Taro Latte;28000
+1337;21;Minuman;Cookies and Cream;30000
+1338;21;Minuman;Matcha Latte;30000
+1339;21;Minuman;Mahardika Coffee;28000
+1340;21;Minuman;Blue Jasmine;28000
+1341;21;Minuman;Berry Coffee Beans;28000
+1342;21;Minuman;Sunshine Flower;28000
+1343;21;Minuman;Tropical Guava;28000
+1344;21;Minuman;Basic Tea;10000
+1345;21;Minuman;Peach Tea;25000
+1346;21;Minuman;Lychee Tea;25000
+1347;21;Minuman;Lemon Tea;25000
+1348;21;Minuman;Air Mineral;8000
+1349;21;Minuman;Infuse Water Lemon;8000
+1350;21;Minuman;Babychino;25000
+1351;21;Minuman;Choco Cheese;30000
+1352;21;Minuman;Korean Banana Milk;28000
+1353;21;Minuman;Milkshake;30000
+1354;21;Minuman;Pink Beach Milk;28000
+1355;22;Makanan;Big Breakfast;70000
+1356;22;Makanan;Spaghetti Bolognese;40000
+1357;22;Makanan;Spaghetti Aglio Olio;40000
+1358;22;Makanan;Fettucine Carbonara;40000
+1359;22;Makanan;Salted Egg Chicken;38000
+1360;22;Makanan;Ayam Bakar Nusantara;40000
+1361;22;Makanan;Chicken Katsu Teriyaki;35000
+1362;22;Makanan;Chicken Katsu Sambal Matah;35000
+1363;22;Makanan;Chicken Katsu Blackpepper;35000
+1364;22;Makanan;Chicken Katsu Curry;35000
+1365;22;Makanan;Beef Teriyaki;40000
+1366;22;Makanan;Beef Bulgogi;40000
+1367;22;Makanan;Beef Mercon;40000
+1368;22;Makanan;Buttermilk Chicken;38000
+1369;22;Makanan;Chicken Wings;42000
+1370;22;Makanan;Cireng;27000
+1371;22;Makanan;French Fries;30000
+1372;22;Makanan;Risol Ragout;30000
+1373;22;Makanan;Risol Mayo;35000
+1374;22;Makanan;Mix Platter;70000
+1375;22;Makanan;Onion Rings;27000
+1376;22;Makanan;Cilumtah Gejrot;35000
+1377;22;Makanan;Tiramisu;30000
+1378;22;Makanan;Waffle;50000
+1379;22;Makanan;Churros;27000
+1380;22;Makanan;Banana Nuggets;27000
+1381;22;Makanan;Pain au Chocolat;25000
+1382;22;Makanan;Cheese Cake Danish;25000
+1383;22;Makanan;Flan Patissier;28000
+1384;22;Makanan;Smoke Beef & Cheese Danish;28000
+1385;22;Makanan;Tuna Puff Pastry;28000
+1386;22;Makanan;Choco Banana Croissant;28000
+1387;22;Makanan;Raisin Roll;25000
+1388;22;Makanan;Butter Croissant;25000
+1389;22;Makanan;Almond Croissant;28000
+1390;22;Makanan;Gourmandise;30000
+1391;22;Makanan;Cromboloni Chocolate;35000
+1392;22;Makanan;Twisted Nutella Danish;28000
+1393;22;Minuman;Espresso;30000
+1394;22;Minuman;Americano;33000
+1395;22;Minuman;On The Rock;30000
+1396;22;Minuman;Piccolo;30000
+1397;22;Minuman;Cappucino;35000
+1398;22;Minuman;Caffe Latte;35000
+1399;22;Minuman;Flavored Latte;35000
+1400;22;Minuman;Mocha Latte;35000
+1401;22;Minuman;Split Shot ;50000
+1402;22;Minuman;Vietnam Drip;30000
+1403;22;Minuman;San Sebastian;33000
+1404;22;Minuman;Saint-Etienne;33000
+1405;22;Minuman;Creamy Aren Latte;28000
+1406;22;Minuman;Sweet Butterscotch Latte;28000
+1407;22;Minuman;Choco-Hazel Latte;28000
+1408;22;Minuman;Caramel Biscuit Latte;40000
+1409;22;Minuman;Himalaya;35000
+1410;22;Minuman;San Marino;33000
+1411;22;Minuman;Saint Petersburg;33000
+1412;22;Minuman;Alessandria;33000
+1413;22;Minuman;Choco Banana;35000
+1414;22;Minuman;Strawberry Cheese Cream;35000
+1415;22;Minuman;Matcha Oreo;35000
+1416;22;Minuman;Milky Blueberry;35000
+1417;22;Minuman;Chocolate;25000
+1418;22;Minuman;Red Velvet;25000
+1419;22;Minuman;Taro;25000
+1420;22;Minuman;Matcha;25000
+1421;22;Minuman;Pure Chamomile Tea;25000
+1422;22;Minuman;Pure Peppermint Tea;25000
+1423;22;Minuman;Vanilla Breakfast Tea;25000
+1424;22;Minuman;Berry Hibiscus Tea;25000
+1425;22;Minuman;Lychee Tea;25000
+1426;22;Minuman;Strawberry Lemon Tea;25000
+1427;23;Makanan;American Breakfast;45000
+1428;23;Makanan;Bring Back Memories;25000
+1429;23;Makanan;Bubur Ayam;20000
+1430;23;Makanan;Omelette;20000
+1431;23;Makanan;Nasi Cume Cabe Ijo;40000
+1432;23;Makanan;Rawon;40000
+1433;23;Makanan;Ayam Serundeng;40000
+1434;23;Makanan;Ayam Cabe Ijo;40000
+1435;23;Makanan;Nasi Goreng Ayam Tepung;35000
+1436;23;Makanan;Nasi Goreng Kioto;33000
+1437;23;Makanan;Nasi Goreng Cumi;37000
+1438;23;Makanan;Grilled Chicken Garlic;47000
+1439;23;Makanan;Chicken Blackpepper;35000
+1440;23;Makanan;Spaghetti Bolognese;42000
+1441;23;Makanan;Spaghetti Aglio Olio;40000
+1442;23;Makanan;Rice Beef;40000
+1443;23;Makanan;Tuna Pizza;45000
+1444;23;Makanan;Margherita Pizza;45000
+1445;23;Makanan;Classic Beef Pizza;55000
+1446;23;Makanan;Chicken Roll;26000
+1447;23;Makanan;Kebab;30000
+1448;23;Makanan;Tuna Mayo Sandwich;25000
+1449;23;Makanan;Veloute French Fries;25000
+1450;23;Makanan;Savoury Nachos;25000
+1451;23;Makanan;Sesame Fried Banana;35000
+1452;23;Makanan;Dimsum;35000
+1453;23;Makanan;Mix Platter;60000
+1454;23;Makanan;Happy Fish Meal;35000
+1455;23;Makanan;Happy Chicken Meal;35000
+1456;23;Minuman;Butterscotch Candy;27000
+1457;23;Minuman;Coco Melow;27000
+1458;23;Minuman;Affogato;20000
+1459;23;Minuman;Espresso;25000
+1460;23;Minuman;Black;28000
+1461;23;Minuman;Lungo;25000
+1462;23;Minuman;Mini White;28000
+1463;23;Minuman;Common White;30000
+1464;23;Minuman;Filter Coffee;25000
+1465;23;Minuman;Artisan Tea;25000
+1466;23;Minuman;Fruit n Tea;28000
+1467;23;Minuman;Ginger Bell;30000
+1468;23;Minuman;Sweet Seventeen;30000
+1469;23;Minuman;Peachy;28000
+1470;23;Minuman;Gemini;28000
+1471;23;Minuman;Pretty Peach;28000
+1472;23;Minuman;Cream Cheese Latte;30000
+1473;23;Minuman;Sunny Day;28000
+1474;23;Minuman;Mocha Salted Caramel;30000
+1475;23;Minuman;Caramel Macchiato;33000
+1476;23;Minuman;Premium Latte;25000
+1477;23;Minuman;Palm Sugar Latte;30000
+1478;23;Minuman;Mocha Latte;28000
+1479;23;Minuman;Vanilla Latte;30000
+1480;23;Minuman;Caramel Latte;30000
+1481;23;Minuman;Pandan Latte;30000
+1482;23;Minuman;Butterscotch Latte;33000
+1483;23;Minuman;Sweet Danum;28000
+1484;23;Minuman;Mercy;28000
+1485;23;Minuman;Pinkish Smooth;28000
+1486;23;Minuman;Matcha;25000
+1487;23;Minuman;Chocolate;25000
+1488;23;Minuman;Red Velvet;25000
+1489;23;Minuman;Lychee Tea;20000
+1490;23;Minuman;Lemon Tea;20000
+1491;23;Minuman;Peach Tea;20000
+1492;23;Minuman;Cotton Candy;25000
+1493;23;Minuman;Vanilla Frozen;25000
+1494;23;Minuman;Pina De Coco;30000
+1495;23;Minuman;Margaret;30000
+1496;23;Minuman;Domato Sour;30000
+1497;23;Minuman;El-Negro;30000
+1498;24;Makanan;Ayam Rica-Rica;28000
+1499;24;Makanan;Ayam Kalasan;28000
+1500;24;Makanan;Bebek Bumbu Hitam khas Madura;46000
+1501;24;Makanan;Chicken Katsu;26000
+1502;24;Makanan;Chicken Hotplate;33000
+1503;24;Makanan;Special Chicken Hotplate;35000
+1504;24;Makanan;Sop Iga;50000
+1505;24;Makanan;Rawon;48000
+1506;24;Makanan;Rice Bowl Baby Cumi;33000
+1507;24;Makanan;Rice Bowl Beef Teriyaki;35000
+1508;24;Makanan;Nasi Telur Dadar;17000
+1509;24;Makanan;Nasi Telang;20000
+1510;24;Makanan;Mie Kangkung;25000
+1511;24;Makanan;Indomie Goreng;13000
+1512;24;Makanan;Indomie Kuah;13000
+1513;24;Makanan;Cireng;18000
+1514;24;Makanan;Crispy Enoki;20000
+1515;24;Makanan;Dimsum;26000
+1516;24;Makanan;French Fries;20000
+1517;24;Makanan;Gohyong;22000
+1518;24;Makanan;Onion Rings;18000
+1519;24;Makanan;Lumpia;18000
+1520;24;Makanan;Potato Wedges;20000
+1521;24;Makanan;Pisang Keju;20000
+1522;24;Makanan;Pangsit Goreng ;25000
+1523;24;Makanan;Roti Bakar;20000
+1524;24;Makanan;Risol Mayo;20000
+1525;24;Makanan;Otak-Otak;35000
+1526;24;Makanan;Singkong Goreng;18000
+1527;24;Makanan;Sweet Potato Rolls;28000
+1528;24;Makanan;Sandwich (Chicken/Tuna);20000
+1529;24;Makanan;Sistaget;26000
+1530;24;Makanan;Tahu Gejrot;18000
+1531;24;Makanan;Tahu Walik;28000
+1532;24;Makanan;Tahu Pentol Mercon;30000
+1533;24;Makanan;Kerupuk Basah;18000
+1534;24;Makanan;Classic Breakfast Platter;20000
+1535;24;Makanan;Open-Faced Sandwich Platter;20000
+1536;24;Minuman;Lavanila;23000
+1537;24;Minuman;Carmela;25000
+1538;24;Minuman;Lamocha;23000
+1539;24;Minuman;Danila;25000
+1540;24;Minuman;Butterscotch;30000
+1541;24;Minuman;Hazelnut Latte;28000
+1542;24;Minuman;Vanilla Latte;28000
+1543;24;Minuman;Americano;21000
+1544;24;Minuman;Americano Lemon;23000
+1545;24;Minuman;Cappucino;28000
+1546;24;Minuman;Caffe Latte;28000
+1547;24;Minuman;Tubruk;17000
+1548;24;Minuman;Vietnam Drip;17000
+1549;24;Minuman;Manual Brew;28000
+1550;24;Minuman;Susu Regal;23000
+1551;24;Minuman;Choco Oreo;23000
+1552;24;Minuman;Choco Milk;23000
+1553;24;Minuman;Taro;21000
+1554;24;Minuman;Red Velvet;21000
+1555;24;Minuman;Green Tea;19000
+1556;24;Minuman;Thai Tea;19000
+1557;24;Minuman;Lemon Tea;23000
+1558;24;Minuman;Lychee Tea;25000
+1559;24;Minuman;Tea Pot Tea;25000
+1560;24;Minuman;Basic Tea;11000
+1561;24;Minuman;Dilmah Tea;25000
+1562;24;Minuman;Aneka Jus;24000
+1563;24;Minuman;Wedang Jahe;14000
+1564;24;Minuman;Wedang Jahe + Sereh;16000
+1565;24;Minuman;Wedang Jahe + Sereh + Aren;18000
+1566;24;Minuman;Wedang Jahe + Jeruk Nipis;18000
+1567;24;Minuman;Limecoff;28000
+1568;24;Minuman;Pinnacoffee;28000
+1569;24;Minuman;Lemonapple;28000
+1570;24;Minuman;Cimon Squash;24000
+1571;24;Minuman;Pineapple Punch;24000
+1572;24;Minuman;Green Apple Punch;24000
+1573;24;Minuman;Pinky Smooth;28000
+1574;25;Makanan;Pisang Krispi;13000
+1575;25;Makanan;Sistagor;15000
+1576;25;Makanan;Stick Singkong;10000
+1577;25;Makanan;French Fries;13000
+1578;25;Makanan;Indomie;10000
+1579;25;Minuman;Oreo;12000
+1580;25;Minuman;Red Velvet;12000
+1581;25;Minuman;Taro;12000
+1582;25;Minuman;Bubble Gum;12000
+1583;25;Minuman;Cappucino;12000
+1584;25;Minuman;Banana;12000
+1585;25;Minuman;Tiramisu;12000
+1586;25;Minuman;Avocado;12000
+1587;25;Minuman;Caramelo;12000
+1588;25;Minuman;Ovaltine;12000
+1589;25;Minuman;Chocolate;15000
+1590;25;Minuman;Kopi Gula Aren;15000
+1591;25;Minuman;Green Tea;12000
+1592;25;Minuman;Thai Tea;12000
+1593;25;Minuman;Lemon Tea;12000
+1594;25;Minuman;Lemonade;12000
+1595;25;Minuman;Air Mineral;5000
+1596;26;Makanan;Nasi Goreng Chili Oil;24000
+1597;26;Makanan;Nasi Telur Ponti;17000
+1598;26;Makanan;Nasi Telur Sambal Teri;17000
+1599;26;Makanan;Nasi Telur Bumbu Bakar;17000
+1600;26;Makanan;Mie Nyemek;15000
+1601;26;Makanan;Nasi Ayam Goreng Sambal Ijo;28000
+1602;26;Makanan;Nasi Ayam Goreng Kremes;28000
+1603;26;Makanan;Pisang Goreng Madu;15000
+1604;26;Makanan;Bakwan Sayur;15000
+1605;26;Makanan;Roti Bakar Mentega;13000
+1606;26;Makanan;Roti Bakar Kaya;18000
+1607;26;Makanan;Roti Bakar Coklat ;15000
+1608;26;Makanan;Roti Bakar Matcha;15000
+1609;26;Makanan;Roti Telur Setengah Matang;18000
+1610;26;Makanan;Dimsum;18000
+1611;26;Makanan;Sempol;15000
+1612;26;Makanan;Tahu Balado;18000
+1613;26;Minuman;Es Kopi Susu Legenda;15000
+1614;26;Minuman;Kopi O;12000
+1615;26;Minuman;Kopi Butter;18000
+1616;26;Minuman;Kopi Jahe;15000
+1617;26;Minuman;Kopi Tarik Susu;15000
+1618;26;Minuman;The O;7000
+1619;26;Minuman;Teh;15000
+1620;26;Minuman;Teh Tarik Aren;15000
+1621;26;Minuman;Teh Jahe;12000
+1622;26;Minuman;Milo Melayu;18000
+1623;26;Minuman;Es Jeruk;15000
+1624;26;Minuman;Es Jeruk Stroberi;18000
+1625;26;Minuman;Es Klepon;20000
+1626;26;Minuman;Es Stroberi Soda;18000
+1627;26;Minuman;Es Teh Telang;10000
+1628;26;Minuman;Air Mineral;5000
+1629;26;Minuman;Es Coklat Legenda;18000
+1630;27;Makanan;Mie Goreng Bejana;35000
+1631;27;Makanan;Mie Kuah Bejana;33000
+1632;27;Makanan;Kwetiau Bejana;35000
+1633;27;Makanan;Cah Kangkung;10000
+1634;27;Makanan;Nasi Goreng Oriental;23000
+1635;27;Makanan;Nasi Goreng Telur;23000
+1636;27;Makanan;Nasi Goreng Ikan Asin;25000
+1637;27;Makanan;Nasi Goreng Ayam;25000
+1638;27;Makanan;Nasi Goreng Special;38000
+1639;27;Makanan;Capcay;35000
+1640;27;Makanan;Iga Bakar;45000
+1641;27;Makanan;Sop Iga Bakar;45000
+1642;27;Makanan;Ayam Asam Manis;35000
+1643;27;Makanan;Ayam Teriyaki;35000
+1644;27;Makanan;Ayam Sambal Matah;35000
+1645;27;Makanan;Cumi Asam Manis;35000
+1646;27;Makanan;Cumi Goreng Tepung;35000
+1647;27;Makanan;Ayam Goreng Kremes;35000
+1648;27;Makanan;Ayam Penyet Sambal Ijo;35000
+1649;27;Makanan;Sop Ayam;35000
+1650;27;Makanan;Pisang Goreng;24000
+1651;27;Makanan;Tahu Cabe Garam;22000
+1652;27;Makanan;Chicken Skin;22000
+1653;27;Makanan;Chicken Meatball;22000
+1654;27;Makanan;Cireng;22000
+1655;27;Makanan;Singkong Goreng;22000
+1656;27;Makanan;Tahu Telur Asin;22000
+1657;27;Makanan;Mix Platter;45000
+1658;27;Makanan;Lumpia Rebung;22000
+1659;27;Makanan;Kerupuk Basah;22000
+1660;27;Makanan;Lempeng Crispy;24000
+1661;27;Makanan;Roti Bakar;25000
+1662;27;Makanan;French Fries;22000
+1663;27;Minuman;Espresso;20000
+1664;27;Minuman;Americano;25000
+1665;27;Minuman;Spanish Latte;25000
+1666;27;Minuman;Caffe Latte;25000
+1667;27;Minuman;Vanilla Latte;25000
+1668;27;Minuman;Hazelnut Latte;25000
+1669;27;Minuman;Caramel Latte;25000
+1670;27;Minuman;Cappucino;25000
+1671;27;Minuman;Caramel Macchiato;35000
+1672;27;Minuman;Vietnam Drip;22000
+1673;27;Minuman;Air Mineral;8000
+1674;27;Minuman;Lemon Tea;20000
+1675;27;Minuman;Lychee Tea;20000
+1676;27;Minuman;Teh Tarik;20000
+1677;27;Minuman;Basic Tea;12000
+1678;27;Minuman;Taro;25000
+1679;27;Minuman;Matcha;25000
+1680;27;Minuman;Milo Dinosaur;25000
+1681;27;Minuman;Red Velvet;25000
+1682;27;Minuman;Korean Strawberry;25000
+1683;27;Minuman;Coconut Nomu;35000
+1684;27;Minuman;Choreo;35000
+1685;27;Minuman;Renjana;22000
+1686;27;Minuman;Arunika;23000
+1687;27;Minuman;Nirmala;25000
+1688;27;Minuman;Vanila;28000
+1689;27;Minuman;Hazel;28000
+1690;27;Minuman;Caramel;28000
+1691;27;Minuman;Aneka Jus;25000
+1692;27;Minuman;Candy Smooth;25000
+1693;27;Minuman;Lavender Bliss;25000
+1694;27;Minuman;Marlina;25000
+1695;27;Minuman;Magisfera;25000
+1696;27;Minuman;Blue Ocean;25000
+1697;28;Makanan;Ayam Goreng Kalasan;35000
+1698;28;Makanan;Ayam Goreng Cabe Ijo;35000
+1699;28;Makanan;Ayam Sambal Matah;35000
+1700;28;Makanan;Nasi Goreng Telur;25000
+1701;28;Makanan;Nasi Goreng Sapi;30000
+1702;28;Makanan;Nasi Goreng Seafood;30000
+1703;28;Makanan;Indomie Goreng;20000
+1704;28;Makanan;Indomie Kuah;20000
+1705;28;Makanan;Chicken Katsu;30000
+1706;28;Makanan;Chicken Pop Karage;30000
+1707;28;Makanan;Rice Beef Slice;35000
+1708;28;Makanan;Ramen Japanese;40000
+1709;28;Makanan;French Fries;20000
+1710;28;Makanan;Chicken Nugget;20000
+1711;28;Makanan;Mini Sausage;20000
+1712;28;Makanan;Mini Pangsit;20000
+1713;28;Makanan;Kerupuk Basah;20000
+1714;28;Makanan;Mix Platter;50000
+1715;28;Makanan;Pisang Keju;20000
+1716;28;Makanan;Pisang Goreng Crispy;20000
+1717;28;Makanan;Dimsum ;25000
+1718;28;Makanan;Dimsum Mentai;35000
+1719;28;Makanan;Dimsum Chedar;35000
+1720;28;Makanan;Ekkado;30000
+1721;28;Makanan;Gyoza;30000
+1722;28;Minuman;Local Beans;25000
+1723;28;Minuman;Cold Brew;30000
+1724;28;Minuman;Cold White;30000
+1725;28;Minuman;Espresso;20000
+1726;28;Minuman;On The Rock;20000
+1727;28;Minuman;Split Shot ;35000
+1728;28;Minuman;Piccolo;25000
+1729;28;Minuman;Americano;20000
+1730;28;Minuman;Cappucino;25000
+1731;28;Minuman;Caffe Latte;25000
+1732;28;Minuman;Moccacino;25000
+1733;28;Minuman;Spanish Latte;20000
+1734;28;Minuman;Caramel Latte;25000
+1735;28;Minuman;Vanilla Latte;25000
+1736;28;Minuman;Short Bread & Cookies;25000
+1737;28;Minuman;Mocca Salted Caramel;25000
+1738;28;Minuman;Hakko Berie;25000
+1739;28;Minuman;Kuroshima;25000
+1740;28;Minuman;Pichiremon;25000
+1741;28;Minuman;Chocolate;20000
+1742;28;Minuman;Matcha;20000
+1743;28;Minuman;Red Velvet;20000
+1744;28;Minuman;Taro;20000
+1745;28;Minuman;Banana Smoothie;27000
+1746;28;Minuman;Sakura Latte;27000
+1747;28;Minuman;Oreo Scrumble;27000
+1748;28;Minuman;Fresh Mango;20000
+1749;28;Minuman;Sakura Lychee;20000
+1750;28;Minuman;Lychee Tea;20000
+1751;28;Minuman;Lemon Tea;20000
+1752;28;Minuman;Air Mineral;10000
+1753;29;Makanan;Nasi Goreng ;12000
+1754;29;Makanan;Nasi Goreng Telur;15000
+1755;29;Makanan;Nasi Goreng Blackpepper;12000
+1756;29;Makanan;Mie Spicy;11000
+1757;29;Minuman;Choco Blast;13000
+1758;29;Minuman;Vany Blast;13000
+1759;29;Minuman;Matcha Blast;13000
+1760;29;Minuman;Milo Blast;15000
+1761;29;Minuman;Choco Crusher;13000
+1762;29;Minuman;Vany Crusher;13000
+1763;29;Minuman;Matcha Crusher;13000
+1764;29;Minuman;Mango Split;13000
+1765;29;Minuman;Lopeberry;13000
+1766;29;Minuman;Green Pineapple;13000
+1767;29;Minuman;Brown Sugar;13000
+1768;29;Minuman;Supreme Choco Oreo;13000
+1769;29;Minuman;Tiramisu;9000
+1770;29;Minuman;Red Velvet;9000
+1771;29;Minuman;Green Tea;9000
+1772;29;Minuman;Lemon Tea;10000
+1773;29;Minuman;Choco Royal;9000
+1774;29;Minuman;Choco Oreo;9000
+1775;29;Minuman;Choco Caramel;9000
+1776;29;Minuman;Milo Ice;12000
+1777;29;Minuman;Mango;9000
+1778;29;Minuman;Lychee;9000
+1779;29;Minuman;Strawberry;9000
+1780;29;Minuman;Taro;9000
+1781;29;Minuman;Vanilla;9000
+1782;29;Minuman;Vanilla Berry;9000
+1783;29;Minuman;Bubble Gum;9000
+1784;29;Minuman;Cappucino;9000
+1785;29;Minuman;Vanilla Latte;9000
+1786;29;Minuman;Mango Float;17000
+1787;29;Minuman;Matcha Float;17000
+1788;29;Minuman;Strawberry Float;17000
+1789;29;Minuman;Berry Sundae;15000
+1790;29;Minuman;Mango Sundae;15000
+1791;29;Minuman;Cookies Sundae;15000
+1792;29;Minuman;Brown Sugar Sundae;15000
+1793;30;Makanan;French Fries;17000
+1794;30;Makanan;Noodle & Egg;15000
+1795;30;Makanan;Spaghetti;20000
+1796;30;Makanan;Mix Platter;29000
+1797;30;Minuman;Americano;17000
+1798;30;Minuman;Sweet Americano;17000
+1799;30;Minuman;Regular Coffee Milk;18000
+1800;30;Minuman;Brown Sugar Coffee Milk;18000
+1801;30;Minuman;Choco Coffee Milk;18000
+1802;30;Minuman;Caramel Coffee Milk;20000
+1803;30;Minuman;Salted Caramel Coffee Milk;20000
+1804;30;Minuman;Irish Cream Coffee Milk;20000
+1805;30;Minuman;Rum Coffee Milk;20000
+1806;30;Minuman;Pandan Coffee Milk;20000
+1807;30;Minuman;Matcha Coffee Milk;20000
+1808;30;Minuman;Hazelnut Coffee Milk;20000
+1809;30;Minuman;Caffe Latte;22000
+1810;30;Minuman;Karaya Coffee Milk;25000
+1811;30;Minuman;Taro;17000
+1812;30;Minuman;Red Velvet;17000
+1813;30;Minuman;Chocolate;17000
+1814;30;Minuman;Sweet Matcha;19000
+1815;30;Minuman;Bubble Gum;17000
+1816;30;Minuman;Brown Sugar Milk;15000
+1817;30;Minuman;Salted Caramel Milk;18000
+1818;30;Minuman;Menggoda - Manggo Soda;15000
+1819;30;Minuman;Milky Soda;14000
+1820;30;Minuman;Thai Tea;14000
+1821;30;Minuman;Thai Green Tea;14000
+1822;30;Minuman;Lychee Tea;13000
+1823;30;Minuman;Lemonade Tea;15000
+1824;31;Makanan;Nasi Goreng Kampung;31000
+1825;31;Makanan;Lalapan Ayam;36000
+1826;31;Makanan;Indomie Goreng;17000
+1827;31;Makanan;Omelette;22000
+1828;31;Makanan;Nasi Tongkol Suwir;31000
+1829;31;Makanan;Beed Teriyaki;36000
+1830;31;Makanan;Beef Blackpepper;36000
+1831;31;Makanan;Salt Chilli Chicken;28000
+1832;31;Makanan;Easy Chicken Teriyaki;31000
+1833;31;Makanan;Chicken Katsu Saus Mentai;33000
+1834;31;Makanan;Tahu Cabe Garam;22000
+1835;31;Makanan;Bulgogi Rice Bowl;36000
+1836;31;Makanan;French Fries;20000
+1837;31;Makanan;Mix Platter;31000
+1838;31;Makanan;Sosis Goreng;25000
+1839;31;Makanan;Cassava;22000
+1840;31;Makanan;Rujak;22000
+1841;31;Makanan;Chicken Wings;28000
+1842;31;Makanan;Spaghetti;22000
+1843;31;Makanan;Jasuke;11000
+1844;31;Makanan;Pisang Bakar;20000
+1845;31;Makanan;Pisang Goreng;22000
+1846;31;Makanan;Roti Bakar;20000
+1847;31;Makanan;Churros Oregano;22000
+1848;31;Makanan;Tempe Mendoan;20000
+1849;31;Makanan;Singkong Goreng;20000
+1850;31;Makanan;Enoki Crispy;26000
+1851;31;Makanan;Cireng;20000
+1852;31;Makanan;Sosis Solo;26000
+1853;31;Makanan;Pastel;22000
+1854;31;Makanan;Tahu Bakso;20000
+1855;31;Makanan;Patin Kandas Sarai;33000
+1856;31;Makanan;Pepes Ikan Patin;33000
+1857;31;Makanan;Juhu Baung Sayur Rimbang;33000
+1858;31;Makanan;Tumis Pakis;16000
+1859;31;Minuman;Kopi Coal;22000
+1860;31;Minuman;Kopi Gano;26000
+1861;31;Minuman;Caramella;28000
+1862;31;Minuman;Cracker Nut;28000
+1863;31;Minuman;Orepop Gano;31000
+1864;31;Minuman;Gano's Mokey;28000
+1865;31;Minuman;Klelepon;33000
+1866;31;Minuman;Strawberry Mocha;33000
+1867;31;Minuman;Carollime;33000
+1868;31;Minuman;Green Italian;33000
+1869;31;Minuman;Silica Squash;33000
+1870;31;Minuman;Rainbow Spark;33000
+1871;31;Minuman;Fragaria's;33000
+1872;31;Minuman;Lilyshine;33000
+1873;31;Minuman;Butterfly Pieche;33000
+1874;31;Minuman;Tea Party;17000
+1875;31;Minuman;Mint Tea;20000
+1876;31;Minuman;Strawberry Tea;20000
+1877;31;Minuman;Lemon Tea;20000
+1878;31;Minuman;Melon Tea;20000
+1879;31;Minuman;Lychee Tea;22000
+1880;31;Minuman;Teh Telang;22000
+1881;31;Minuman;Strawberry Milky;33000
+1882;31;Minuman;Manggo Milky;33000
+1883;31;Minuman;Melon Milky;33000
+1884;31;Minuman;Matcha;28000
+1885;31;Minuman;Red Velvet;28000
+1886;31;Minuman;Nyiur Milky;28000
+1887;31;Minuman;Taro;28000
+1888;31;Minuman;Milky Choco;28000
+1889;31;Minuman;Milk Flavour;24000
+1890;31;Minuman;Americano;22000
+1891;31;Minuman;Cappucino;28000
+1892;31;Minuman;Latte;28000
+1893;31;Minuman;Latte Flavour;31000
+1894;31;Minuman;Moccacino;31000
+1895;31;Minuman;Air Mineral;11000
+1896;32;Makanan;French Fries;25000
+1897;32;Makanan;Tempe Mendoan;25000
+1898;32;Makanan;Tahu Cabe Garam;25000
+1899;32;Makanan;Bakwan;23000
+1900;32;Makanan;Pisang Gondrong;20000
+1901;32;Makanan;Roti Panggang;20000
+1902;32;Makanan;Nasi Goreng;30000
+1903;32;Makanan;Ayam Goreng;35000
+1904;32;Makanan;Chicken Rice Bowl;28000
+1905;32;Makanan;Indomie Not Normal;26000
+1906;32;Makanan;Spaghetti Bolognese;35000
+1907;32;Makanan;Nasi Telur;18000
+1908;32;Minuman;Chocolate;26000
+1909;32;Minuman;Matcha;26000
+1910;32;Minuman;Vanilla;26000
+1911;32;Minuman;Wedding March;25000
+1912;32;Minuman;Rivers Flow;25000
+1913;32;Minuman;Fur Elise;25000
+1914;32;Minuman;Black Tea;15000
+1915;32;Minuman;Lemon Tea;20000
+1916;32;Minuman;Lychee Tea;20000
+1917;32;Minuman;Vanilla Cheese Berry;28000
+1918;32;Minuman;Blue Latte;28000
+1919;32;Minuman;Ice Cream Waffle;28000
+1920;33;Makanan;Ayam Cabe Garam;33000
+1921;33;Makanan;Ayam Blackpepper;33000
+1922;33;Makanan;Ayam Teriyaki;33000
+1923;33;Makanan;Ayam Geprek;25000
+1924;33;Makanan;Ayam Sambal Matah;33000
+1925;33;Makanan;Ayam Chilli Padi;33000
+1926;33;Makanan;Ayam Goreng Tepung;38000
+1927;33;Makanan;Chicken Steak;40000
+1928;33;Makanan;Beef Blackpepper;38000
+1929;33;Makanan;Beef Chilli Padi;38000
+1930;33;Makanan;Udang Cabe Garam;40000
+1931;33;Makanan;Cumi Goreng Tepung;40000
+1932;33;Makanan;Nasi Goreng Hongkong;35000
+1933;33;Makanan;Nasi Basanga;28000
+1934;33;Makanan;Nasi GorengKu;25000
+1935;33;Makanan;Nasi Telor;18000
+1936;33;Makanan;Kwetiau Goreng;35000
+1937;33;Makanan;Mie Telor;18000
+1938;33;Makanan;Mie Nyemek;18000
+1939;33;Makanan;Spaghetti Bolognese;30000
+1940;33;Makanan;Cireng;18000
+1941;33;Makanan;French Fries;18000
+1942;33;Makanan;Singkong Goreng;18000
+1943;33;Makanan;Chicken Crispy;20000
+1944;33;Makanan;Pisang Goreng;20000
+1945;33;Makanan;Otak-Otak;20000
+1946;33;Makanan;Tempe Mendoan;20000
+1947;33;Makanan;Tahu Bakso;20000
+1948;33;Makanan;Roti Maryam;20000
+1949;33;Makanan;Burger Patty;23000
+1950;33;Minuman;Alex Creamy;20000
+1951;33;Minuman;Alexandria;20000
+1952;33;Minuman;Butterscotch;20000
+1953;33;Minuman;Hazelnut;20000
+1954;33;Minuman;Delight;20000
+1955;33;Minuman;Basic;20000
+1956;33;Minuman;Scrumptious;20000
+1957;33;Minuman;Coffee Matcha;22000
+1958;33;Minuman;Caramel Macchiato;25000
+1959;33;Minuman;Espresso;17000
+1960;33;Minuman;Americano;20000
+1961;33;Minuman;Long Black;22000
+1962;33;Minuman;Merchee;20000
+1963;33;Minuman;Milky Regal;20000
+1964;33;Minuman;Lotus Biscoff;20000
+1965;33;Minuman;Matcha;20000
+1966;33;Minuman;Red Velvet;20000
+1967;33;Minuman;Strawberry Milk;20000
+1968;33;Minuman;Lychee Milk;20000
+1969;33;Minuman;Choco Signa;20000
+1970;33;Minuman;Black Latte;20000
+1971;33;Minuman;Strawberry Pure;22000
+1972;33;Minuman;Strawberry Yakult;22000
+1973;33;Minuman;Lychee Yakult;22000
+1974;33;Minuman;Samudra;20000
+1975;33;Minuman;Gokult;20000
+1976;33;Minuman;Tropical Sunset;20000
+1977;33;Minuman;Strawberry Lemonade;20000
+1978;33;Minuman;Guava;20000
+1979;33;Minuman;Jasmine Tea;8000
+1980;33;Minuman;Lychee Tea;20000
+1981;33;Minuman;Lemon Tea;18000
+1982;34;Makanan;Shasuka;44000
+1983;34;Makanan;Creamsoup Mushroom;33000
+1984;34;Makanan;Avocado Toast;47000
+1985;34;Makanan;Saikoro Kari Jepang;42000
+1986;34;Makanan;Saikoro Garlic Butter;42000
+1987;34;Makanan;Saikoro Taichan;34000
+1988;34;Makanan;Saikoro Blackpepper;43000
+1989;34;Makanan;Ayam Anggrek Taichan;26000
+1990;34;Makanan;Nasi Goreng Saikoro;47000
+1991;34;Makanan;Nasi Goreng Seafood;42000
+1992;34;Makanan;Nasi Goreng Teri Medan;29000
+1993;34;Makanan;Nasi Goreng Ayam;32000
+1994;34;Makanan;Sate Lilit Bali;48000
+1995;34;Makanan;Sop Ayam Kampung;43000
+1996;34;Makanan;Ayam Serundeng;35000
+1997;34;Makanan;Sop Buntut;65000
+1998;34;Makanan;Spaghetti Salmon Creamy Tuscan;80000
+1999;34;Makanan;Nasi Goreng Kambing;59000
+2000;34;Makanan;Mie Goreng Anggrek;38000
+2001;34;Makanan;Spaghetti Shrimp Aglio E Olio;43000
+2002;34;Makanan;Ramen Curry Katsu;59000
+2003;34;Makanan;Ramen Tori Paitan;45000
+2004;34;Makanan;Mix Platter;68000
+2005;34;Makanan;Cheese Load French Fries;35000
+2006;34;Makanan;Nachos Pangsit with Salsa;38000
+2007;34;Makanan;Tempe Mendoan;22000
+2008;34;Makanan;Lumpia Ayam;29000
+2009;34;Makanan;Onion Rings;28000
+2010;34;Makanan;Gyoza Anggrek;28000
+2011;34;Makanan;Pisang Goreng Wijen;29000
+2012;34;Makanan;Pudding Brownies;25000
+2013;34;Makanan;Singkong Goreng;25000
+2014;34;Minuman;Kopi Susu Gula Aren;20000
+2015;34;Minuman;Kopi Susu Banana;22000
+2016;34;Minuman;Kopi Susu Pandan;22000
+2017;34;Minuman;Americano;22000
+2018;34;Minuman;Cappucino;28000
+2019;34;Minuman;Caffe Latte;28000
+2020;34;Minuman;Espresso;20000
+2021;34;Minuman;Mocca Mint;28000
+2022;34;Minuman;Caramel Macchiato;28000
+2023;34;Minuman;Es Cendol Anggrek;24000
+2024;34;Minuman;Chocolate;28000
+2025;34;Minuman;Honey Milk Lotus;28000
+2026;34;Minuman;Matcha;28000
+2027;34;Minuman;Red Velvet;28000
+2028;34;Minuman;Holiday with Rara;29000
+2029;34;Minuman;Wonderin Allyska;27000
+2030;34;Minuman;Pretty Diana;27000
+2031;34;Minuman;Cindercella;26000
+2032;34;Minuman;Hilolip;26000
+2033;34;Minuman;Ice Shaken Lychee Tea;25000
+2034;34;Minuman;Ice Shaken Artisan Tea;22000
+2035;34;Minuman;The Naga;20000
+2036;34;Minuman;Artisan Tea;20000
+2037;34;Minuman;Lemon Tea;22000
+2038;34;Minuman;Elderwand;22000
+2039;34;Minuman;Adeline;23000
+2040;34;Minuman;Domestic Pe;21000
+2041;34;Minuman;Playin with Sasmitha;24000
+2042;35;Makanan;Ayam Goreng Lengkuas;37000
+2043;35;Makanan;Ayam Goreng Cabe Ijo;37000
+2044;35;Makanan;Ayam Betutu;39000
+2045;35;Makanan;Ayam Bakar Kecap;37000
+2046;35;Makanan;Ayam Geprek Salted Egg;37000
+2047;35;Makanan;Nasi Ayam Jontor;30000
+2048;35;Makanan;Nasi Goreng Maju Makmur;33000
+2049;35;Makanan;Nasi Goreng Daging Sapi;35000
+2050;35;Makanan;Nasi Goreng Ikan Asin;30000
+2051;35;Makanan;Nasi Goreng Telur;25000
+2052;35;Makanan;Nasi Goreng Ayam Jontor;35000
+2053;35;Makanan;Kwetiau Goreng;33000
+2054;35;Makanan;Chicken Blackpepper;33000
+2055;35;Makanan;Chicken Teriyaki;33000
+2056;35;Makanan;Chicken Sambal Matah;33000
+2057;35;Makanan;Chicken Salted Egg;35000
+2058;35;Makanan;Ayam Cabe Garam;33000
+2059;35;Makanan;Beef Teriyaki;38000
+2060;35;Makanan;Beef Bulgogi;38000
+2061;35;Makanan;udang Sambal Matah;38000
+2062;35;Makanan;Udang Cabe Garam;38000
+2063;35;Makanan;Cumi Sambal Matah;38000
+2064;35;Makanan;Cumi Cabe Garam;38000
+2065;35;Makanan;Cumi Cabe Ijo;40000
+2066;35;Makanan;Nastel;15000
+2067;35;Makanan;Tongseng Daging Sapi;40000
+2068;35;Makanan;Sop Iga Sapi;50000
+2069;35;Makanan;Soto Ayam Surabaya;30000
+2070;35;Makanan;Rawon Daging Sapi;40000
+2071;35;Makanan;Iga Bakar Penyet;50000
+2072;35;Makanan;Fish and Chips;40000
+2073;35;Makanan;Nasi Ebi Lilit;35000
+2074;35;Makanan;Soto Betawi;38000
+2075;35;Makanan;Chicken Cobb Salad;28000
+2076;35;Makanan;Pasta Beef Blackpepper;33000
+2077;35;Makanan;Pasta Aglio Olio with Prawn;30000
+2078;35;Makanan;Pasta Beef Bolognese;30000
+2079;35;Makanan;Capcay;30000
+2080;35;Makanan;Beef Burger;33000
+2081;35;Makanan;Chicken Burger;30000
+2082;35;Makanan;Gohyong Ayam;25000
+2083;35;Makanan;Fun Sumpler;60000
+2084;35;Makanan;Holiwings Spicy;30000
+2085;35;Makanan;Holiwings Original;35000
+2086;35;Makanan;Pisang Goreng;28000
+2087;35;Makanan;Onion Rings;25000
+2088;35;Makanan;Churros;25000
+2089;35;Makanan;Taso;30000
+2090;35;Makanan;Taso Gejrot;28000
+2091;35;Makanan;Sosis;20000
+2092;35;Makanan;Nugget;20000
+2093;35;Makanan;Cireng;25000
+2094;35;Makanan;Kentang Crisccut;25000
+2095;35;Makanan;French Fries;18000
+2096;35;Makanan;Singkong Goreng;18000
+2097;35;Makanan;Dimsum;28000
+2098;35;Makanan;Potato Beef Bolognese;30000
+2099;35;Makanan;Big Sampler;90000
+2100;35;Makanan;Croffle Chocolate;28000
+2101;35;Makanan;Croffle Strawberry;28000
+2102;35;Makanan;Croffle Greentea;28000
+2103;35;Makanan;Croffle Tiramisu;28000
+2104;35;Makanan;Roti Bakar Chocolate;20000
+2105;35;Makanan;Roti Bakar Straweberry;20000
+2106;35;Makanan;Roti Bakar Greentea;20000
+2107;35;Makanan;Roti Bakar Tiramisu;20000
+2108;35;Makanan;Indomie Goreng;12000
+2109;35;Makanan;Cheesecake;35000
+2110;35;Makanan;Burnt Cheesecake;18000
+2111;35;Makanan;Ketan Mangga;25000
+2112;35;Makanan;Ketan Susu Coklat;23000
+2113;35;Makanan;Ketan Susu Keju;23000
+2114;35;Makanan;Ketan Susu Coklat Keju;25000
+2115;35;Makanan;Manggangan;25000
+2116;35;Makanan;Millie Crepes;28000
+2117;35;Minuman;Eskobar;35000
+2118;35;Minuman;Hazelnut;35000
+2119;35;Minuman;Caramel;35000
+2120;35;Minuman;Crème Brulee;35000
+2121;35;Minuman;Cheesecake;35000
+2122;35;Minuman;Popcorn;35000
+2123;35;Minuman;Banana;35000
+2124;35;Minuman;Kopi Susu Maju Makmur;25000
+2125;35;Minuman;Eskobar;18000
+2126;35;Minuman;Dara;20000
+2127;35;Minuman;Butterscotch Sea Salt;28000
+2128;35;Minuman;Brown Butter Latte;28000
+2129;35;Minuman;Amerigo;23000
+2130;35;Minuman;Amerberry;23000
+2131;35;Minuman;Amerly;23000
+2132;35;Minuman;Espresso;18000
+2133;35;Minuman;Monochrome;30000
+2134;35;Minuman;Americano;18000
+2135;35;Minuman;Affogato;20000
+2136;35;Minuman;Caffe Latte;20000
+2137;35;Minuman;Cappucino;20000
+2138;35;Minuman;Caramel Latte;25000
+2139;35;Minuman;Hazelnut Latte;25000
+2140;35;Minuman;Vanilla Latte;25000
+2141;35;Minuman;Pandan Latte;25000
+2142;35;Minuman;CHocolate;20000
+2143;35;Minuman;Chocolate Almond;25000
+2144;35;Minuman;Red Velvet;20000
+2145;35;Minuman;Matcha;23000
+2146;35;Minuman;Klepon;23000
+2147;35;Minuman;Taro;20000
+2148;35;Minuman;Strawberry Frappe;35000
+2149;35;Minuman;Chocolate Frappe;35000
+2150;35;Minuman;Caramel Frappucino;35000
+2151;35;Minuman;Aneka Jus;23000
+2152;35;Minuman;Lychee Tea;25000
+2153;35;Minuman;Peach tea;25000
+2154;35;Minuman;Lemon Tea;20000
+2155;35;Minuman;Basic Tea;6000
+2156;35;Minuman;Es Jeruk;15000
+2157;35;Minuman;Citrus Bitter Orange;25000
+2158;35;Minuman;Sweet Lady Nectarine;25000
+2159;35;Minuman;Authentic Tropical Fruit;25000
+2160;35;Minuman;Accra Mango Jamaican;25000
+2161;35;Minuman;Mango Guine;25000
+2162;36;Makanan;Ayam Goreng;22000
+2163;36;Makanan;Opor Ayam;25000
+2164;36;Makanan;Nasi Campur;25000
+2165;36;Makanan;Nasi Kulit Ayam;25000
+2166;36;Makanan;Tumis Udang;30000
+2167;36;Makanan;Udang Telur Asin;30000
+2168;36;Makanan;Udang Cabe Garam;30000
+2169;36;Makanan;Tumis Cumi Cabe Ijo;30000
+2170;36;Makanan;Ayam Krispy Nasi Daun Jeruk;30000
+2171;36;Makanan;Beef Blackpepper;32000
+2172;36;Makanan;Beef Barbeque;32000
+2173;36;Makanan;Beef Teriyaki;32000
+2174;36;Makanan;Chicken Katsu Blackpepper;32000
+2175;36;Makanan;Chicken Katsu Barbeque;32000
+2176;36;Makanan;Chicken Katsu Teriyaki;32000
+2177;36;Makanan;Tumis Daging Daun Jeruk;32000
+2178;36;Makanan;Spaghetti Aglio Olio;32000
+2179;36;Makanan;Fettucini Carbonara;32000
+2180;36;Makanan;Chicken Barbeque;38000
+2181;36;Makanan;Sop Iga;50000
+2182;36;Makanan;Iga Bakar;50000
+2183;36;Makanan;Bread Choco Cream;28000
+2184;36;Makanan;Bread Matcha Cream;28000
+2185;36;Makanan;Bread Red Velvet Cream;28000
+2186;36;Makanan;Tela-Tela;20000
+2187;36;Makanan;Roti Bakar;20000
+2188;36;Makanan;Tahu Petis;20000
+2189;36;Makanan;Cireng;20000
+2190;36;Makanan;Canai Coklat Keju;20000
+2191;36;Makanan;Churros;22000
+2192;36;Makanan;Choco Ball;22000
+2193;36;Makanan;Sweet Potato Tiramisu;22000
+2194;36;Makanan;Samosa;22000
+2195;36;Makanan;Risol Mayo;23000
+2196;36;Makanan;Risol Ayam;23000
+2197;36;Makanan;Milo Bread Cheese;23000
+2198;36;Makanan;Sosis Solo;23000
+2199;36;Makanan;French Fries;23000
+2200;36;Makanan;Choco Banana Crispy;23000
+2201;36;Makanan;Nachos Bolognese;25000
+2202;36;Makanan;Croffle;25000
+2203;36;Makanan;Dimsum;28000
+2204;36;Makanan;Dimsum Mentai;28000
+2205;36;Makanan;Tahu Bakse Gejrot;25000
+2206;36;Makanan;Banana Nuget;23000
+2207;36;Makanan;Cireng Keju;22000
+2208;36;Makanan;Cireng Kuah;25000
+2209;36;Makanan;Caramel Toast;28000
+2210;36;Makanan;Mix Platter;30000
+2211;36;Minuman;Kencana;20000
+2212;36;Minuman;Pandora;23000
+2213;36;Minuman;Roasted Almond;26000
+2214;36;Minuman;Choban;26000
+2215;36;Minuman;Mojito Passion Fruit;26000
+2216;36;Minuman;Manggojito;27000
+2217;36;Minuman;Whipekis;28000
+2218;36;Minuman;Strawberry Milk Cheese;28000
+2219;36;Minuman;Jivanya;33000
+2220;36;Minuman;Sabina;33000
+2221;36;Minuman;Tamara;35000
+2222;36;Minuman;Taro;22000
+2223;36;Minuman;Matcha;23000
+2224;36;Minuman;Red Velvet;22000
+2225;36;Minuman;Bubble Gum;22000
+2226;36;Minuman;Choco Original;22000
+2227;36;Minuman;Klepon;23000
+2228;36;Minuman;Choco Mint;25000
+2229;36;Minuman;Creamy Maple Berry;26000
+2230;36;Minuman;Creamy Lotus;26000
+2231;36;Minuman;Avocado;27000
+2232;36;Minuman;T-Rex;28000
+2233;36;Minuman;MonsteReo;28000
+2234;36;Minuman;Brown Sugar Ovomaltine;28000
+2235;36;Minuman;Espresso;20000
+2236;36;Minuman;Americano;25000
+2237;36;Minuman;Piccolo;25000
+2238;36;Minuman;Cappucino;25000
+2239;36;Minuman;Caffe Latte;25000
+2240;36;Minuman;Americannggo;27000
+2241;36;Minuman;Americanberry;27000
+2242;36;Minuman;Mocha Latte;28000
+2243;36;Minuman;Hazelnut Latte;28000
+2244;36;Minuman;Vanilla Latte;28000
+2245;36;Minuman;Caramel Latte;28000
+2246;36;Minuman;Caramel Frappucino;28000
+2247;36;Minuman;Japanese Iced Coffe Reg;26000
+2248;36;Minuman;Japanese Guest Beans;36000
+2249;36;Minuman;V60 Regular Beans;25000
+2250;36;Minuman;V60 Guest Beans;35000
+2251;36;Minuman;Basic Tea;6000
+2252;36;Minuman;Lemon Tea;21000
+2253;36;Minuman;Lychee Tea;21000
+2254;37;Makanan;Ayam Goreng Sambal Bawang;30000
+2255;37;Makanan;Ayam Pedas Daun Jeruk;30000
+2256;37;Makanan;Ayam Saos Tiram;30000
+2257;37;Makanan;Bistik Daging;35000
+2258;37;Makanan;Tumis Udang Telur;33000
+2259;37;Makanan;Cumis Tepung Saos Asam Manis;35000
+2260;37;Makanan;Sate Daging Goreng;35000
+2261;37;Makanan;Sop Daging;35000
+2262;37;Makanan;French Fries;20000
+2263;37;Makanan;Singkong Goreng;20000
+2264;37;Makanan;Pisang Coklat Gulung;20000
+2265;37;Makanan;Corn Ribs;20000
+2266;37;Makanan;Martabak Bakso;25000
+2267;37;Makanan;Pisang Goreng Keju;25000
+2268;37;Makanan;Mix Platter;40000
+2269;37;Minuman;Espresso;20000
+2270;37;Minuman;On The Rock;22000
+2271;37;Minuman;Americano;25000
+2272;37;Minuman;Long Black;25000
+2273;37;Minuman;Piccolo;28000
+2274;37;Minuman;Cappucino;28000
+2275;37;Minuman;Caffe Latte;28000
+2276;37;Minuman;Flavour Latte;32000
+2277;37;Minuman;Split Shot ;40000
+2278;37;Minuman;Classic Chocolate;22000
+2279;37;Minuman;Red Velvet;22000
+2280;37;Minuman;Matcha Latte;22000
+2281;37;Minuman;Unicorn Candy;28000
+2282;37;Minuman;Vanilla Peanut Butter;28000
+2283;37;Minuman;Orange Gummy 'OG';26000
+2284;37;Minuman;Purple Boost;26000
+2285;37;Minuman;Berry's Pop;30000
+2286;37;Minuman;Miracle Sour;25000
+2287;37;Minuman;Malybu;25000
+2288;37;Minuman;Brown Sugar Latte;23000
+2289;37;Minuman;Sweet Pistachio Latte;25000
+2290;37;Minuman;Sweet Cinnamon Latte;30000
+2291;37;Minuman;Black Citrus;28000
+2292;37;Minuman;Black Tea;15000
+2293;37;Minuman;Earl Grey Tea;18000
+2294;37;Minuman;Lemon Tea;18000
+2295;37;Minuman;Strawberry Tea;20000
+2296;37;Minuman;Lychee Citrus Tea;22000
+2297;37;Minuman;Berrybiscous;18000
+2298;37;Minuman;Nalesha Peach;18000
+2299;37;Minuman;Araya Jasmine;18000
+2300;38;Makanan;French Fries;15000
+2301;38;Makanan;Cireng;18000
+2302;38;Makanan;Singkong Goreng;18000
+2303;38;Minuman;Seperti Biasa;20000
+2304;38;Minuman;Seperti Biasa Spesial;28000
+2305;38;Minuman;Gak Biasa;28000
+2306;38;Minuman;Luar Biasa;28000
+2307;38;Minuman;Espresso Tonic;25000
+2308;38;Minuman;Americano;20000
+2309;38;Minuman;Cappucino;20000
+2310;38;Minuman;Caffe Latte;20000
+2311;38;Minuman;Caramel;23000
+2312;38;Minuman;Caramel Macchiato;28000
+2313;38;Minuman;Pandan;26000
+2314;38;Minuman;Hazelnut;26000
+2315;38;Minuman;Vanilla Latte;26000
+2316;38;Minuman;Banana;26000
+2317;38;Minuman;Flamingo;25000
+2318;38;Minuman;Aurora;25000
+2319;38;Minuman;Peach Paradise;25000
+2320;38;Minuman;Twilight Smile;25000
+2321;38;Minuman;Taro;25000
+2322;38;Minuman;Coklat;25000
+2323;38;Minuman;Red Velvet;25000
+2324;38;Minuman;Matcha;25000
+2325;38;Minuman;Vietnam Drip;20000
+2326;39;Makanan;Mix Platter;57000
+2327;39;Makanan;Chicken Strips with Tartar Sauce;35000
+2328;39;Makanan;Tofu Salt and Chilli;33000
+2329;39;Makanan;Chicken Martabak;24000
+2330;39;Makanan;French Fries;27000
+2331;39;Makanan;Potato Wedges;27000
+2332;39;Makanan;Chicken Wings;35000
+2333;39;Makanan;Beef Nachos;30000
+2334;39;Makanan;Ricebowl Chicken Katsu Teriyaki;45000
+2335;39;Makanan;Ricebowl Chicken Katsu Salted Egg;45000
+2336;39;Makanan;Chicken Kastu Sambal Matah with Savory Rice;43000
+2337;39;Makanan;Beef Sambal Matah with Savory Rice;51000
+2338;39;Makanan;Gyudon;51000
+2339;39;Makanan;Fried Rice Delicia;38000
+2340;39;Makanan;Chicken Cordon Bleu;53000
+2341;39;Makanan;Spaghetti Beef Bolognese;50000
+2342;39;Makanan;Spaghetti Carbonara;47000
+2343;39;Makanan;Chicken Snitchzel;52000
+2344;39;Makanan;Cheesecake Delicia;41000
+2345;39;Makanan;Pancake Delicia;34000
+2346;39;Makanan;Donut;10000
+2347;39;Minuman;Espresso;20000
+2348;39;Minuman;Americano;25000
+2349;39;Minuman;Long Black;25000
+2350;39;Minuman;Piccolo;25000
+2351;39;Minuman;Caffe Latte;25000
+2352;39;Minuman;Cappucino;28000
+2353;39;Minuman;Mochacinno;30000
+2354;39;Minuman;Split Shot ;30000
+2355;39;Minuman;Vanilla Latte;28000
+2356;39;Minuman;Caramel Latte;28000
+2357;39;Minuman;Hazelnut Latte;28000
+2358;39;Minuman;Delicia Rum Latte;28000
+2359;39;Minuman;Delicia Scotch Latte;28000
+2360;39;Minuman;Delicia Brown Latte;28000
+2361;39;Minuman;Pine Grape Colada;30000
+2362;39;Minuman;Apple Peche;30000
+2363;39;Minuman;Fujibitter Blossom;30000
+2364;39;Minuman;Fruity Boms Matcha;30000
+2365;39;Minuman;Caramel Cheesecake;35000
+2366;39;Minuman;Choco Praline Cheese;35000
+2367;39;Minuman;Kiwi Yoghurt Smooth;35000
+2368;39;Minuman;Strawberry Yoghurt Smooth;35000
+2369;39;Minuman;Taro Latte;28000
+2370;39;Minuman;Choco Latte;28000
+2371;39;Minuman;Matcha Latte;28000
+2372;39;Minuman;Red Velvet;28000
+2373;39;Minuman;Green Paradise;28000
+2374;39;Minuman;Red Bitter Blossom;28000
+2375;39;Minuman;Lychee Tea;25000
+2376;39;Minuman;Lime Tea;25000
+2377;39;Minuman;Air Mineral;10000
+2378;39;Minuman;Lychee Flavoured Ceylon Black Tea;28000
+2379;39;Minuman;Peach Flavoured Ceylon Black Tea;28000
+2380;39;Minuman;Blackcurrant Flavoured Ceylon Black Tea;28000
+2381;39;Minuman;Pure Chamomile Tea;28000
+2382;39;Minuman;Oolong Tea with Peach;28000
+2383;39;Minuman;Green Tea with Jasmine Petals;28000
+2384;39;Minuman;Earl Grey Tea with Vanilla;28000
+2385;40;Makanan;Crispy Chicken Tender;33000
+2386;40;Makanan;Spicy Chicken Wings;35000
+2387;40;Makanan;Chilli Cheese Fries with Smoke Beef;35000
+2388;40;Makanan;Mix Platter;50000
+2389;40;Makanan;Chicken Burger;38000
+2390;40;Makanan;Chicken Noodle;38000
+2391;40;Makanan;Grilled Chicken Sambal Dabu Dabu;35000
+2392;40;Makanan;Chicken Karage with Sweet & Sour;35000
+2393;40;Makanan;Chicken Crispy with Honey Garlic;35000
+2394;40;Makanan;French Toasted Coffee Custard;30000
+2395;40;Makanan;Urbane Omelette;40000
+2396;40;Makanan;Chocolate French Toast;30000
+2397;40;Makanan;Classic French Toast;30000
+2398;40;Makanan;English Breakfast;40000
+2399;40;Makanan;Caesar Salad;40000
+2400;40;Minuman;Black Coffee;30000
+2401;40;Minuman;White Coffee;30000
+2402;40;Minuman;Cappucino;35000
+2403;40;Minuman;Americano;35000
+2404;40;Minuman;Flavour Latte;35000
+2405;40;Minuman;Coffee Junky;20000
+2406;40;Minuman;Iced Black;35000
+2407;40;Minuman;Iced White;35000
+2408;40;Minuman;Chocolate;33000
+2409;40;Minuman;Matcha;33000
+2410;40;Minuman;Red Velvet;33000
+2411;40;Minuman;Noir 01;33000
+2412;40;Minuman;Noir 02;33000
+2413;40;Minuman;Sunset Dream;33000
+2414;40;Minuman;Orange Garden;33000
+2415;40;Minuman;Black Tea Sour;33000
+2416;40;Minuman;Lychee Greentea;33000
+2417;40;Minuman;Pinky Promise;33000
+2418;40;Minuman;Butterfly Effect;33000
+2419;41;Makanan;Rice Bowl Geprek;20000
+2420;41;Makanan;Rice Bowl Cabe Garam;20000
+2421;41;Makanan;Rice Bowl Sambal Matah;20000
+2422;41;Makanan;Rice Bowl Blackpepper;20000
+2423;41;Makanan;Rice Bowl Cabe Ijo;20000
+2424;41;Makanan;Chicken Katsu Sambal Matah;25000
+2425;41;Makanan;Chicken Katsu Teriyaki;25000
+2426;41;Makanan;Chicken Katsu Blackpepper;25000
+2427;41;Makanan;Chicken Katsu Cabe Ijo;25000
+2428;41;Makanan;Ayam Goreng Kalasan;25000
+2429;41;Makanan;Ayam Goreng Cabe Ijo;25000
+2430;41;Makanan;Nasi Campur BBC;25000
+2431;41;Makanan;Ayam Opor;25000
+2432;41;Makanan;Beef Bulgogi;28000
+2433;41;Makanan;Fried Noodle;15000
+2434;41;Makanan;Nasi Telur;15000
+2435;41;Makanan;Mie Nyemek;15000
+2436;41;Makanan;Ayam Bakar Sambal Ijo;25000
+2437;41;Makanan;Ayam Bakar Mentega;25000
+2438;41;Makanan;Tongseng Ayam;25000
+2439;41;Makanan;Tahu Ja;15000
+2440;41;Makanan;Kentang Goreng;20000
+2441;41;Makanan;Churros;18000
+2442;41;Makanan;Risol;20000
+2443;41;Makanan;Mix Platter;28000
+2444;41;Makanan;Tempe Mendoan;15000
+2445;41;Makanan;Singkong Goreng;15000
+2446;41;Makanan;Dimsum;22000
+2447;41;Makanan;Onion Rings;18000
+2448;41;Makanan;Tahu Cabe Garam;15000
+2449;41;Minuman;Kopi Susu BBC;15000
+2450;41;Minuman;Camelia;18000
+2451;41;Minuman;Pop Punk;20000
+2452;41;Minuman;Americano;20000
+2453;41;Minuman;Espresso Double Shot;20000
+2454;41;Minuman;Caffe Latte;23000
+2455;41;Minuman;Cappucino;23000
+2456;41;Minuman;Split Shot ;28000
+2457;41;Minuman;Spanish Latte;23000
+2458;41;Minuman;BBC On The Rock;23000
+2459;41;Minuman;Chocolate;18000
+2460;41;Minuman;Matcha;18000
+2461;41;Minuman;Red Velvet;18000
+2462;41;Minuman;Taro;18000
+2463;41;Minuman;Black Tea;8000
+2464;41;Minuman;Lychee Tea;18000
+2465;41;Minuman;Lemon Tea;18000
+2466;41;Minuman;Casera;23000
+2467;41;Minuman;Baby Blue;23000
+2468;41;Minuman;Green Day;23000
+2469;41;Minuman;Strawberry Jam;15000
+2470;41;Minuman;Banana Smoothie;20000
+2471;41;Minuman;Strawberry Smoothie;20000
+2472;41;Minuman;Dragon Fruit Smoothie;20000
+2473;42;Makanan;Beef Bulgogi;36000
+2474;42;Makanan;Beef Pedas Nampol;36000
+2475;42;Makanan;Tongkol Suwir;28000
+2476;42;Makanan;Nasi Ayam Kecap;28000
+2477;42;Makanan;Nasi Ayam Suwir;28000
+2478;42;Makanan;Karage Cabe Garam;30000
+2479;42;Makanan;Karage Sambal Matah;30000
+2480;42;Makanan;Karage Teriyaki;30000
+2481;42;Makanan;Chicken Katsu Sambal Matah;28000
+2482;42;Makanan;Chicken Katsu Blackpepper;28000
+2483;42;Makanan;Chicken Katsu Teriyaki;28000
+2484;42;Makanan;Ayam Gepuk Sambal Ijo;28000
+2485;42;Makanan;Ayam Gepuk Sambal Bawang;28000
+2486;42;Makanan;Nasi Goreng;28000
+2487;42;Makanan;Nasi Telur Dadar;18000
+2488;42;Makanan;Ayam Rempah;25000
+2489;42;Makanan;Risoles;20000
+2490;42;Makanan;Cireng;20000
+2491;42;Makanan;French Fries;18000
+2492;42;Makanan;Mix Platter;27000
+2493;42;Makanan;Tahu Bakso;22000
+2494;42;Makanan;Kerupuk Basah;22000
+2495;42;Makanan;Tempe Mendoan;22000
+2496;42;Makanan;Singkong Goreng;20000
+2497;42;Makanan;Chicken Karage Hot Sesame Sauce;25000
+2498;42;Makanan;Indomie Nyemek;22000
+2499;42;Makanan;Indomie Kari Ayam;15000
+2500;42;Makanan;Indomie Soto Banjar;15000
+2501;42;Makanan;Indomie Soto Banjar Limau Kuit;15000
+2502;42;Makanan;Indomie Goreng Sejuta Umat ++;18000
+2503;42;Minuman;Americano;20000
+2504;42;Minuman;Americano Honey;25000
+2505;42;Minuman;Americano Cold Foam;27000
+2506;42;Minuman;Cappucino;25000
+2507;42;Minuman;Caffe Latte;25000
+2508;42;Minuman;Vanilla Latte;27000
+2509;42;Minuman;Spanish Latte;27000
+2510;42;Minuman;Moccacino;25000
+2511;42;Minuman;Caramel Macchiato;27000
+2512;42;Minuman;Kolmi;18000
+2513;42;Minuman;Auren;20000
+2514;42;Minuman;Auren 2.0;23000
+2515;42;Minuman;Hazelea;23000
+2516;42;Minuman;Carmila;23000
+2517;42;Minuman;Mba Nana;23000
+2518;42;Minuman;Komandan;23000
+2519;42;Minuman;Taro;18000
+2520;42;Minuman;Matcha;22000
+2521;42;Minuman;Chocolate;20000
+2522;42;Minuman;Red Velvet;20000
+2523;42;Minuman;Choco Banan;22000
+2524;42;Minuman;Choco Mint;22000
+2525;42;Minuman;Creamy Lotus;27000
+2526;42;Minuman;Cookies and Cream;27000
+2527;42;Minuman;Strawberry Milk Cheese;27000
+2528;42;Minuman;Iced Pure Matcha;20000
+2529;42;Minuman;Pure Matcha Latte;25000
+2530;42;Minuman;Basic Tea;8000
+2531;42;Minuman;Mango Tea;18000
+2532;42;Minuman;Lychee Tea;18000
+2533;42;Minuman;Lemon Tea;18000
+2534;42;Minuman;Mint Tea;18000
+2535;42;Minuman;Hawaii;25000
+2536;42;Minuman;Lizy;25000
+2537;42;Minuman;Blue Diamond;25000
+2538;42;Minuman;Aestro;25000
+2539;42;Minuman;Burst Manju;25000
+2540;42;Minuman;Air Mineral;5000
+2541;43;Makanan;Ayam Bakar Gumer;25000
+2542;43;Makanan;Ayam Serundeng;23000
+2543;43;Makanan;Indomie Goreng;11000
+2544;43;Makanan;Indomie Kuah;11000
+2545;43;Makanan;Mie Atjeh Bangladesh;20000
+2546;43;Makanan;Nasi Ayam Bawang;23000
+2547;43;Makanan;Nasi Campur Djoeang;23000
+2548;43;Makanan;Nasi Goreng Kampung;23000
+2549;43;Makanan;O.G Bangladesh;20000
+2550;43;Makanan;French Fries;20000
+2551;43;Makanan;Pangsit Mini;20000
+2552;43;Makanan;Pisang Goreng Keju;20000
+2553;43;Makanan;Pisang Goreng Wijen;20000
+2554;43;Makanan;Pisang Keju Gulung;20000
+2555;43;Makanan;Singkong Goreng;20000
+2556;43;Makanan;Tahu Cabe Garam;20000
+2557;43;Makanan;Tempe Mendoan;20000
+2558;43;Minuman;Air Mineral;8000
+2559;43;Minuman;Americano;20000
+2560;43;Minuman;Amerle;20000
+2561;43;Minuman;Caffe Latte;20000
+2562;43;Minuman;Cappucino;20000
+2563;43;Minuman;Chocolate;16000
+2564;43;Minuman;Basic Tea;5000
+2565;43;Minuman;Espresso;12000
+2566;43;Minuman;Koepi Soesoe Djoeang;19000
+2567;43;Minuman;Koepi Soesoe Noesantara;17000
+2568;43;Minuman;Koepi Soesoe  Patriot;19000
+2569;43;Minuman;Koepi Toebroek;15000
+2570;43;Minuman;Kopi Mentega;15000
+2571;43;Minuman;Kopi Penguat;20000
+2572;43;Minuman;Lemon Tea;16000
+2573;44;Makanan;Chicken Katsu Teriyaki;25000
+2574;44;Makanan;Chicken Katsu Sambal Matah;25000
+2575;44;Makanan;Mie Apah;15000
+2576;44;Makanan;Tempe Mendoan;15000
+2577;44;Makanan;Singkong Goreng;15000
+2578;44;Makanan;French Fries;15000
+2579;44;Makanan;Cireng;15000
+2580;44;Makanan;Risol;15000
+2581;44;Makanan;Kentang Sosis;19000
+2582;44;Minuman;Espresso;20000
+2583;44;Minuman;Americano;20000
+2584;44;Minuman;Long Black;18000
+2585;44;Minuman;Piccolo;23000
+2586;44;Minuman;Cappucino;25000
+2587;44;Minuman;Caffe Latte;25000
+2588;44;Minuman;Vanilla Latte;25000
+2589;44;Minuman;Caramel Latte;25000
+2590;44;Minuman;Massa Depan;18000
+2591;44;Minuman;Massa Kini;18000
+2592;44;Minuman;Matcha Lalu;20000
+2593;44;Minuman;Taro Disini;20000
+2594;44;Minuman;Brownie;20000
+2595;44;Minuman;Red Velvet Cheese Cake;20000
+2596;44;Minuman;Cheese Cake;23000
+2597;44;Minuman;Popcorn;23000
+2598;44;Minuman;Lemon Tea;15000
+2599;44;Minuman;Lychee Tea;15000
+2600;44;Minuman;Passion Tea;15000
+2601;44;Minuman;Peach Tea;15000
+2602;45;Makanan;Beef Blackpepper;33000
+2603;45;Makanan;Beef Sambal Bawang;33000
+2604;45;Makanan;Beef Teriyaki;33000
+2605;45;Makanan;Nasi Goreng Gaba;23000
+2606;45;Makanan;Nasi Goreng Hongkong;25000
+2607;45;Makanan;Nasi Goreng Ikan Asin;28000
+2608;45;Makanan;Nasi Goreng Sambal Bawang;23000
+2609;45;Makanan;Nasi Goreng Special;30000
+2610;45;Makanan;Ayam Goreng Geprek Gaba;30000
+2611;45;Makanan;Ayam Goreng Sambal Bawang;30000
+2612;45;Makanan;Ayam Goreng Sambal Ijo;30000
+2613;45;Makanan;Ayam Goreng Sambal Matah;30000
+2614;45;Makanan;Ayam Goreng Blackpepper;30000
+2615;45;Makanan;Ayam Goreng Teriyaki;30000
+2616;45;Makanan;Ayam Goreng 3 Rasa;33000
+2617;45;Makanan;Ayam Goreng Lalapan;30000
+2618;45;Makanan;Ayam Goreng Pedas Manis;33000
+2619;45;Makanan;Ayam Pop Blackpepper;28000
+2620;45;Makanan;Ayam Pop Teriyaki;28000
+2621;45;Makanan;Ayam Pop Asam Manis;28000
+2622;45;Makanan;Ayam Pop Sambal Matah;28000
+2623;45;Makanan;Chicken Katsu Blackpepper;30000
+2624;45;Makanan;Chicken Katsu Teriyaki;30000
+2625;45;Makanan;Chicken Katsu Asam Manis;30000
+2626;45;Makanan;Chicken Katsu Sambal Matah;30000
+2627;45;Makanan;Samosa;20000
+2628;45;Makanan;Singkong Jadoel;23000
+2629;45;Makanan;Sugor People;20000
+2630;45;Makanan;Sweet Sutagor;20000
+2631;45;Makanan;Tahu Bakso;18000
+2632;45;Makanan;Tahu Balado;18000
+2633;45;Makanan;Tahu Cabe Garam;20000
+2634;45;Makanan;Tahu Isi;23000
+2635;45;Makanan;Tahu Tempe;18000
+2636;45;Makanan;Tempe Mendoan;18000
+2637;45;Makanan;Bakwan;20000
+2638;45;Makanan;Cireng;20000
+2639;45;Makanan;French Fries;23000
+2640;45;Makanan;Mix Platter;33000
+2641;45;Makanan;Pangsit;18000
+2642;45;Makanan;Pisang Coklat;20000
+2643;45;Makanan;Pisang Goreng Kipas Srikaya;23000
+2644;45;Makanan;Pisang Keju;23000
+2645;45;Makanan;Pisang Nugget;22000
+2646;45;Makanan;Risol;23000
+2647;45;Minuman;Affogato;20000
+2648;45;Minuman;Americano;25000
+2649;45;Minuman;Caffe Latte;22000
+2650;45;Minuman;Cappucino;22000
+2651;45;Minuman;Caramel Latte;23000
+2652;45;Minuman;Espresso;18000
+2653;45;Minuman;Hazelnut Latte;23000
+2654;45;Minuman;Moccacino;25000
+2655;45;Minuman;Piccolo;20000
+2656;45;Minuman;Vanilla Latte;23000
+2657;45;Minuman;Sweet Like Honey;25000
+2658;45;Minuman;Boos Bar;25000
+2659;45;Minuman;Orange Fantasy;23000
+2660;45;Minuman;Summer Drink;23000
+2661;45;Minuman;Royal Botles;23000
+2662;45;Minuman;Akira;25000
+2663;45;Minuman;Choco Classic ;20000
+2664;45;Minuman;Choco Gogo;25000
+2665;45;Minuman;Klepon;22000
+2666;45;Minuman;Matcha;23000
+2667;45;Minuman;Red Velvet;20000
+2668;45;Minuman;Taro;20000
+2669;45;Minuman;Basic Tea;10000
+2670;45;Minuman;Lemon Tea;20000
+2671;45;Minuman;Lychee Tea;20000
+2672;46;Makanan;Nasi Goreng Ayam;20000
+2673;46;Makanan;Nasi Goreng Telur;20000
+2674;46;Makanan;Nasi Goreng Seafood;35000
+2675;46;Makanan;Nasi Goreng Sapi;35000
+2676;46;Makanan;Nasi Goreng Kaisar;35000
+2677;46;Makanan;Mie Goreng Ayam;25000
+2678;46;Makanan;Mie Goreng Seafood;35000
+2679;46;Makanan;Mie Kuah;25000
+2680;46;Makanan;Ifumie;30000
+2681;46;Makanan;Kwetiau Goreng Ayam;25000
+2682;46;Makanan;Kwetiau Goreng Seafood;35000
+2683;46;Makanan;Kwetiau Goreng Sapi;35000
+2684;46;Makanan;Kwetiau Kuah;25000
+2685;46;Makanan;Kwetiau Siram;30000
+2686;46;Makanan;Nasi Capcay;35000
+2687;46;Makanan;Capcay Goreng Ayam;25000
+2688;46;Makanan;Capcay Goreng Seafood;35000
+2689;46;Makanan;Capcay Kuah;35000
+2690;46;Makanan;Cah Kangkung;25000
+2691;46;Makanan;Kangkung Belacan;25000
+2692;46;Makanan;Kangkung Tauco;25000
+2693;46;Makanan;Fuyunghai Ayam;40000
+2694;46;Makanan;Fuyunghai Udang;45000
+2695;46;Makanan;Ayam Geprek;15000
+2696;46;Makanan;Ayam Goreng Kremes;45000
+2697;46;Makanan;Ayam Cah Jamur;45000
+2698;46;Makanan;Ayam Cabe Ijo;45000
+2699;46;Makanan;Ayam Asam Manis;45000
+2700;46;Makanan;Ayam Mentega;45000
+2701;46;Makanan;Ayam Lada Hitam;45000
+2702;46;Makanan;Ayam Saos Padang;45000
+2703;46;Makanan;Ayam Saos Inggris;45000
+2704;46;Makanan;Ayam Telur Asin;45000
+2705;46;Makanan;Ayam Goreng Tepung;45000
+2706;46;Makanan;Ayam Cabe Garam;45000
+2707;46;Makanan;Ayam Singapore;45000
+2708;46;Makanan;Cumi Cabe Ijo;50000
+2709;46;Makanan;Cumi Asam Manis;50000
+2710;46;Makanan;Cumi Telur Asin;50000
+2711;46;Makanan;Cumi Goreng Tepung;50000
+2712;46;Makanan;Udang Cabe Ijo;50000
+2713;46;Makanan;Udang Asam Manis;50000
+2714;46;Makanan;Udang Telur Asin;50000
+2715;46;Makanan;Udang Goreng Tepung;50000
+2716;46;Makanan;Sop Iga;55000
+2717;46;Makanan;Bebek Serundeng;49000
+2718;46;Makanan;Mix Platter;40000
+2719;46;Makanan;Pisang Pontianak;26000
+2720;46;Makanan;French Fries;21000
+2721;46;Makanan;Singkong Goreng;21000
+2722;46;Makanan;Mini Pao;20000
+2723;46;Minuman;Teh Herbal Bajakah;25000
+2724;46;Minuman;Kopi Herbal Bajakah;21000
+2725;46;Minuman;Kopi Sintuk Madu;21000
+2726;46;Minuman;Kopi Pasak Bumi;21000
+2727;46;Minuman;Espresso;16000
+2728;46;Minuman;Espresso Double Shot;23000
+2729;46;Minuman;Cappucino;26000
+2730;46;Minuman;Caffe Latte;26000
+2731;46;Minuman;Americano;21000
+2732;46;Minuman;Manual Brew V60;26000
+2733;46;Minuman;Vietnam Drip;26000
+2734;46;Minuman;Kopi Susu Gula Aren;20000
+2735;46;Minuman;Caramel Macchiato;29000
+2736;46;Minuman;Moccacino;29000
+2737;46;Minuman;Vanilla Latte;26000
+2738;46;Minuman;Butterscotch Latte;25000
+2739;46;Minuman;Salt Caramel Latte;25000
+2740;46;Minuman;Hazelnut Latte;31000
+2741;46;Minuman;Hazelnut Mocha Latte;31000
+2742;46;Minuman;Hazelnut Matcha Latte;31000
+2743;46;Minuman;Alexandra;26000
+2744;46;Minuman;Lemon Rock;26000
+2745;46;Minuman;Lychee Mojito;26000
+2746;46;Minuman;Mango Mojito;26000
+2747;46;Minuman;Klepon;39000
+2748;46;Minuman;Avocado;26000
+2749;46;Minuman;Matcha;26000
+2750;46;Minuman;Red Velvet;26000
+2751;46;Minuman;Chocolate;26000
+2752;46;Minuman;Taro;26000
+2753;46;Minuman;Caramel;26000
+2754;46;Minuman;Thai Tea;21000
+2755;46;Minuman;Lychee Tea;21000
+2756;46;Minuman;Peach Tea;26000
+2757;46;Minuman;Lemon Tea;21000
+2758;47;Makanan;Mie Kubu;25000
+2759;47;Makanan;Ayam Pop Sambal Matah;30000
+2760;47;Makanan;Ayam Pop Cabe Garam;30000
+2761;47;Makanan;Ayam Pop Goreng Mentega;30000
+2762;47;Makanan;Ayam Pop Lada Hitam;30000
+2763;47;Makanan;Nasi Goreng;30000
+2764;47;Makanan;Singkong Goreng;20000
+2765;47;Makanan;Cireng;20000
+2766;47;Makanan;French Fries;20000
+2767;47;Makanan;Tahu Bakso;25000
+2768;47;Makanan;Tahu Cabe Garam;20000
+2769;47;Makanan;Tempe Mendoan;20000
+2770;47;Makanan;Dimsum;30000
+2771;47;Makanan;Pangsit;25000
+2772;47;Makanan;Pisang Goreng;20000
+2773;47;Minuman;Kubu Aren;25000
+2774;47;Minuman;Kubu Pandan;27000
+2775;47;Minuman;Caramel Salted;30000
+2776;47;Minuman;Americano;25000
+2777;47;Minuman;Espresso;25000
+2778;47;Minuman;V60;27000
+2779;47;Minuman;Vietnam Drip;25000
+2780;47;Minuman;Cappucino;27000
+2781;47;Minuman;Moccacino;27000
+2782;47;Minuman;Caffe Latte;27000
+2783;47;Minuman;Caramel Latte;27000
+2784;47;Minuman;Coffee Mint Latte;27000
+2785;47;Minuman;Hazelnut Latte;27000
+2786;47;Minuman;Vanilla Latte;27000
+2787;47;Minuman;Tiramisu Latte;27000
+2788;47;Minuman;Matcha;25000
+2789;47;Minuman;Taro;25000
+2790;47;Minuman;Red Velvet;25000
+2791;47;Minuman;Chocolate;25000
+2792;47;Minuman;Choco Milo;27000
+2793;47;Minuman;Cookies and Cream;27000
+2794;47;Minuman;Tiramisu;25000
+2795;47;Minuman;Tanjung;25000
+2796;47;Minuman;Ocean Breeze;25000
+2797;47;Minuman;Pacific Ocean;25000
+2798;47;Minuman;Strawberry Bliss;25000
+2799;47;Minuman;Air Mineral;10000
+2800;47;Minuman;Lychee Tea;20000
+2801;47;Minuman;Lemon Tea;20000
+2802;47;Minuman;Double Shoot;20000
+2803;48;Makanan;Chicken Salted Egg;28000
+2804;48;Makanan;Chicken Teriyaki;28000
+2805;48;Makanan;Chicken Sambal Matah;28000
+2806;48;Makanan;Beef Teriyaki;34000
+2807;48;Makanan;Nasi Goreng Jawa;27000
+2808;48;Makanan;Ayam Goreng Ori;38000
+2809;48;Makanan;Cireng;19000
+2810;48;Makanan;Singkong Goreng;19000
+2811;48;Makanan;Tela-Tela;19000
+2812;48;Makanan;French Fries;19000
+2813;48;Makanan;Chick Pop with Fries;25000
+2814;48;Makanan;Gyoza;25000
+2815;48;Makanan;Karipap;26000
+2816;48;Makanan;Risol;23000
+2817;48;Makanan;Mix Platter;51000
+2818;48;Makanan;Nutella Toast;17000
+2819;48;Makanan;Kaya Toast;17000
+2820;48;Makanan;Indomie Goreng;12000
+2821;48;Makanan;Indomie Kuah Kari Ayam;12000
+2822;48;Minuman;OG Espresso;11000
+2823;48;Minuman;OG Latte;16000
+2824;48;Minuman;OG Americano;16000
+2825;48;Minuman;Kopi Aeter;16000
+2826;48;Minuman;Kopi Aeter Creamy;16000
+2827;48;Minuman;Dark Mocha;18000
+2828;48;Minuman;Hazelblast;22000
+2829;48;Minuman;Caramello;22000
+2830;48;Minuman;Vantastic;22000
+2831;48;Minuman;Butterscotch;22000
+2832;48;Minuman;Lemon Tea;11000
+2833;48;Minuman;Choco Maniac;18000
+2834;48;Minuman;Choco Minion;18000
+2835;48;Minuman;Reveluv;17000
+2836;48;Minuman;Taro Violette;17000
+2837;48;Minuman;Hulk Matcha;17000
+2838;48;Minuman;Watermelon;21000
+2839;48;Minuman;Strawberry Matcha;25000
+2840;48;Minuman;Oreo Shake;20000
+2841;48;Minuman;Caramel Shake;25000
+2842;48;Minuman;Aeter Coffee Shake;22000
+2843;48;Minuman;Sunset;23000
+2844;48;Minuman;Sunrise;23000
+2845;48;Minuman;Black Panther;23000
+2846;49;Makanan;Rice Bowl Ayam Cabe Goreng;28000
+2847;49;Makanan;Rice Bowl Ayam Asam Manis;28000
+2848;49;Makanan;Rice Bowl Ayam Blackpepper;28000
+2849;49;Makanan;Rice Bowl Ayam Madu;28000
+2850;49;Makanan;Nasi Kulit Ayam Cabe Goreng;25000
+2851;49;Makanan;Nasi Kulit Ayam Asam Manis;25000
+2852;49;Makanan;Nasi Kulit Ayam Blackpepper;25000
+2853;49;Makanan;Nasi Kulit Ayam Madu;25000
+2854;49;Makanan;Ayam Mentega;35000
+2855;49;Makanan;Ayam Cabe Goreng;35000
+2856;49;Makanan;Ayam Asam Manis;35000
+2857;49;Makanan;Ayam Blackpepper;35000
+2858;49;Makanan;Ayam Madu;35000
+2859;49;Makanan;Ayam Goreng Taliwang;35000
+2860;49;Makanan;Kebab Ayam Blackpepper;25000
+2861;49;Makanan;Tomyum Seafood;25000
+2862;49;Makanan;Soto Banjar Kampung;30000
+2863;49;Makanan;Tongseng Ayam;35000
+2864;49;Makanan;Ayam Sambal Ijo;35000
+2865;49;Makanan;Ayam Sambal Bawang;35000
+2866;49;Makanan;Ayam Sambal Kemiri;35000
+2867;49;Makanan;Ayam Sambal Lalapan;35000
+2868;49;Makanan;Ayam Sambal Rawit;35000
+2869;49;Makanan;Ayam Sambal Rendang;35000
+2870;49;Makanan;Ayam Sambal Terasi;35000
+2871;49;Makanan;French Fries;18000
+2872;49;Makanan;Potato Wedges;20000
+2873;49;Makanan;Bakwan;18000
+2874;49;Makanan;Chicken Wings;28000
+2875;49;Makanan;Cireng;18000
+2876;49;Makanan;Dimsum;22000
+2877;49;Makanan;Singkong Goreng;18000
+2878;49;Makanan;Mix Platter;35000
+2879;49;Makanan;Cheese Stick;18000
+2880;49;Makanan;Croffle Caramel;20000
+2881;49;Makanan;Croffle Ice Cream;25000
+2882;49;Makanan;Roti Maryam;18000
+2883;49;Makanan;Rujak Buah;20000
+2884;49;Makanan;Lumpia Goreng;18000
+2885;49;Makanan;Tahu Tempe Goreng;18000
+2886;49;Makanan;Tahu Gejrot;18000
+2887;49;Makanan;Pangsit Ayam;18000
+2888;49;Minuman;Srikandi;20000
+2889;49;Minuman;Rahayu;23000
+2890;49;Minuman;Semar Gabin;23000
+2891;49;Minuman;Nawang Wulan;23000
+2892;49;Minuman;Dawet Ayu;23000
+2893;49;Minuman;Hanoman;23000
+2894;49;Minuman;Espresso Double Shot;23000
+2895;49;Minuman;On The Rock;23000
+2896;49;Minuman;Americano;25000
+2897;49;Minuman;Cappucino;25000
+2898;49;Minuman;Caffe Latte;25000
+2899;49;Minuman;Vanilla Latte;28000
+2900;49;Minuman;Caramel Latte;28000
+2901;49;Minuman;Hazelnut Latte;28000
+2902;49;Minuman;Split Shot ;35000
+2903;49;Minuman;Matcha;20000
+2904;49;Minuman;Taro;20000
+2905;49;Minuman;Red Velvet;23000
+2906;49;Minuman;Chocolate;23000
+2907;49;Minuman;Bunga Ayu;25000
+2908;49;Minuman;Fruity Mint;25000
+2909;49;Minuman;Melonias;25000
+2910;49;Minuman;Strawberry Candy;25000
+2911;49;Minuman;Banano;25000
+2912;49;Minuman;Fruity Punch;25000
+2913;49;Minuman;Strawberry Field;25000
+2914;49;Minuman;Sparkling Peach;25000
+2915;49;Minuman;Honey Moon;25000
+2916;49;Minuman;Peach Majestic;25000
+2917;49;Minuman;Flowers Candy;25000
+2918;49;Minuman;Lemonade;25000
+2919;49;Minuman;Honey Passion;25000
+2920;49;Minuman;Jasmine Child ;25000
+2921;49;Minuman;Pink Rose;25000
+2922;49;Minuman;Air Mineral;8000
+2923;49;Minuman;Basic Tea;10000
+2924;49;Minuman;Apple Tea;15000
+2925;49;Minuman;Lemon Tea;15000
+2926;49;Minuman;Lychee Tea;15000
+2927;49;Minuman;Jasmine Tea;15000
+2928;50;Makanan;Nasi Tongkol Suwir Pedas;22000
+2929;50;Makanan;Nasi Ayam Saos Lada Hitam;22000
+2930;50;Makanan;Nasi Ayam Telur Asin;22000
+2931;50;Makanan;Nasi Ayam Cabe Garam;22000
+2932;50;Makanan;Nasi Ayam Sambal Matah;22000
+2933;50;Makanan;Nasi Daging Saos Lada Hitam;25000
+2934;50;Makanan;Nasi Daging Sambal Matah;25000
+2935;50;Makanan;Nasi Dori Saos Lada Hitam;22000
+2936;50;Makanan;Nasi Dori Cabe Garam;22000
+2937;50;Makanan;Nasi Dori Sambal Matah;22000
+2938;50;Makanan;Nasi Gila;22000
+2939;50;Makanan;Nasi Mentai Sosis;22000
+2940;50;Makanan;Nasi Mentai Ayam;22000
+2941;50;Makanan;Nasi Udang Butter Garlic;25000
+2942;50;Makanan;Bakso Ikan Kuah;18000
+2943;50;Makanan;Bakso Goreng;18000
+2944;50;Makanan;Bakso Bakar;6000
+2945;50;Makanan;Brokoli Crispy;18000
+2946;50;Makanan;Chicken Nugget;18000
+2947;50;Makanan;Cireng;18000
+2948;50;Makanan;Indomie Goreng Komplit;15000
+2949;50;Makanan;French Fries;18000
+2950;50;Makanan;Mix Platter;25000
+2951;50;Makanan;Otak-Otak;18000
+2952;50;Makanan;Sosis Bakar;10000
+2953;50;Makanan;Sosis Goreng;18000
+2954;50;Makanan;Tahu Cabe Garam;18000
+2955;50;Makanan;Tahu Bakso;18000
+2956;50;Makanan;Tempe Mendoan;18000
+2957;50;Makanan;Chicken Wings;25000
+2958;50;Makanan;Pangsit Kuah;18000
+2959;50;Makanan;Cheese Burger;17000
+2960;50;Makanan;Toast Premium;17000
+2961;50;Makanan;Sweet Toast;17000
+2962;50;Makanan;Croffle;10000
+2963;50;Makanan;Burger Maxxx;25000
+2964;50;Minuman;Biscoof Iced Latte;20000
+2965;50;Minuman;Caffe Latte;18000
+2966;50;Minuman;Kopi Aren;18000
+2967;50;Minuman;Moccacino;18000
+2968;50;Minuman;Affogato;18000
+2969;50;Minuman;Americano;15000
+2970;50;Minuman;Pandan Latte;18000
+2971;50;Minuman;Caramel Latte;18000
+2972;50;Minuman;Butterscotch Latte;18000
+2973;50;Minuman;Hazelnut Latte;18000
+2974;50;Minuman;Vanilla Latte;18000
+2975;50;Minuman;Banana Latte;18000
+2976;50;Minuman;Milky Regal;17000
+2977;50;Minuman;Matcha;15000
+2978;50;Minuman;Milo;17000
+2979;50;Minuman;Chocolate;15000
+2980;50;Minuman;Red Velvet;15000
+2981;50;Minuman;Taro;15000
+2982;50;Minuman;Milkshake Vanilla;15000
+2983;50;Minuman;Milkshake Strawberry;15000
+2984;50;Minuman;Oreo Blend;17000
+2985;50;Minuman;Alpukat Kerok;20000
+2986;50;Minuman;Mango Paradise;20000
+2987;50;Minuman;Blue Breeze Mojito;15000
+2988;50;Minuman;Red Sea Mojito;15000
+2989;50;Minuman;Lychee Yakult;17000
+2990;50;Minuman;Mango Yakult;17000
+2991;50;Minuman;Melon Selasih;15000
+2992;50;Minuman;Jeruk Peras;15000
+2993;50;Minuman;Lemon Tea;12000
+2994;51;Makanan;Chicken Teriyaki;28000
+2995;51;Makanan;Oseng Mercon Sapi;32000
+2996;51;Makanan;Rawon;40000
+2997;51;Makanan;Nasi Bakar Ayam;22000
+2998;51;Makanan;Nasi Bakar Tongkol;22000
+2999;51;Makanan;Indomie Goreng Spesial;18000
+3000;51;Makanan;Ayam Goreng Lengkuas;35000
+3001;51;Makanan;Mix Platter;50000
+3002;51;Makanan;Asco Wing;25000
+3003;51;Makanan;French Fries;23000
+3004;51;Makanan;Singkong Goreng;23000
+3005;51;Makanan;Banana Cheese Roll;28000
+3006;51;Makanan;Tape Roll;28000
+3007;51;Makanan;Cireng;23000
+3008;51;Makanan;Churros;25000
+3009;51;Makanan;New York Cheese Cake;30000
+3010;51;Makanan;Lotus Cheese Cake;32000
+3011;51;Makanan;Butter Toast Ice Cream;22000
+3012;51;Makanan;Choco Toast Ice Cream;22000
+3013;51;Makanan;Cheese Toast Ice Cream;22000
+3014;51;Makanan;Strawberry Toast Ice Cream;22000
+3015;51;Makanan;Pisang Wijen Palm Sugar;22000
+3016;51;Makanan;Pisang Wijen Coklat;24000
+3017;51;Makanan;Pisang Wijen Keju;24000
+3018;51;Makanan;Pisang Wijen Coklat Keju;26000
+3019;51;Makanan;Pisang Wijen Lotus Biscoff;26000
+3020;51;Makanan;Dimsum;36000
+3021;51;Makanan;Dimsum Mentai;36000
+3022;51;Makanan;Dimsum Cheesy Melt;36000
+3023;51;Makanan;Spaghetti Carbonara;35000
+3024;51;Makanan;Spaghetti Aglio Olio;35000
+3025;51;Makanan;Spaghetti Bolognese;35000
+3026;51;Minuman;Palm Better;24000
+3027;51;Minuman;Ashley Lady;26000
+3028;51;Minuman;Mytea Rush;24000
+3029;51;Minuman;Spring Fizz;28000
+3030;51;Minuman;Berry Freshing;28000
+3031;51;Minuman;Crunchy Lotus Coffee ;34000
+3032;51;Minuman;Crunchy Lotus Milk;30000
+3033;51;Minuman;Strawberry Matcha;34000
+3034;51;Minuman;Strawberry Milk;32000
+3035;51;Minuman;Strawberry Chocolate;34000
+3036;51;Minuman;Cappucino;32000
+3037;51;Minuman;Caffe Latte;32000
+3038;51;Minuman;Americano;24000
+3039;51;Minuman;Espresso;24000
+3040;51;Minuman;Vietnam Drip;24000
+3041;51;Minuman;Affogato;26000
+3042;51;Minuman;Caramel Macchiato;36000
+3043;51;Minuman;Green Tea;32000
+3044;51;Minuman;Red Velvet;32000
+3045;51;Minuman;taro;32000
+3046;51;Minuman;Chocolate;32000
+3047;51;Minuman;Sweet Sunset;25000
+3048;51;Minuman;Lemon Crush;22000
+3049;51;Minuman;Basic Tea;10000
+3050;51;Minuman;Air Mineral;5000
+3051;51;Minuman;Pick Me Up;22000
+3052;51;Minuman;Choco Luxe;32000
+3053;51;Minuman;Thai Tea;24000
+3054;51;Minuman;Berry Zest;24000
+3055;51;Minuman;Blue Breeze;24000
+3056;52;Makanan;Bubur Komplit;30000
+3057;52;Makanan;Bubur Seafood;45000
+3058;52;Makanan;Chicken Burger;25000
+3059;52;Makanan;Beef Burger Premium;30000
+3060;52;Makanan;Beef Burger Paket;60000
+3061;52;Makanan;Package Burger;55000
+3062;52;Makanan;French Fries;20000
+3063;52;Makanan;Potato Wedges;20000
+3064;52;Makanan;Chicken Steak;45000
+3065;52;Minuman;Americano;20000
+3066;52;Minuman;Kopi Gula Aren;20000
+3067;52;Minuman;Vietnam Drip;20000
+3068;52;Minuman;Espresso;20000
+3069;52;Minuman;Ice Caramel Coffee;20000
+3070;52;Minuman;Ice Vanilla Latte;20000
+3071;52;Minuman;Ice Hazelnut;20000
+3072;52;Minuman;Thai Tea;20000
+3073;52;Minuman;Taro;20000
+3074;52;Minuman;Red Velvet;20000
+3075;52;Minuman;Manggo Sensation;20000
+3076;52;Minuman;Lychee Syrup;20000
+3077;52;Minuman;Soft Drink;12000
+3078;53;Makanan;Chicken Katsu Sambal Matah;28000
+3079;53;Makanan;Chicken Salted Egg;30000
+3080;53;Makanan;Ayam Cabe Garam;28000
+3081;53;Makanan;Ayam Penyet;35000
+3082;53;Makanan;Ayam Bakar;35000
+3083;53;Makanan;Ayam Mentega;35000
+3084;53;Makanan;Ayam Rica-Rica;28000
+3085;53;Makanan;Nasi Goreng;25000
+3086;53;Makanan;Dimsum;28000
+3087;53;Makanan;French Fries;20000
+3088;53;Makanan;Nugget;20000
+3089;53;Makanan;Cireng;20000
+3090;53;Makanan;Singkong Goreng;20000
+3091;53;Makanan;Tempe Mendoan;20000
+3092;53;Makanan;Pisang Coklat;20000
+3093;53;Makanan;Pisang Keju;25000
+3094;53;Makanan;Mix Platter;35000
+3095;53;Minuman;Kana;23000
+3096;53;Minuman;Alika;25000
+3097;53;Minuman;Nasia;28000
+3098;53;Minuman;Grisha;25000
+3099;53;Minuman;Astra;28000
+3100;53;Minuman;Espresso;25000
+3101;53;Minuman;White;35000
+3102;53;Minuman;Black;30000
+3103;53;Minuman;Vanilla Latte;27000
+3104;53;Minuman;Hazelnut Latte;27000
+3105;53;Minuman;Caramel Latte;27000
+3106;53;Minuman;Salted Caramel;27000
+3107;53;Minuman;Butterscotch Latte;27000
+3108;53;Minuman;Red Velvet;23000
+3109;53;Minuman;Chocolate;23000
+3110;53;Minuman;Matcha;23000
+3111;53;Minuman;Coconut Milktea;25000
+3112;53;Minuman;Brown Sugar Jelly;25000
+3113;53;Minuman;Lemon Tea;20000
+3114;53;Minuman;Lychee Tea;23000
+3115;53;Minuman;Honey Tea;20000
+3116;53;Minuman;Basic Tea;8000
+3117;53;Minuman;Blue Agave;25000
+3118;53;Minuman;Aga Red;28000
+3119;53;Minuman;Red Agave;25000
+3120;53;Minuman;Sweet Black Humon;25000
+3121;53;Minuman;Sweet Black Orange;28000
+3122;54;Makanan;Ayam Laos;38000
+3123;54;Makanan;Udang Krispy Saus Salad;30000
+3124;54;Makanan;Chicken Katsu Sambal Matah;32000
+3125;54;Makanan;Nasi Pecel;20000
+3126;54;Makanan;Nasi Tongkol Balado;20000
+3127;54;Makanan;Nasi Orek Hati;20000
+3128;54;Makanan;Nasi Ayam Teriyaki;35000
+3129;54;Makanan;Nasi Ayam Rica-Rica;35000
+3130;54;Makanan;Sapi Lada Hitam;45000
+3131;54;Makanan;Selada Ayam;33000
+3132;54;Makanan;Selada Daging;48000
+3133;54;Makanan;Indomie Kuah;17000
+3134;54;Makanan;Indomie Goreng;17000
+3135;54;Makanan;French Fries;27000
+3136;54;Makanan;Singkong Goreng;17000
+3137;54;Makanan;Sambosa;32000
+3138;54;Makanan;Churros;26000
+3139;54;Makanan;Cireng;26000
+3140;54;Makanan;Mix Platter;55000
+3141;54;Makanan;Popcorn;39000
+3142;54;Makanan;Tahu Bakso;28000
+3143;54;Minuman;Americano;22000
+3144;54;Minuman;Caffe Latte;28000
+3145;54;Minuman;Cappucino;28000
+3146;54;Minuman;Hazelnut Latte;25000
+3147;54;Minuman;Lavanilla;25000
+3148;54;Minuman;Espresso;22000
+3149;54;Minuman;Affogato;22000
+3150;54;Minuman;Manis Legit;22000
+3151;54;Minuman;Manis Legit Banget;25000
+3152;54;Minuman;Village Creamy;25000
+3153;54;Minuman;Basic Tea;8000
+3154;54;Minuman;Lychee Tea;20000
+3155;54;Minuman;Lemon Tea;17000
+3156;54;Minuman;Kopi Amer;22000
+3157;54;Minuman;Black Village;20000
+3158;54;Minuman;Chocolate;25000
+3159;54;Minuman;Red Velvet;25000
+3160;54;Minuman;Matcha;25000
+3161;54;Minuman;Taro;25000
+3162;54;Minuman;Oreo Latte;25000
+3163;54;Minuman;Regal Latte;25000
+3164;54;Minuman;Berry Gummy;30000
+3165;54;Minuman;Oasis ;26000
+3166;54;Minuman;The Missisippi;24000
+3167;54;Minuman;Partea;24000
+3168;54;Minuman;Mojito;22000
+3169;54;Minuman;Tropical;22000
+3170;55;Makanan;Chicken Katsu Blackpepper;25000
+3171;55;Makanan;Chicken Katsu Barbeque;25000
+3172;55;Makanan;Chicken Katsu Teriyaki;25000
+3173;55;Makanan;Chicken Katsu Sambal Matah;25000
+3174;55;Makanan;Nasi Ayam Sambal Matah;25000
+3175;55;Makanan;Nasi Goreng Desember;25000
+3176;55;Makanan;Nasi Goreng Sosis;25000
+3177;55;Makanan;Mie Goreng Desember;25000
+3178;55;Makanan;Beef Slice with Broccoli;30000
+3179;55;Makanan;Sop Iga;40000
+3180;55;Makanan;Iga Bakar;45000
+3181;55;Makanan;Creamy Chicken Spaghetti;45000
+3182;55;Makanan;Chicken Salted Egg;28000
+3183;55;Makanan;Churros;20000
+3184;55;Makanan;Singkong Goreng;20000
+3185;55;Makanan;Donut;6000
+3186;55;Makanan;Risoles;6000
+3187;55;Makanan;French Fries;22000
+3188;55;Makanan;Chicken Wings;25000
+3189;55;Makanan;Onion Rings;20000
+3190;55;Makanan;Tempe Mendoan;20000
+3191;55;Makanan;Tahu dan Tempe;20000
+3192;55;Makanan;Mix Platter;30000
+3193;55;Makanan;Dimsum Mentai;25000
+3194;55;Minuman;Coco Desember;20000
+3195;55;Minuman;Kopi Susu Desember;20000
+3196;55;Minuman;Cheese;25000
+3197;55;Minuman;Pandan;25000
+3198;55;Minuman;Butterscotch;25000
+3199;55;Minuman;Hazelnut;25000
+3200;55;Minuman;Banana;25000
+3201;55;Minuman;Chocolate;28000
+3202;55;Minuman;Matcha;28000
+3203;55;Minuman;Red Velvet;28000
+3204;55;Minuman;Taro;28000
+3205;55;Minuman;Espresso;20000
+3206;55;Minuman;Americano;25000
+3207;55;Minuman;Merrylime;30000
+3208;55;Minuman;American Fresh;32000
+3209;55;Minuman;Latte;28000
+3210;55;Minuman;Cappucino;28000
+3211;55;Minuman;Matcha Latte;30000
+3212;55;Minuman;Mocha Latte;30000
+3213;55;Minuman;Mango Tea;18000
+3214;55;Minuman;Strawberry Tea;18000
+3215;55;Minuman;Telang Tea;18000
+3216;55;Minuman;Kombucha Tea;18000
+3217;55;Minuman;Lemon Tea;18000
+3218;55;Minuman;Lychee Tea;18000
+3219;55;Minuman;Strawberry Squash;20000
+3220;55;Minuman;Mango Squash;20000
+3221;55;Minuman;Lemon Squash;20000
+3222;55;Minuman;Lychee Squash;20000
+3223;56;Makanan;Soto Betawi;55000
+3224;56;Makanan;Sop Iga;50000
+3225;56;Makanan;Tongseng Ayam;40000
+3226;56;Makanan;Kari Ayam;40000
+3227;56;Makanan;Ayam Bakar Taliwang;40000
+3228;56;Makanan;Ayam Sambal Matah;30000
+3229;56;Makanan;Ayam Serundeng;35000
+3230;56;Makanan;Ayam Kremes Sambal Tomat;35000
+3231;56;Makanan;Nasi Goreng Seafood;35000
+3232;56;Makanan;Nasi Goreng Sapi Sambal Ijo;35000
+3233;56;Makanan;Sambal Baby Cumi;35000
+3234;56;Makanan;Cumi Sambal Ijo;38000
+3235;56;Makanan;Cumi Telur Asin;40000
+3236;56;Makanan;Ayam Telur Asin;35000
+3237;56;Makanan;Dori Telur Asin;40000
+3238;56;Makanan;Beef Bulgogi;38000
+3239;56;Makanan;Oriental Crunchy Beef;35000
+3240;56;Makanan;Dori Cabe Garam;38000
+3241;56;Makanan;Wingers Cheese Sauce;35000
+3242;56;Makanan;Tomyum Seafood;45000
+3243;56;Makanan;Mie Goreng Seleraku;20000
+3244;56;Makanan;Mie Pedas Asin;30000
+3245;56;Makanan;Bakmi Ayam;30000
+3246;56;Makanan;Creamy Chicken Mushroom;45000
+3247;56;Makanan;Marinated Grilled Chicken;45000
+3248;56;Makanan;Tahu Walik;35000
+3249;56;Makanan;Spicy Wingers;35000
+3250;56;Makanan;Croffle;25000
+3251;56;Makanan;Pisang Goreng Tiramisu;25000
+3252;56;Makanan;Risoles;35000
+3253;56;Makanan;Churros;25000
+3254;56;Makanan;Onion Rings;25000
+3255;56;Makanan;Potato Nuggets;25000
+3256;56;Makanan;French Fries;20000
+3257;56;Makanan;Pangsit;25000
+3258;56;Makanan;Mix Platter;45000
+3259;56;Makanan;Gorengan Platter;45000
+3260;56;Minuman;Espresso;22000
+3261;56;Minuman;On The Rock;25000
+3262;56;Minuman;Americano;25000
+3263;56;Minuman;Manual Brew;30000
+3264;56;Minuman;Split Shot ;45000
+3265;56;Minuman;Piccolo;25000
+3266;56;Minuman;Cappucino;25000
+3267;56;Minuman;Caffe Latte;25000
+3268;56;Minuman;Asa;20000
+3269;56;Minuman;Angan;23000
+3270;56;Minuman;Trisha;23000
+3271;56;Minuman;Lencana;23000
+3272;56;Minuman;Affogato;28000
+3273;56;Minuman;Flavour Latte;30000
+3274;56;Minuman;Moccacino;30000
+3275;56;Minuman;Caramel Macchiato;30000
+3276;56;Minuman;Matcha;20000
+3277;56;Minuman;Red Velvet;20000
+3278;56;Minuman;Chocolate;20000
+3279;56;Minuman;Sky Oreo;22000
+3280;56;Minuman;Nirmala;25000
+3281;56;Minuman;Mandala;25000
+3282;56;Minuman;Berrybiscous;25000
+3283;56;Minuman;Amyra Lychee;25000
+3284;56;Minuman;Pure Chamomile;25000
+3285;56;Minuman;Banda Neira;25000
+3286;56;Minuman;Classic Earl Grey;25000
+3287;56;Minuman;Lemon Tea;20000
+3288;56;Minuman;Lychee Tea;20000
+3289;56;Minuman;Peach Tea;20000
+3290;57;Makanan;Mie Murmer;15000
+3291;57;Makanan;Ayam Cabe Garam;25000
+3292;57;Makanan;Ayam Sambal Matah;25000
+3293;57;Makanan;Ayam Blackpepper;25000
+3294;57;Makanan;Ayam Teriyaki;25000
+3295;57;Makanan;Ayam Mayo;25000
+3296;57;Makanan;Kulit Ayam Cabe Garam;25000
+3297;57;Makanan;Kulit Ayam Sambal Matah;25000
+3298;57;Makanan;Cumi Cabe Garam;30000
+3299;57;Makanan;Beef Blackpepper;30000
+3300;57;Makanan;Beef BBQ;30000
+3301;57;Makanan;Aglio Olio Chicken;25000
+3302;57;Makanan;Aglio Olio Beef;30000
+3303;57;Makanan;French Fries;18000
+3304;57;Makanan;Stick Singkong;20000
+3305;57;Makanan;Tahu Bakso;20000
+3306;57;Makanan;Tahu Cabe Garam;20000
+3307;57;Makanan;Tahu Crispy;15000
+3308;57;Makanan;Samosa;20000
+3309;57;Makanan;Roti Canai;18000
+3310;57;Makanan;Jamur Enoki;20000
+3311;57;Makanan;Pisang Goreng Crispy;20000
+3312;57;Makanan;Onion Rings;20000
+3313;57;Makanan;Tempe Mendoan;20000
+3314;57;Makanan;Comel Croffle;20000
+3315;57;Makanan;Dimsum;28000
+3316;57;Makanan;Mix Platter;30000
+3317;57;Minuman;Sindoro;25000
+3318;57;Minuman;Trikora;25000
+3319;57;Minuman;Fuji;25000
+3320;57;Minuman;Kerinci;25000
+3321;57;Minuman;Rinjani;25000
+3322;57;Minuman;Lhotse;25000
+3323;57;Minuman;Everest;25000
+3324;57;Minuman;Klepon;25000
+3325;57;Minuman;Merbabu;25000
+3326;57;Minuman;Kinibalu;25000
+3327;57;Minuman;Semeru;25000
+3328;57;Minuman;Awindya;25000
+3329;57;Minuman;Kencana;25000
+3330;57;Minuman;Andong;25000
+3331;57;Minuman;Caffe Latte;30000
+3332;57;Minuman;Cappucino;30000
+3333;57;Minuman;Americano;30000
+3334;57;Minuman;Vietnam Drip;28000
+3335;57;Minuman;V60;25000
+3336;57;Minuman;Affogato;25000
+3337;57;Minuman;Caramel Macchiato;25000
+3338;57;Minuman;Sweet and Sour Slide;25000
+3339;57;Minuman;Tropical Punch;25000
+3340;57;Minuman;Mango Tea Lemonade;25000
+3341;57;Minuman;Merry Berry;30000
+3342;57;Minuman;Twist and Punch;30000
+3343;57;Minuman;Sweet Apple Breeze;30000
+3344;57;Minuman;Etna;25000
+3345;57;Minuman;Lychee Tea;15000
+3346;57;Minuman;Strawberry Tea;15000
+3347;57;Minuman;Lemon Tea;15000
+3348;58;Makanan;Ayam Rica-Rica;28000
+3349;58;Makanan;Ayam Lada Hitam;28000
+3350;58;Makanan;Ayam Geprek Teras;28000
+3351;58;Makanan;Beef Blackpepper;35000
+3352;58;Makanan;Nasi Goreng Teras;25000
+3353;58;Makanan;Spicy Chicken;28000
+3354;58;Makanan;Spaghetti;22000
+3355;58;Makanan;Indomie Goreng;18000
+3356;58;Makanan;Indomie Kuah;18000
+3357;58;Makanan;Burger Ayam;29000
+3358;58;Makanan;Burger Ayam Keju;32000
+3359;58;Makanan;Burger Ayam Telur;32000
+3360;58;Makanan;Burger Ayam Komplit;35000
+3361;58;Makanan;Burger Sapi;31000
+3362;58;Makanan;Burger Sapi Keju;34000
+3363;58;Makanan;Burger Sapi Telur;34000
+3364;58;Makanan;Burger Sapi Komplit;38000
+3365;58;Makanan;Cireng;18000
+3366;58;Makanan;Churros;18000
+3367;58;Makanan;Chicken Ball Sauce;18000
+3368;58;Makanan;Cheese Chips;28000
+3369;58;Makanan;Dimsum;28000
+3370;58;Makanan;Empek-Empek Teras;18000
+3371;58;Makanan;French Fries;18000
+3372;58;Makanan;Kulit Empek-Empek;18000
+3373;58;Makanan;Mayo Potato;25000
+3374;58;Makanan;Mix Platter;30000
+3375;58;Makanan;Onion Rings;18000
+3376;58;Makanan;Roti Gulung;18000
+3377;58;Makanan;Risoles;18000
+3378;58;Makanan;Tahu Bakso;20000
+3379;58;Makanan;Tahu Crispy;18000
+3380;58;Minuman;Espresso;18000
+3381;58;Minuman;Americano;18000
+3382;58;Minuman;Caffe Latte;22000
+3383;58;Minuman;Cappucino;22000
+3384;58;Minuman;Moccacino;22000
+3385;58;Minuman;Vietnam Drip;20000
+3386;58;Minuman;Tubruk;18000
+3387;58;Minuman;Chocolate;22000
+3388;58;Minuman;Matcha;22000
+3389;58;Minuman;Red Velvet;22000
+3390;58;Minuman;Taro;22000
+3391;58;Minuman;Mango Milk;22000
+3392;58;Minuman;Strawberry Milk;25000
+3393;58;Minuman;Lychee Tea;18000
+3394;58;Minuman;Lemon Tea;18000
+3395;58;Minuman;New Teras;22000
+3396;58;Minuman;Sweet Coffee;22000
+3397;58;Minuman;Butterscotch;22000
+3398;58;Minuman;Green Coffee;22000
+3399;58;Minuman;Copa Coffee ;22000
+3400;58;Minuman;Sukoco;28000
+3401;58;Minuman;Pria Sejati;25000
+3402;58;Minuman;Kuda Liar;28000
+3403;58;Minuman;Traditional Drink;28000
+3404;58;Minuman;Kopral;22000
+3405;58;Minuman;Wish Purple;25000
+3406;58;Minuman;Blue Lime;28000
+3407;58;Minuman;Summer Green;25000
+3408;58;Minuman;Air Mineral;6000
+3409;59;Makanan;Nasi Daun Jeruk Ayam pedas;28000
+3410;59;Makanan;Nasi Putih Ayam Suwir Pedas Daun Jeruk;28000
+3411;59;Makanan;Nasi Ayam Cabe Garam;28000
+3412;59;Makanan;Nasi Ayam Sambal Matah;28000
+3413;59;Makanan;Nasi Goreng Chilli Oil;27000
+3414;59;Makanan;Nasi Goreng Ayam;25000
+3415;59;Makanan;Indomie Kost'an;15000
+3416;59;Makanan;Mix Platter;28000
+3417;59;Makanan;Cireng;25000
+3418;59;Makanan;Dimsum;23000
+3419;59;Makanan;Tahu Walik;20000
+3420;59;Makanan;Banana Crispy;20000
+3421;59;Makanan;French Fries;18000
+3422;59;Makanan;Kerupuk Basa;18000
+3423;59;Makanan;Tempe Mendoan;18000
+3424;59;Makanan;Bakwan;18000
+3425;59;Minuman;Carcoal Ore;30000
+3426;59;Minuman;Butterscotch Dream;30000
+3427;59;Minuman;Terserah;23000
+3428;59;Minuman;Kopi Bahari;22000
+3429;59;Minuman;Choco Monkey;22000
+3430;59;Minuman;Choco Ori;22000
+3431;59;Minuman;Red Flag;20000
+3432;59;Minuman;Green Flag;20000
+3433;59;Minuman;Taro Aja Deh;20000
+3434;59;Minuman;Durian Brew;25000
+3435;59;Minuman;Corn Latte;25000
+3436;59;Minuman;Crème Brulee Latte;25000
+3437;59;Minuman;Kopi Klasik;23000
+3438;59;Minuman;Karam;23000
+3439;59;Minuman;Vanilina;23000
+3440;59;Minuman;Banana Coffee;23000
+3441;59;Minuman;Caffe Latte;23000
+3442;59;Minuman;Americano;23000
+3443;59;Minuman;Espresso;18000
+3444;59;Minuman;Berry Sweet;25000
+3445;59;Minuman;Ocean Blue;25000
+3446;59;Minuman;Purple Ice;25000
+3447;59;Minuman;Jaga Coffee;25000
+3448;59;Minuman;Pinky;25000
+3449;59;Minuman;Pesona Laut;25000
+3450;59;Minuman;Lychee Tea;20000
+3451;59;Minuman;Lemon Tea;15000
+3452;59;Minuman;Basic Tea;10000
+3453;59;Minuman;Air Mineral;7000
+3454;60;Makanan;Nasi Goreng Usus;25000
+3455;60;Makanan;Ayam Baceman;26000
+3456;60;Makanan;Soto Betawi;25000
+3457;60;Makanan;Gulai Sapi;25000
+3458;60;Makanan;Nasi Rawon;25000
+3459;60;Makanan;Sup Bakso Ikan;25000
+3460;60;Makanan;Tomyum Gong;47000
+3461;60;Makanan;Nasi Goreng Atel;25000
+3462;60;Makanan;Nasi Goreng Gokong;28000
+3463;60;Makanan;Ayam Sambal Matah;25000
+3464;60;Makanan;Ayam Fakultas;20000
+3465;60;Makanan;Nasi Paru Daun Jeruk;25000
+3466;60;Makanan;Nasi Kulit Daun Jeruk;20000
+3467;60;Makanan;Banana Cheese;15000
+3468;60;Makanan;Mix Platter;25000
+3469;60;Makanan;Chicken Wings Buffalo;18000
+3470;60;Makanan;Fish Ball with Cheese Mayo;25000
+3471;60;Makanan;Fish and Chips;28000
+3472;60;Makanan;Friesto Misto;28000
+3473;60;Makanan;French Fries;15000
+3474;60;Makanan;Singkong Goreng;15000
+3475;60;Makanan;Potato Wedges;15000
+3476;60;Makanan;Omelette;18000
+3477;60;Makanan;Tahu Bakso;15000
+3478;60;Makanan;Chicken Fries and Cheese Sauce;25000
+3479;60;Makanan;Cireng;15000
+3480;60;Makanan;Rice Bowl Tumis Ayam;30000
+3481;60;Makanan;Rice Bowl Tumis Udang;33000
+3482;60;Makanan;Rice Bowl Tumis Cumi;33000
+3483;60;Makanan;Rice Bowl Beef Bulgogi;35000
+3484;60;Makanan;Rice Bowl Beef Blackpepper;35000
+3485;60;Minuman;Espresso;15000
+3486;60;Minuman;Americano;15000
+3487;60;Minuman;Caffe Latte;25000
+3488;60;Minuman;Cappucino;25000
+3489;60;Minuman;Affogato;20000
+3490;60;Minuman;Caramel Macchiato;25000
+3491;60;Minuman;Greentea;20000
+3492;60;Minuman;Chocolate;18000
+3493;60;Minuman;Red Velvet;18000
+3494;60;Minuman;Taro;18000
+3495;60;Minuman;Cookies and Cream;23000
+3496;60;Minuman;Kopi Susu Thok;15000
+3497;60;Minuman;Kopi Susu Adem;15000
+3498;60;Minuman;Kopi Susu Anteng;23000
+3499;60;Minuman;Kopi Susu Gedang;20000
+3500;60;Minuman;Kopi Susu Legi;20000
+3501;60;Minuman;Kopi Susu Suji;20000
+3502;60;Minuman;Kayu Tangan;18000
+3503;60;Minuman;Kopi Susu YZ;10000
+3504;60;Minuman;Lemon Tea;18000
+3505;60;Minuman;Lychee Tea;18000
+3506;60;Minuman;Tamarin Breeze;20000
+3507;60;Minuman;Bulu Perindu;23000
+3508;60;Minuman;Snicker Latte;25000
+3509;60;Minuman;Mango Mood;23000
+3510;60;Minuman;Air Mineral;6000
+3511;61;Makanan;French Fries;15000
+3512;61;Makanan;Kentang Nugget;20000
+3513;61;Makanan;Singkong Goreng;17000
+3514;61;Makanan;Pisang Goreng;17000
+3515;61;Makanan;Onion Rings;18.00
+3516;61;Makanan;Mix Platter;27000
+3517;61;Minuman;Affogato;22000
+3518;61;Minuman;Espresso;20000
+3519;61;Minuman;Americano;21000
+3520;61;Minuman;Caffe Latte;24000
+3521;61;Minuman;Vanilla Latte;31000
+3522;61;Minuman;Hazelnut Latte;31000
+3523;61;Minuman;Caramel Latte;31000
+3524;61;Minuman;Cappucino;24000
+3525;61;Minuman;Flat White;24000
+3526;61;Minuman;Piccolo Latte;24000
+3527;61;Minuman;Mocha Latte;30000
+3528;61;Minuman;Mocha Caramel;35000
+3529;61;Minuman;Mocha Hazelnut;35000
+3530;61;Minuman;Mocha Vanilla;35000
+3531;61;Minuman;Vietnam Drip;17000
+3532;61;Minuman;Dinosaur;18000
+3533;61;Minuman;Godzilla;23000
+3534;61;Minuman;Lemon Tea;15000
+3535;61;Minuman;Lemon Splash;17000
+3536;61;Minuman;Air Mineral;7000
+3537;61;Minuman;Chocolate Milkshake;30000
+3538;61;Minuman;Vanilla;30000
+3539;61;Minuman;Oreo;35000
+3540;61;Minuman;Regal;35000
+3541;61;Minuman;Lotus Biscoff;35000
+3542;61;Minuman;Chocolate;21000
+3543;61;Minuman;Thai Tea;21000
+3544;61;Minuman;Green Tea;21000
+3545;61;Minuman;Taro;21000
+3546;61;Minuman;Red Velvet;21000
+3547;61;Minuman;Black Charcoal;21000
+3548;62;Makanan;Gado-Gado Surabaya;22000
+3549;62;Makanan;Nasi Goreng Jawa;28000
+3550;62;Makanan;Chicken Katsu Barbeque;30000
+3551;62;Makanan;Korean Sweet and Sour Chicken;30000
+3552;62;Makanan;Nasi Ayam Goreng;38000
+3553;62;Makanan;Beef Teriyaki;35000
+3554;62;Makanan;Indomie Goreng;12000
+3555;62;Makanan;Indomie Kuah Kari Ayam;14000
+3556;62;Makanan;Indomie Kuah Limau Kuit;14000
+3557;62;Makanan;Cireng;20000
+3558;62;Makanan;Singkong Goreng;20000
+3559;62;Makanan;Tela-Tela;20000
+3560;62;Makanan;French Fries;20000
+3561;62;Makanan;Risol Mayo;24000
+3562;62;Makanan;Risol Ayam;24000
+3563;62;Makanan;Gyoza;25000
+3564;62;Makanan;Chick Ball;28000
+3565;62;Makanan;Mix Platter;52000
+3566;62;Minuman;Espresso;12000
+3567;62;Minuman;Affogato;20000
+3568;62;Minuman;Long Black;18000
+3569;62;Minuman;Hey Latte;18000
+3570;62;Minuman;Kopi Susu Guren;18000
+3571;62;Minuman;Kopi Susu Guren Creamy;18000
+3572;62;Minuman;Kopi Susu Arum Manis;22000
+3573;62;Minuman;Caramel Latte;24000
+3574;62;Minuman;Vanilla Latte;24000
+3575;62;Minuman;Matcha Latte;24000
+3576;62;Minuman;Crème Brulee Latte;24000
+3577;62;Minuman;Roem;24000
+3578;62;Minuman;Mochapresso;24000
+3579;62;Minuman;Coffee Shake;28000
+3580;62;Minuman;Loca Tea;14000
+3581;62;Minuman;Lemon Tea;14000
+3582;62;Minuman;Chocolate;18000
+3583;62;Minuman;Matcha;18000
+3584;62;Minuman;Taro;18000
+3585;62;Minuman;Red Velvet;18000
+3586;62;Minuman;Earl Grey Milk Tea;18000
+3587;62;Minuman;Peach Tea;18000
+3588;62;Minuman;Lychee Tea;22000
+3589;62;Minuman;Blue Galaxy;22000
+3590;62;Minuman;Odaiba Brown Milk;22000
+3591;62;Minuman;Shibuya Brown Milk;22000
+3592;62;Minuman;Hokkaido Brown Milk;24000
+3593;62;Minuman;Honey Yuzu;24000
+3594;62;Minuman;Sureom Regal;24000
+3595;62;Minuman;Chocolate Macchiato;24000
+3596;62;Minuman;Speculoos Lotus;24000
+3597;62;Minuman;Cookies and Cream;28000
+3598;62;Minuman;Green Tea Sakura;28000
+3599;63;Makanan;Chicken Quesadillas;35000
+3600;63;Makanan;Chicken Harissa;40000
+3601;63;Makanan;Iga Bakar Chilli Oil;65000
+3602;63;Makanan;Chicken Korean Spicy;28000
+3603;63;Makanan;Chicken Blackpepper;35000
+3604;63;Makanan;Beef Saikoro Blackpepper;45000
+3605;63;Makanan;Spaghetti Bolognese;30000
+3606;63;Makanan;Lasagna;30000
+3607;63;Makanan;Kid's Pasta Carbonara;35000
+3608;63;Makanan;Fettucini;35000
+3609;63;Makanan;Beef Blackpepper Aglio Olio;40000
+3610;63;Makanan;Mac and Cheese;40000
+3611;63;Makanan;Ayam Cabe Garam;35000
+3612;63;Makanan;Mie Goreng Jawa;35000
+3613;63;Makanan;Nasi Goreng Kampung;35000
+3614;63;Makanan;Soto Ayam Kuning;35000
+3615;63;Makanan;Nasi Goreng Sambal Matah;38000
+3616;63;Makanan;Nasi Goreng Lavanaa;40000
+3617;63;Makanan;Nasi Goreng Buntut;45000
+3618;63;Makanan;Rawon;55000
+3619;63;Makanan;Oxtail Soup;60000
+3620;63;Makanan;Banana Bowl;22000
+3621;63;Makanan;French Fries;22000
+3622;63;Makanan;Tempe Mendoan;22000
+3623;63;Makanan;Loaded Fries;30000
+3624;63;Makanan;Mix Platter;35000
+3625;63;Makanan;Dimsum Goreng Chilli Oil;35000
+3626;63;Makanan;Pastry Apple Pucent;35000
+3627;63;Makanan;Siomay Goreng;35000
+3628;63;Makanan;Kaki Naga 1 Ekor;35000
+3629;63;Makanan;Lumpia Goreng;35000
+3630;63;Makanan;Money Bag;35000
+3631;63;Makanan;Cheese Cake;45000
+3632;63;Minuman;Kae Berry Guava;28000
+3633;63;Minuman;Kae Tu Putu;28000
+3634;63;Minuman;Kae Cinema 21;28000
+3635;63;Minuman;Kae Lawud;28000
+3636;63;Minuman;Kae Susana Lho;28000
+3637;63;Minuman;Sanger;15000
+3638;63;Minuman;Lavanaa Basic;18000
+3639;63;Minuman;Affogato;20000
+3640;63;Minuman;Kae Sua;20000
+3641;63;Minuman;Kae Sua Creamy;22000
+3642;63;Minuman;Kae Sua Caramel;22000
+3643;63;Minuman;Americano;23000
+3644;63;Minuman;Americano Flavour;25000
+3645;63;Minuman;Caffe Latte;25000
+3646;63;Minuman;Cappucino;28000
+3647;63;Minuman;Mock Lavender;23000
+3648;63;Minuman;Mock Pink Lady;23000
+3649;63;Minuman;Tea Mocktail;23000
+3650;63;Minuman;Coklat Magnum;25000
+3651;63;Minuman;Matcha Avocado;25000
+3652;63;Minuman;Mojichaa;25000
+3653;63;Minuman;Banana Clasp;25000
+3654;63;Minuman;Mock Lav Orange Gum;25000
+3655;63;Minuman;Mock Lav with Love;25000
+3656;63;Minuman;Mock Lav Tropical Fruit;25000
+3657;63;Minuman;Basic Tea;10000
+3658;63;Minuman;Lemon Tea;18000
+3659;63;Minuman;Lychee Tea;20000
+3660;63;Minuman;Taro;22000
+3661;63;Minuman;Red Velvet;22000
+3662;63;Minuman;Matcha;22000
+3663;63;Minuman;Chocolate;22000
+3664;63;Minuman;Charcoal;22000
+3665;63;Minuman;Air Mineral;7000
+3666;64;Makanan;Milor;13000
+3667;64;Makanan;Mie Nyemek;17000
+3668;64;Makanan;Nagetsolor;17000
+3669;64;Makanan;Miekosan;18000
+3670;64;Makanan;Nasgor Weco;18000
+3671;64;Makanan;Nasi Gila;23000
+3672;64;Makanan;Nasi Ayam Geprek;20000
+3673;64;Makanan;Nasi Ayam Sambal Matah;28000
+3674;64;Makanan;Nasi Ayam Korean Honey;28000
+3675;64;Makanan;Chicken Katsu Blackpepper;30000
+3676;64;Makanan;Chicken Crispy Blackpepper;32000
+3677;64;Makanan;Cireng;17000
+3678;64;Makanan;Nugget+Sosis Goreng;17000
+3679;64;Makanan;French Fries;17000
+3680;64;Makanan;Cireng Ayam;20000
+3681;64;Makanan;Cheese Chicken Fillet;20000
+3682;64;Makanan;Mix Platter;30000
+3683;64;Makanan;Lumpia Goreng;18000
+3684;64;Makanan;Wonton;23000
+3685;64;Makanan;Tahu Ikan Crispy;18000
+3686;64;Minuman;Kospaces;20000
+3687;64;Minuman;Lowspaces;17000
+3688;64;Minuman;Melsu;20000
+3689;64;Minuman;Carumel;20000
+3690;64;Minuman;O Honey!;20000
+3691;64;Minuman;Kospaces Creamy;20000
+3692;64;Minuman;Hazelnut Coffee;22000
+3693;64;Minuman;Kospaces Aren;22000
+3694;64;Minuman;Dirty Matcha Milk;25000
+3695;64;Minuman;Americano;18000
+3696;64;Minuman;Espresso;20000
+3697;64;Minuman;Cappucino Latte;23000
+3698;64;Minuman;Caramel Latte;23000
+3699;64;Minuman;Manual Brew V60;25000
+3700;64;Minuman;Air Mineral;5000
+3701;64;Minuman;Chocolate;20000
+3702;64;Minuman;Taro;20000
+3703;64;Minuman;Matcha;20000
+3704;64;Minuman;Red Velvet;20000
+3705;64;Minuman;Bubble Gum;20000
+3706;64;Minuman;Tiramisu Flavour;23000
+3707;64;Minuman;Cheesecake Milk;23000
+3708;64;Minuman;Ichigo Mango;23000
+3709;64;Minuman;Cocoa Milk;20000
+3710;64;Minuman;Amaro Spessa;25000
+3711;64;Minuman;Freshly Yuhon;23000
+3712;64;Minuman;Sunset Pearsod;23000
+3713;64;Minuman;Sweet Dark Rose;25000
+3714;64;Minuman;Gloomy Day;25000
+3715;64;Minuman;Blooming Rose;23000
+3716;64;Minuman;Jasmine Tea;10000
+3717;64;Minuman;Lime Shoottea;15000
+3718;64;Minuman;Thai Tea;15000
+3719;64;Minuman;Lychee Tea;15000
+3720;64;Minuman;Peach Tea;17000
+3721;64;Minuman;Lychee Land;18000
+3722;64;Minuman;Manggo Land;18000
+3723;64;Minuman;Ichigo Land;18000
+3724;64;Minuman;Green Summer;20000
+3725;64;Minuman;Limone Acida;20000
+3726;65;Makanan;Bakmi Komplit;37000
+3727;65;Makanan;Bakmi Ayam Pangsit;33000
+3728;65;Makanan;Bakmi Ayam Bakso;33000
+3729;65;Makanan;Bami Jamur Creamy;29000
+3730;65;Makanan;Bakmi Ayam Kampung;33000
+3731;65;Makanan;Bakmi Ayam Original;26000
+3732;65;Makanan;Bakmi Ayam Jamur;26000
+3733;65;Makanan;Nasi Ayam Jamur;26000
+3734;65;Makanan;Beef Spicy;32000
+3735;65;Makanan;Beef Yakiniki;32000
+3736;65;Makanan;Sate Ayam Santai;32000
+3737;65;Makanan;Nasi Ayam Goreng Dadakan;32000
+3738;65;Makanan;Nasi Ayam Bakar Bumbu Gurih;32000
+3739;65;Makanan;Nasi Bebek Bacem;49000
+3740;65;Makanan;Pangsit Goreng;23000
+3741;65;Makanan;Pangsit Kuah;20000
+3742;65;Makanan;Pangsit Chilli Oil;23000
+3743;65;Makanan;French Fries;23000
+3744;65;Makanan;Singkong Goreng;22000
+3745;65;Makanan;Mix Platter;39000
+3746;65;Makanan;Seafood Platter;29000
+3747;65;Makanan;Potato Wedges;31000
+3748;65;Makanan;Pisang Goreng Caramel;23000
+3749;65;Makanan;Corn Ribs Balado;26000
+3750;65;Makanan;Ropang Santai Cokelat;23000
+3751;65;Makanan;Ropang Santai Srikaya;23000
+3752;65;Makanan;Bakso Kuah Kosongan;23000
+3753;65;Makanan;Oreo Cheesecake;28000
+3754;65;Makanan;Blueberry Cheesecake;28000
+3755;65;Makanan;Blueberry Miniburnt Cheesecake;44000
+3756;65;Makanan;Creamberry Cheese;20000
+3757;65;Makanan;Banana Bead;17000
+3758;65;Makanan;Cinnamon Roll;17000
+3759;65;Makanan;Brownies Espresso;17000
+3760;65;Makanan;Choco Nut Cookie;11000
+3761;65;Minuman;Tiffany's;28000
+3762;65;Minuman;Kinanty's;28000
+3763;65;Minuman;Rayuan Pulau Kelapa;28000
+3764;65;Minuman;Mawiney;28000
+3765;65;Minuman;Air Mineral;8000
+3766;65;Minuman;Santai;20000
+3767;65;Minuman;Kalem;20000
+3768;65;Minuman;Tenang;20000
+3769;65;Minuman;Melaka;20000
+3770;65;Minuman;Sundae;21000
+3771;65;Minuman;Espresso;20000
+3772;65;Minuman;Cek Santai;30000
+3773;65;Minuman;Americano;21000
+3774;65;Minuman;Cappucino;24000
+3775;65;Minuman;Caffe Latte;23000
+3776;65;Minuman;Caramel Latte;23000
+3777;65;Minuman;Moka Santai;26000
+3778;65;Minuman;Amelica;23000
+3779;65;Minuman;Affogato;23000
+3780;65;Minuman;Lychee Tea;20000
+3781;65;Minuman;Flavored Tea;20000
+3782;65;Minuman;Matcha Santai;22000
+3783;65;Minuman;Mojito Santai;22000
+3784;65;Minuman;Dark Cocoa;21000
+3785;65;Minuman;Good Night Sudirman;22000
+3786;65;Minuman;Darah Muda;21000
+3787;65;Minuman;Cotton Candy;21000

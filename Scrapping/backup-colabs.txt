@@ -1,0 +1,597 @@
+from IPython import get_ipython
+from IPython.display import display
+# %%
+# # ── 1) Install & import ───────────────────────────────────────────────────────────
+!pip install pandas requests scikit-learn tabulate --quiet
+
+import requests
+import pandas as pd
+import numpy as np
+import json
+from sklearn.neighbors import NearestNeighbors
+from tabulate import tabulate
+from collections import defaultdict
+
+# ── 2) Konfigurasi API & session ───────────────────────────────────────────────────
+BASE = "https://ef25-140-213-216-83.ngrok-free.app"
+session = requests.Session()
+session.headers.update({"ngrok-skip-browser-warning": "true"})
+
+# ── 3) Helper untuk fetch ─────────────────────────────────────────────────────────
+def fetch_all_user_ids():
+    # Menangani potensi error jika API tidak merespons atau JSON invalid
+    try:
+        r = session.get(f"{BASE}/api/users")
+        r.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
+        data = r.json()
+        # Pastikan data adalah list sebelum mencoba iterasi
+        if isinstance(data, list):
+            return [int(u["id_user"]) for u in data if isinstance(u, dict) and "id_user" in u]
+        else:
+            print(f"Warning: API /api/users returned non-list data: {data}")
+            return []
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching user IDs: {e}")
+        return []
+    except json.JSONDecodeError as e:
+        print(f"Error decoding user IDs JSON: {e}")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred fetching user IDs: {e}")
+        return []
+
+
+def fetch_visited(user_id):
+    try:
+        r = session.get(f"{BASE}/api/visited/{user_id}")
+        r.raise_for_status()
+        data = r.json()
+        if isinstance(data, dict):
+            return data.get("visited_cafes", [])
+        return data if isinstance(data, list) else []
+    except requests.exceptions.RequestException as e:
+        # print(f"Error fetching visited cafes for user {user_id}: {e}")
+        return []
+    except json.JSONDecodeError as e:
+        # print(f"Error decoding visited cafes JSON for user {user_id}: {e}")
+        return []
+    except Exception as e:
+        # print(f"An unexpected error occurred fetching visited cafes for user {user_id}: {e}")
+        return []
+
+
+def fetch_user(user_id):
+    try:
+        r = session.get(f"{BASE}/api/users/{user_id}")
+        r.raise_for_status()
+        return r.json()
+    except requests.exceptions.RequestException as e:
+        # print(f"Error fetching user {user_id}: {e}")
+        return {}
+    except json.JSONDecodeError as e:
+        # print(f"Error decoding user JSON for user {user_id}: {e}")
+        return {}
+    except Exception as e:
+        # print(f"An unexpected error occurred fetching user {user_id}: {e}")
+        return {}
+
+
+def fetch_cafe(cafe_id):
+    try:
+        r = session.get(f"{BASE}/api/cafe/{cafe_id}")
+        r.raise_for_status()
+        return r.json()
+    except requests.exceptions.RequestException as e:
+        # print(f"Error fetching cafe {cafe_id}: {e}")
+        return {}
+    except json.JSONDecodeError as e:
+        # print(f"Error decoding cafe JSON for cafe {cafe_id}: {e}")
+        return {}
+    except Exception as e:
+        # print(f"An unexpected error occurred fetching cafe {cafe_id}: {e}")
+        return {}
+
+
+# ── 4) Bangun user–item matrix dari menu_yang_disukai ─────────────────────────────
+records = []
+for uid in fetch_all_user_ids():
+    u   = fetch_user(uid)
+    raw = u.get("menu_yang_disukai") or "[]" # Default to "[]" if None or empty
+
+    favs = []
+    if isinstance(raw, str):
+        try:
+            # Handle potential non-list JSON or malformed data
+            parsed_raw = json.loads(raw)
+            if isinstance(parsed_raw, list):
+                favs = parsed_raw
+            else:
+                 # print(f"Warning: menu_yang_disukai for user {uid} is not a JSON list: {raw}")
+                 pass # Keep favs as empty list
+        except json.JSONDecodeError:
+             # print(f"Warning: Failed to decode JSON for user {uid}: {raw}")
+             pass # Keep favs as empty list
+    elif isinstance(raw, list):
+        favs = raw
+    else:
+         # print(f"Warning: menu_yang_disukai for user {uid} is neither string nor list: {type(raw)}")
+         pass # Keep favs as empty list
+
+
+    for m in favs:
+        # Pastikan m adalah dict dan memiliki kunci yang dibutuhkan
+        if isinstance(m, dict) and "harga" in m and "id_cafe" in m:
+            try:
+                # Handle potential non-numeric 'harga' after replace
+                harga_str = str(m["harga"]).replace(".", "")
+                records.append({
+                    "user_id": uid,
+                    "cafe_id": int(m["id_cafe"]), # Pastikan id_cafe bisa diubah ke int
+                    "harga":   int(harga_str)
+                })
+            except ValueError:
+                # print(f"Warning: Could not convert cafe_id or harga to int for user {uid}, item {m}")
+                pass # Skip record if conversion fails
+            except Exception as e:
+                # print(f"An unexpected error occurred processing menu item for user {uid}, item {m}: {e}")
+                pass
+
+
+df = pd.DataFrame(records)
+
+# Cetak ukuran DataFrame sebelum pivot
+print(f"\nDataFrame from menu_yang_disukai shape: {df.shape}")
+
+mat = pd.DataFrame() # Default to empty DataFrame
+if not df.empty:
+    try:
+        # Pastikan kolom ada sebelum pivot
+        if "user_id" in df.columns and "cafe_id" in df.columns and "harga" in df.columns:
+             mat = df.pivot_table(
+                index="user_id", columns="cafe_id", values="harga", fill_value=0
+             )
+            #  print(f"User-Item Matrix shape: {mat.shape}")
+        else:
+            print("Warning: Required columns (user_id, cafe_id, harga) not found in DataFrame for pivot.")
+    except Exception as e:
+        print(f"An error occurred during pivot_table: {e}")
+
+
+# ── 5) Hitung adjusted cosine similarity + KNN ────────────────────────────────────
+sim = pd.DataFrame() # Default to empty DataFrame
+knn = None # Default knn to None
+
+# Cetak ukuran matrix sebelum similarity calculation
+print(f"User-Item Matrix shape: {mat.shape}")
+
+if not mat.empty and mat.shape[0] > 1:
+    try:
+        X    = mat.sub(mat.mean(axis=1), axis=0)
+        num  = X.dot(X.T)
+        # Pastikan hasil sum tidak nol sebelum sqrt
+        sum_of_squares = (X**2).sum(axis=1)
+        # Ganti 0 dengan angka kecil untuk menghindari div by zero dalam norm calculation
+        norm = np.sqrt(sum_of_squares.replace(0, 1e-8).to_numpy())
+        den  = np.outer(norm, norm) + 1e-8 # Tambah epsilon untuk avoid div by zero
+        # Gunakan where clause di np.divide untuk menangani den == 0 secara aman
+        sim_vals = np.divide(num.values, den, out=np.zeros_like(num.values), where=den>1e-8)
+        sim = pd.DataFrame(sim_vals.clip(-1,1), index=mat.index, columns=mat.index)
+
+        # Pastikan similarity matrix tidak kosong dan memiliki >1 baris/kolom sebelum KNN
+        if not sim.empty and sim.shape[0] > 1:
+            dist = 1 - sim
+            # Pastikan n_neighbors tidak melebihi jumlah sampel yang tersedia
+            n_neighbors_val = min(5, len(sim))
+            if n_neighbors_val > 0: # Need at least 1 neighbor
+                 knn  = NearestNeighbors(metric="precomputed",
+                                        n_neighbors=n_neighbors_val)
+                 knn.fit(dist.values)
+            else:
+                 print("Warning: Not enough samples to build KNN with > 0 neighbors.")
+                 sim = pd.DataFrame() # Reset sim if KNN cannot be built
+        else:
+             print("Warning: Similarity matrix is empty or too small after calculation.")
+             sim = pd.DataFrame() # Reset sim
+    except Exception as e:
+        print(f"An error occurred during similarity calculation or KNN fit: {e}")
+        sim = pd.DataFrame() # Reset sim and knn on error
+        knn = None
+else:
+    print("Warning: User-Item matrix is empty or too small to calculate similarity.")
+
+
+# Cetak ukuran similarity matrix setelah calculation
+print(f"Similarity Matrix shape: {sim.shape}")
+if knn:
+    print(f"KNN n_neighbors: {knn.n_neighbors}")
+
+
+# ── 6) Dua alur rekomendasi ────────────────────────────────────────────────────────
+def rec_menu(user_id, K=6):
+    # Cek apakah sim dan mat ada dan user_id ada di index-nya
+    if knn is None or sim.empty or mat.empty or user_id not in sim.index or user_id not in mat.index:
+        # print(f"Debug (rec_menu): Requirements not met for user {user_id}. Returning [].")
+        # print(f"  knn: {knn is not None}, sim empty: {sim.empty}, mat empty: {mat.empty}, user in sim: {user_id in sim.index if not sim.empty else False}, user in mat: {user_id in mat.index if not mat.empty else False}")
+        return []
+
+    try:
+        # Pastikan jumlah neighbor tidak melebihi jumlah user yang tersedia (setelah mengecualikan user itu sendiri)
+        # sim.shape[0] adalah total user, min(K+1, len(sim)) mengambil K+1 neighbor
+        # Tapi kita ambil i[0][1:] jadi neighbor yang sebenarnya adalah min(K+1, len(sim)) - 1
+        # Pastikan len(sim) > 1 agar bisa ada neighbor selain diri sendiri
+        if len(sim) <= 1:
+             # print(f"Debug (rec_menu): Not enough users ({len(sim)}) for neighbors. Returning [].")
+             return []
+
+        n_nb = min(K+1, len(sim)) # Ambil K+1 tetangga (termasuk diri sendiri)
+        # Pastikan user_id ada di index sim sebelum slicing
+        if user_id not in sim.index:
+             # print(f"Debug (rec_menu): User {user_id} not in sim index. Returning [].")
+             return []
+
+        # Handle cases where kneighbors might return fewer than n_nb neighbors
+        d, i = knn.kneighbors((1-sim).loc[[user_id]].values, n_neighbors=n_nb)
+
+        # Pastikan i memiliki setidaknya 2 elemen (diri sendiri dan minimal 1 tetangga)
+        if i.shape[1] < 2:
+             # print(f"Debug (rec_menu): Not enough neighbors found for user {user_id}. Returning [].")
+             return []
+
+        # Ambil index tetangga (mulai dari index 1 untuk mengecualikan diri sendiri)
+        neigh_indices = i[0][1:]
+        if len(neigh_indices) == 0:
+             # print(f"Debug (rec_menu): No neighbors found after excluding self for user {user_id}. Returning [].")
+             return []
+        neigh = sim.index[neigh_indices] # Dapatkan user_id dari index
+
+        scores = {}
+        # Iterasi hanya pada kolom (cafe_id) yang ada di matrix
+        for cid in mat.columns:
+            # Rekomendasi hanya untuk kafe yang BELUM dinilai oleh user ini (nilai 0 di matrix)
+            # NOTE: Filter ini berdasarkan rating > 0, bukan kunjungan.
+            # Filtering kafe yang sudah dikunjungi akan dilakukan di fungsi get_topK_composite
+            if user_id in mat.index: # Cek apakah user ada di matrix
+                # Hitung weighted sum
+                # Pastikan neighbor ada di index sim dan mat sebelum digunakan
+                numerator = sum(sim.loc[user_id, u] * mat.loc[u, cid] for u in neigh if u in sim.index and u in mat.index)
+                denominator = sum(abs(sim.loc[user_id, u]) for u in neigh if u in sim.index)
+
+                val = numerator / denominator if denominator > 0 else 0
+
+                # hanya sim positif (atau rekomendasi positif?)
+                # Asumsi maksudnya hanya nilai rekomendasi val > 0 yang diambil
+                if val > 0: scores[cid] = val
+
+        # Urutkan berdasarkan skor dan ambil K teratas
+        sorted_cids = sorted(scores, key=scores.get, reverse=True)
+        # print(f"Debug (rec_menu): Generated {len(sorted_cids)} recommendations for user {user_id}")
+        return sorted_cids[:K]
+    except Exception as e:
+        print(f"An error occurred in rec_menu for user {user_id}: {e}")
+        return []
+
+
+def rec_visited(user_id, K=6):
+    try:
+        # Ambil sequence kunjungan user target
+        seq = [int(v["id_cafe"]) for v in fetch_visited(user_id) if isinstance(v, dict) and "id_cafe" in v]
+
+        # Jika sequence kosong atau hanya 1, tidak bisa prediksi next item
+        if len(seq) < 1:
+            # print(f"Debug (rec_visited): Sequence too short for user {user_id}. Returning [].")
+            return []
+
+        trans=defaultdict(list)
+        all_user_ids = fetch_all_user_ids() # Fetch user IDs once
+        # Batasi iterasi fetch_visited jika jumlah user sangat banyak
+        for u in all_user_ids:
+             s = [int(v["id_cafe"]) for v in fetch_visited(u) if isinstance(v, dict) and "id_cafe" in v]
+             # Bangun transisi: a -> b
+             for a,b in zip(s,s[1:]):
+                 trans[a].append(b)
+
+
+        # Kumpulkan kandidat berdasarkan transisi dari kafe yang dikunjungi user target
+        cands = []
+        # Iterasi mundur dari kafe terakhir di sequence user target
+        # agar rekomendasi paling relevan (dari kafe terakhir) dipertimbangkan lebih dulu
+        for cafe_in_seq in reversed(seq):
+             if cafe_in_seq in trans:
+                 cands.extend(trans[cafe_in_seq])
+
+        # Hitung frekuensi kandidat dan urutkan
+        # Gunakan pd.Series untuk value_counts, handle case cands empty
+        if not cands:
+             # print(f"Debug (rec_visited): No candidates generated from transitions for user {user_id}. Returning [].")
+             return []
+
+        freq_series = pd.Series(cands)
+        # Filter kafe yang sudah ada di sequence user target dari daftar frekuensi
+        # Ini adalah model *next-item* prediction, jadi kita TIDAK filter test_cafe di sini.
+        # Filtering visited akan dilakukan di fungsi get_topK_composite yang memanggil ini.
+        freq_list = freq_series.value_counts().index.tolist()
+
+        # Ambil K teratas dari daftar frekuensi
+        # print(f"Debug (rec_visited): Generated {len(freq_list)} recommendations before taking TopK for user {user_id}")
+        return freq_list[:K]
+
+    except Exception as e:
+        print(f"An error occurred in rec_visited for user {user_id}: {e}")
+        return []
+
+
+# ── 7) Composite-based TopK (Versi Rekomendasi Umum - Filter SEMUA yang Dikunjungi) ───────────────────────────────────────
+def get_topK_composite_general(user_id, K=6):
+    try:
+        # 1) gabung pool dari kedua alur, gunakan >0 similarity saja (ini dilakukan di rec_menu)
+        # Panggil rec_menu dan rec_visited untuk mendapatkan kandidat awal
+        menu_recs_raw = rec_menu(user_id,K*2)
+        visited_recs_raw = rec_visited(user_id,K*2)
+        pool = list(dict.fromkeys(menu_recs_raw + visited_recs_raw))
+        # print(f"Debug (get_topK_composite_general): Initial pool size for user {user_id}: {len(pool)}")
+
+
+        # 2) filter visited - FILTER SEMUA KAFE YANG SUDAH DIKUNJUNGI
+        # Ambil daftar SEMUA kafe yang pernah dikunjungi oleh user ini
+        all_visited_set = set([int(v["id_cafe"]) for v in fetch_visited(user_id) if isinstance(v,dict) and "id_cafe" in v])
+
+        # Filter pool: hilangkan kafe yang ada di all_visited_set
+        pool = [c for c in pool if c not in all_visited_set]
+        # print(f"Debug (get_topK_composite_general): Pool size after filtering ALL visited: {len(pool)}")
+
+
+        # 3) ambil detail + composite score
+        rows = []
+        # Panggil lagi rec_menu untuk mendapatkan ranking saat ini untuk scoring.
+        # Ini mungkin kurang efisien, idealnya fungsi rec_menu mengembalikan item DAN skornya.
+        menu_recs_ranked = {cid: idx for idx, cid in enumerate(rec_menu(user_id, K*2))} # Dict: cafe_id -> rank (0-based)
+
+
+        for cid in pool:
+            info = fetch_cafe(cid)
+            if not isinstance(info,dict) or not info.get("nama_kafe"):
+                 # print(f"Debug (get_topK_composite_general): Skipping cafe {cid} due to missing info or nama_kafe.")
+                 continue # Lewati jika detail kafe tidak valid
+
+            r = float(info.get("rating",0))
+
+            # Hitung composite score
+            # Gunakan inverse rank dari menu_recs sebagai skor menu
+            menu_score = 0
+            if cid in menu_recs_ranked:
+                 menu_score = 1.0 / (menu_recs_ranked[cid] + 1)
+
+            # Gunakan 1 jika ada di visited_recs_raw sebagai skor visited.
+            # Meskipun visited_recs_raw mungkin masih mengandung kafe yang baru saja difilter,
+            # kafe yang difilter sudah tidak ada di `pool`, jadi skor visited_score > 0
+            # untuk kafe yang sudah dikunjungi tidak akan mempengaruhi hasil akhir.
+            visited_score = 1.0 if cid in visited_recs_raw else 0.0
+
+            # Gabungkan skor (contoh: rata-rata atau weighted sum)
+            composite_score = menu_score + visited_score # Contoh sederhana
+
+            score_to_sort_by = composite_score
+
+
+            rows.append({
+                "cafe_id": int(cid) if pd.notna(cid) else None, # Pastikan ID integer atau None
+                "nama_kafe": info["nama_kafe"],
+                "rating": r,
+                "score": score_to_sort_by # Gunakan composite_score
+            })
+
+        dfc = pd.DataFrame(rows)
+
+        if dfc.empty:
+            # print(f"Debug (get_topK_composite_general): DataFrame of candidates is empty for user {user_id}.")
+            # Pastikan DataFrame kosong yang dikembalikan memiliki kolom yang sama untuk konsistensi
+            return pd.DataFrame(columns=["cafe_id","nama_kafe","rating","score"])
+
+        # 4) pilih TopK by score → lalu sort by rating
+        # Sort by score DESC, then rating DESC untuk memilih K terbaik
+        if "score" not in dfc.columns:
+             print(f"Warning: 'score' column not found in dfc for user {user_id}. Cannot sort by score.")
+             # Fallback to sorting by rating only if score is missing
+             if "rating" in dfc.columns:
+                  dfc_topK = dfc.sort_values("rating",ascending=False).head(K)
+             else:
+                  return pd.DataFrame(columns=["cafe_id","nama_kafe","rating","score"]) # Return empty if no score/rating
+        else:
+            dfc_topK = dfc.sort_values(["score","rating"],ascending=[False,False]).head(K)
+
+
+        # Sort hasil Top-K terakhir berdasarkan rating (DESC) untuk output akhir
+        # Pastikan kolom yang diminta ada sebelum memilih
+        cols_to_return = ["cafe_id","nama_kafe","rating","score"] # Tambahkan 'score'
+        cols_present = [col for col in cols_to_return if col in dfc_topK.columns]
+
+        # Mengurutkan hasil Top-K terakhir berdasarkan rating tertinggi ke terendah
+        return dfc_topK[cols_present].sort_values("rating", ascending=False)
+
+
+    except Exception as e:
+        print(f"An error occurred in get_topK_composite_general for user {user_id}: {e}")
+        # Kembalikan DataFrame kosong dengan kolom yang diharapkan jika terjadi error
+        return pd.DataFrame(columns=["cafe_id","nama_kafe","rating","score"])
+
+# ── 7') Composite-based TopK (Versi Khusus Evaluasi - Izinkan Test Cafe) ───────────
+def get_topK_composite_for_eval(user_id, K=6):
+    # KODE INI SAMA PERSIS DENGAN VERSI SEBELUMNYA YANG MEMPERBAIKI EVALUASI NEXT-ITEM
+    # FILTERING-NYA MENGIZINKAN TEST_CAFE ADA DI KANDIDAT.
+    try:
+        # 1) gabung pool dari kedua alur, gunakan >0 similarity saja (ini dilakukan di rec_menu)
+        menu_recs_raw = rec_menu(user_id,K*2)
+        visited_recs_raw = rec_visited(user_id,K*2)
+        pool = list(dict.fromkeys(menu_recs_raw + visited_recs_raw))
+        # print(f"Debug (get_topK_composite_for_eval): Initial pool size for user {user_id}: {len(pool)}")
+
+
+        # 2) filter visited - FILTERING KHUSUS UNTUK EVALUASI (IZINKAN TEST_CAFE)
+        # Ambil daftar semua kafe yang pernah dikunjungi oleh user ini
+        all_visited = [int(v["id_cafe"]) for v in fetch_visited(user_id) if isinstance(v,dict) and "id_cafe" in v]
+
+        # Jika ada minimal 2 kunjungan, kafe test adalah kunjungan terakhir
+        # Kita hanya perlu daftar kafe yang HARUS difilter, yaitu kafe sebelum kunjungan terakhir
+        seen_before_test = set(all_visited[:-1]) if len(all_visited) >= 2 else set()
+
+        # Filter pool: hilangkan kafe yang ada di seen_before_test
+        pool = [c for c in pool if c not in seen_before_test]
+        # print(f"Debug (get_topK_composite_for_eval): Pool size after filtering 'seen before test': {len(pool)}")
+
+        # 3) ambil detail + composite score
+        rows = []
+        # Panggil lagi rec_menu untuk mendapatkan ranking saat ini.
+        menu_recs_ranked = {cid: idx for idx, cid in enumerate(rec_menu(user_id, K*2))}
+
+        for cid in pool:
+            info = fetch_cafe(cid)
+            if not isinstance(info,dict) or not info.get("nama_kafe"):
+                 continue
+
+            r = float(info.get("rating",0))
+
+            # Hitung composite score
+            menu_score = 0
+            if cid in menu_recs_ranked:
+                 menu_score = 1.0 / (menu_recs_ranked[cid] + 1)
+
+            visited_score = 1.0 if cid in visited_recs_raw else 0.0
+
+            composite_score = menu_score + visited_score
+
+            score_to_sort_by = composite_score
+
+            rows.append({
+                "cafe_id": int(cid) if pd.notna(cid) else None,
+                "nama_kafe": info["nama_kafe"],
+                "rating": r,
+                "score": score_to_sort_by
+            })
+
+        dfc = pd.DataFrame(rows)
+
+        if dfc.empty:
+            return pd.DataFrame(columns=["cafe_id","nama_kafe","rating","score"])
+
+        # 4) pilih TopK by score → lalu sort by rating
+        if "score" not in dfc.columns:
+             if "rating" in dfc.columns:
+                  dfc_topK = dfc.sort_values("rating",ascending=False).head(K)
+             else:
+                  return pd.DataFrame(columns=["cafe_id","nama_kafe","rating","score"])
+        else:
+            dfc_topK = dfc.sort_values(["score","rating"],ascending=[False,False]).head(K)
+
+        cols_to_return = ["cafe_id","nama_kafe","rating","score"]
+        cols_present = [col for col in cols_to_return if col in dfc_topK.columns]
+
+        return dfc_topK[cols_present].sort_values("rating", ascending=False)
+
+    except Exception as e:
+        print(f"An error occurred in get_topK_composite_for_eval for user {user_id}: {e}")
+        return pd.DataFrame(columns=["cafe_id","nama_kafe","rating","score"])
+
+
+# ── 8) Evaluasi Composite Next-Item ───────────────────────────────────────────────
+# Fungsi evaluate_composite SEKARANG menggunakan get_topK_composite_for_eval
+def evaluate_composite(K=6):
+    hits,mrrs=[],[]
+    all_user_ids_eval = fetch_all_user_ids()
+    # print(f"\nStarting evaluation for {len(all_user_ids_eval)} users...")
+
+    for uid in all_user_ids_eval:
+        # print(f"Evaluating user {uid}...")
+        seq = [int(v["id_cafe"]) for v in fetch_visited(uid) if isinstance(v,dict) and "id_cafe" in v]
+        # print(f"  Visited sequence length: {len(seq)}")
+        if len(seq)<2:
+            # print(f"  Skipping user {uid}: sequence too short (< 2 visits)")
+            continue # Minimal harus ada 2 kunjungan untuk split train/test
+
+        hist, test = seq[:-1], seq[-1] # test adalah kafe terakhir yang dikunjungi
+        # print(f"  History: {hist}, Test cafe: {test}")
+
+        # rekom berdasarkan composite pipeline → X topK composite then extract ids
+        # PANGGIL VERSI EVALUASI DI SINI
+        recs_df = get_topK_composite_for_eval(uid,K)
+        # print(f"  Recommendations DF shape: {recs_df.shape}")
+
+        # Tambahkan pengecekan apakah DataFrame rekomendasi kosong
+        if recs_df.empty:
+            # print(f"  Skipping user {uid}: get_topK_composite_for_eval returned empty DataFrame.")
+            # Karena tidak ada rekomendasi, hit dan mrr untuk user ini adalah 0
+            hits.append(0)
+            mrrs.append(0.0)
+            continue # Lanjutkan ke pengguna berikutnya
+
+        # Pastikan kolom 'cafe_id' ada di recs_df sebelum mengaksesnya
+        if "cafe_id" not in recs_df.columns:
+             print(f"Error: 'cafe_id' column missing in recs_df for user {uid}. Skipping user.")
+             hits.append(0)
+             mrrs.append(0.0)
+             continue # Lewati pengguna ini jika kolom penting hilang
+
+
+        # Pastikan nilai di kolom cafe_id bukanlah None sebelum diconvert ke list
+        recs = [cid for cid in recs_df["cafe_id"].tolist() if cid is not None] # Daftar ID kafe yang direkomendasikan Top-K
+        # print(f"  Recommended cafe IDs: {recs}")
+
+        # HitRate: Apakah kafe test ada di dalam daftar rekomendasi?
+        is_hit = (test in recs)
+        hits.append(1 if is_hit else 0)
+        # print(f"  Is hit? {is_hit}")
+
+        # MRR: Jika kafe test ada, hitung resiprokal rank-nya. Jika tidak ada, MRR=0.
+        if is_hit:
+            rank = recs.index(test)+1
+            mrr_score = 1.0 / rank
+            # print(f"  Test cafe rank: {rank}, MRR score: {mrr_score:.4f}")
+            mrrs.append(mrr_score)
+        else:
+            # print(f"  Test cafe not in recommendations, MRR score: 0.0")
+            mrrs.append(0.0)
+
+    # Hitung rata-rata hanya jika ada pengguna yang dievaluasi
+    final_hitrate = np.mean(hits) if hits else 0.0
+    final_mrr = np.mean(mrrs) if mrrs else 0.0
+
+    # print("\nEvaluation complete.")
+    return {"HitRate":final_hitrate,
+            "MRR":    final_mrr}
+
+
+# ── 9) Main: Cetak & Evaluasi ─────────────────────────────────────────────────────
+if __name__=="__main__":
+    users = fetch_all_user_ids()
+    if users:
+        # Pilih pengguna target, gunakan user_id 5 seperti contoh output Anda
+        # Atau gunakan users[0] jika user 5 tidak selalu ada atau Anda ingin konsisten
+        # tgt = users[0] # Atau gunakan user pertama dari daftar
+
+        tgt = 3 # Ganti dengan user_id 5 sesuai contoh output Anda
+        print(f"\nTop 6 composite→rating untuk user {tgt}:")
+        # Panggil get_topK_composite_general untuk rekomendasi umum
+        top_k_composite_result = get_topK_composite_general(tgt,6)
+        if not top_k_composite_result.empty:
+            # Pastikan kolom ada sebelum mencetak dengan tabulate
+            # Tambahkan 'score' ke daftar kolom yang diharapkan
+            cols_to_print = ["cafe_id", "nama_kafe", "rating", "score"]
+            cols_present_in_result = [col for col in top_k_composite_result.columns if col in cols_to_print] # Filter kolom yang ada di df hasil
+
+            if cols_present_in_result:
+                 # Menggunakan df yang sudah diurutkan berdasarkan rating di fungsi get_topK_composite_general
+                 # tabulate akan mencetak sesuai urutan di DataFrame input
+                 print(tabulate(top_k_composite_result[cols_present_in_result],
+                                headers="keys",tablefmt="github",showindex=False))
+            else:
+                 print("Kolom yang diperlukan (cafe_id, nama_kafe, rating, score) tidak lengkap di hasil rekomendasi.")
+        else:
+            print("Tidak ada rekomendasi ditemukan untuk pengguna ini.")
+
+    print("\n=== Evaluasi Composite Next‐Item ===")
+    try:
+        # Evaluasi menggunakan fungsi evaluate_composite (yang memanggil get_topK_composite_for_eval)
+        evaluation_results = evaluate_composite(6)
+        for k,v in evaluation_results.items():
+            print(f"{k}: {v:.4f}")
+    except Exception as e:
+        print(f"An error occurred during evaluation: {e}")

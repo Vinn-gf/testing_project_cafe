@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 OUT_DIR = "data"
-OUT_FILE = os.path.join(OUT_DIR, "label_seed_2.csv")
+OUT_FILE = os.path.join(OUT_DIR, "label_seed.csv")
 SEED_SIZE = 400
 
 # ganti user:password@host/dbname sesuai Anda

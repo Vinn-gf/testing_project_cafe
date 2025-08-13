@@ -1,0 +1,6 @@
+menggunakan model yang sudah jadi untuk analisis sentimen, gunakan SVM untuk melabelkan review itu negatif atau positif, yang kafe saja yang menggunakan sentimen
+
+
+harus tahu matriks evaluasi nya digunakan untuk apa
+
+MAP itu semakin mendekati 0 maka semakin bagus

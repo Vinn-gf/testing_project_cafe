@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from sentiment import SentimentAnalyzer
+from sentiment import analyze_reviews
 import mysql.connector
 from collections import OrderedDict
 import json
@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-sentiment_analyzer = SentimentAnalyzer()
+# sentiment_analyzer = SentimentAnalyzer()
 
 def get_data(search_term=None):
     db = mysql.connector.connect(
@@ -553,7 +553,7 @@ def api_sentiment(id_kafe):
     reviews = get_reviews(id_kafe)
     if not isinstance(reviews, list):
         return jsonify({"error": "Failed to fetch reviews"}), 500
-    analyzed = sentiment_analyzer.analyze_reviews(reviews, id_kafe)
+    analyzed = analyze_reviews(reviews, id_kafe)
     return jsonify(analyzed), 200
 
 @app.route('/api/data', methods=['GET'])

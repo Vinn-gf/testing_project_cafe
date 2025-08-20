@@ -9,8 +9,8 @@ OUT = MASTER
 if not os.path.exists(NEW):
     raise FileNotFoundError(f"New labeled file not found: {NEW}")
 
+df_master = pd.read_csv(MASTER, encoding="utf-8", sep=",", on_bad_lines='warn', dtype=str) if os.path.exists(MASTER) else pd.DataFrame(columns=["ulasan","label"])
 # load robustly
-df_master = pd.read_csv(MASTER, encoding="utf-8", sep=";", on_bad_lines='warn', dtype=str) if os.path.exists(MASTER) else pd.DataFrame(columns=["ulasan","label"])
 df_new = pd.read_csv(NEW, encoding="utf-8", sep=";", on_bad_lines='warn', dtype=str)
 
 # ensure columns present

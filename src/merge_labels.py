@@ -1,32 +1,59 @@
-# scripts/merge_labels.py
-import os, pandas as pd
+# merge_labels.py
+from pathlib import Path
+from csv_utils import robust_read_csv, write_csv_semicolon
 from preprocessing import normalize_text
+import pandas as pd
 
-MASTER = "data/labeled_all.csv"
-NEW = "data/to_label_round_labeled.csv"  # annotator output must contain pool_idx, ulasan, label
-OUT = MASTER
+NEW = Path("data/to_label_round_labeled.csv")
+MASTER = Path("data/labeled_all.csv")
 
-if not os.path.exists(NEW):
-    raise FileNotFoundError(f"New labeled file not found: {NEW}")
+def main():
+    if not NEW.exists():
+        raise FileNotFoundError("Annotated file not found: data/to_label_round_labeled.csv")
+    df_new = robust_read_csv(NEW)
+    cols_lower = {c.strip().lower(): c for c in df_new.columns}
+    if "ulasan" in cols_lower:
+        df_new = df_new.rename(columns={cols_lower["ulasan"]:"ulasan"})
+    elif "review" in cols_lower:
+        df_new = df_new.rename(columns={cols_lower["review"]:"ulasan"})
+    else:
+        if len(df_new.columns) == 1:
+            df_new.columns = ["ulasan"]
+        else:
+            raise ValueError("Annotated file must contain 'ulasan' column")
+    if "label" in cols_lower:
+        df_new = df_new.rename(columns={cols_lower["label"]:"label"})
+    else:
+        if "label" not in df_new.columns and len(df_new.columns) >= 2:
+            df_new = df_new.rename(columns={df_new.columns[-1]:"label"})
+        else:
+            raise ValueError("Annotated file must contain 'label' column")
+    df_new = df_new.fillna("").astype(str)
+    df_new["label"] = df_new["label"].str.lower().str.strip()
+    df_new = df_new[["ulasan","label"]]
 
-df_master = pd.read_csv(MASTER, encoding="utf-8", sep=",", on_bad_lines='warn', dtype=str) if os.path.exists(MASTER) else pd.DataFrame(columns=["ulasan","label"])
-# load robustly
-df_new = pd.read_csv(NEW, encoding="utf-8", sep=";", on_bad_lines='warn', dtype=str)
+    if MASTER.exists():
+        df_master = robust_read_csv(MASTER)
+        if "ulasan" not in [c.lower() for c in df_master.columns]:
+            df_master.rename(columns={df_master.columns[0]:"ulasan"}, inplace=True)
+        if "label" not in [c.lower() for c in df_master.columns] and len(df_master.columns)>=2:
+            df_master.rename(columns={df_master.columns[-1]:"label"}, inplace=True)
+    else:
+        df_master = pd.DataFrame(columns=["ulasan","label"])
+    df_master = df_master.fillna("").astype(str)
 
-# ensure columns present
-if "ulasan" not in df_new.columns or "label" not in df_new.columns:
-    raise ValueError("New labeled CSV must have columns: 'ulasan' and 'label'")
+    df_master["__clean"] = df_master["ulasan"].astype(str).apply(normalize_text) if not df_master.empty else pd.Series(dtype=str)
+    df_new["__clean"] = df_new["ulasan"].astype(str).apply(normalize_text)
 
-# normalize to compare and avoid duplicates
-df_master["clean"] = df_master["ulasan"].astype(str).apply(normalize_text) if not df_master.empty else pd.Series(dtype=str)
-df_new["clean"] = df_new["ulasan"].astype(str).apply(normalize_text)
+    if not df_master.empty:
+        existing = set(df_master["__clean"].tolist())
+        df_new_unique = df_new[~df_new["__clean"].isin(existing)].copy()
+    else:
+        df_new_unique = df_new.copy()
 
-# remove new rows already present (by clean text)
-if not df_master.empty:
-    existing = set(df_master["clean"].tolist())
-    df_new = df_new[~df_new["clean"].isin(existing)]
+    combined = pd.concat([df_master[["ulasan","label"]], df_new_unique[["ulasan","label"]]], ignore_index=True)
+    write_csv_semicolon(MASTER, combined)
+    print(f"[merge_labels] Merged {len(df_new_unique)} new rows. Master now has {len(combined)} rows (sep=';').")
 
-# append and save
-combined = pd.concat([df_master[["ulasan","label"]], df_new[["ulasan","label"]]], ignore_index=True)
-combined.to_csv(OUT, index=False, encoding="utf-8")
-print(f"Merged {len(df_new)} new rows. Master now has {len(combined)} rows.")
+if __name__ == "__main__":
+    main()

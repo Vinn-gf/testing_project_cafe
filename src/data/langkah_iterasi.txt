@@ -1,0 +1,27 @@
+langkah langkah iterasi data review
+1. train_svm
+2. csv_utils
+3. preprocessing
+4. make_unlabeled (ada kata yang hilang ketika buat unlabeled)
+5. make pool_idx (di file make_unlabeled_pool.py juga)
+6. select_uncertain (output : to_label_round.csv)
+7. labeling manual (output : to_label_round_labeled.csv)
+8. merge_labels
+
+catatan iterasi 2 :
+1. labeled_all : 786 data (new)
+2. unlabeled_pool : 3035 data
+
+output train_svm :
+[train] Accuracy: 0.8144
+              precision    recall  f1-score   support
+
+    negative     0.7500    0.6000    0.6667        15
+     neutral     0.5714    0.2857    0.3810        14
+    positive     0.8462    0.9706    0.9041        68
+
+    accuracy                         0.8144        97
+   macro avg     0.7225    0.6188    0.6506        97
+weighted avg     0.7916    0.8144    0.7919        97
+
+catatan iterasi 3 :

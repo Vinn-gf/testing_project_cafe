@@ -3,6 +3,7 @@ from flask_cors import CORS
 from sentiment import analyze_reviews
 import mysql.connector
 from collections import OrderedDict
+from copy import deepcopy
 import json
 
 app = Flask(__name__)
@@ -128,31 +129,56 @@ def get_data_by_id(nomor):
         return None
 
 def get_reviews(id_kafe=None):
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cafe_databases"
-    )
-    cursor = db.cursor()
-    cursor.execute("SHOW COLUMNS FROM review_tables")
-    columns = [col[0] for col in cursor.fetchall()]
+    db = None
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        cursor.execute("SHOW COLUMNS FROM review_tables")
+        columns = [col[0] for col in cursor.fetchall()]
 
-    if id_kafe:
-        cursor.execute("SELECT * FROM review_tables WHERE id_kafe = %s", (id_kafe,))
-    else:
-        cursor.execute("SELECT * FROM review_tables")
+        if id_kafe:
+            cursor.execute("SELECT * FROM review_tables WHERE id_kafe = %s", (id_kafe,))
+        else:
+            cursor.execute("SELECT * FROM review_tables")
 
-    rows = cursor.fetchall()
-    db.close()
+        rows = cursor.fetchall()
 
-    results = []
-    for row in rows:
-        od = OrderedDict()
-        for idx, col in enumerate(columns):
-            od[col] = row[idx]
-        results.append(od)
-    return results
+        results = []
+        for row in rows:
+            od = OrderedDict()
+            for idx, col in enumerate(columns):
+                od[col] = row[idx]
+            results.append(od)
+
+        # Deduplikasi berdasarkan tuple dari semua kolom (preserve order)
+        seen = set()
+        unique_results = []
+        for item in results:
+            # buat key dari nilai-nilai kolom, gunakan None jika tidak ada
+            key = tuple(item.get(col) for col in columns)
+            if key not in seen:
+                seen.add(key)
+                unique_results.append(item)
+
+        return unique_results
+
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        try:
+            cursor.close()
+        except:
+            pass
+        try:
+            if db:
+                db.close()
+        except:
+            pass
 
 def register_user(data):
     username = data.get("username")
@@ -553,7 +579,11 @@ def api_sentiment(id_kafe):
     reviews = get_reviews(id_kafe)
     if not isinstance(reviews, list):
         return jsonify({"error": "Failed to fetch reviews"}), 500
-    analyzed = analyze_reviews(reviews, id_kafe)
+    reviews_copy = deepcopy(reviews)
+    analyzed = analyze_reviews(reviews_copy, id_kafe)
+    if analyzed is None:
+        return jsonify({"error": "Sentiment analysis returned nothing"}), 500
+
     return jsonify(analyzed), 200
 
 @app.route('/api/data', methods=['GET'])

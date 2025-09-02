@@ -1,16 +1,4 @@
 # make_unlabeled_pool.py
-"""
-Robust maker for unlabeled pool.
-
-Behavior:
-- Try to detect if input CSV has a proper 'ulasan' column (delimiter-separated).
-  If yes -> parse using that delimiter and extract the 'ulasan' column.
-- Otherwise -> fallback to RAW-LINES mode: read file as text (multiple encodings tried),
-  normalize newlines, then take each non-empty physical line (after optional header removal)
-  as one review (this preserves commas/quotes/emoji and avoids pandas/csv quoting issues).
-- Write output as semicolon-separated CSV with two columns: pool_idx;ulasan (UTF-8-SIG).
-"""
-
 from pathlib import Path
 import csv
 import re

@@ -9,8 +9,6 @@ langkah langkah iterasi data review
 8. merge_labels
 
 catatan iterasi 2 :
-1. labeled_all : 786 data (new)
-2. unlabeled_pool : 3035 data
 
 output train_svm :
 [train] Accuracy: 0.8144
@@ -24,17 +22,101 @@ output train_svm :
    macro avg     0.7225    0.6188    0.6506        97
 weighted avg     0.7916    0.8144    0.7919        97
 
+
+
 catatan iterasi 3 :
+data labeled_all (after merge) : 720 data
+output train_svm
+$ python train_svm.py
+[train] Accuracy: 0.7708
+              precision    recall  f1-score   support
+
+    negative     0.6897    0.6897    0.6897        29
+     neutral     0.6667    0.3478    0.4571        23
+    positive     0.8058    0.9022    0.8513        92
+
+    accuracy                         0.7708       144
+   macro avg     0.7207    0.6466    0.6660       144
+weighted avg     0.7602    0.7708    0.7558       144
 
 
-PERBAIKI SOURCE CODE MERGE LABELS
+catatan iterasi 4
+data labeled_all (after merge) : 902 data
+$ python train_svm.py
+[train] Accuracy: 0.6630
+              precision    recall  f1-score   support
 
-ACUAN REVIEW YANG PERLU DIPERBAIKI
-Main course Beff Bulgogi nya enak,,buat nunggu sambil mobil dicuci memang cocok,,, Tapi SANGAT disayangkan Nyuci Mobil Antrian Ke 5 nunggunya sampe 3,5 jam... Tolong kecepatan Carwash nya lebih d perhatikan, boleh lah tenaga Kerjanya di tambah😪😪 …
+    negative     0.5714    0.6364    0.6022        44
+     neutral     0.3333    0.1875    0.2400        32
+    positive     0.7544    0.8190    0.7854       105
 
- 
-Spesialis kopi tanpa anpas yang menggugah, tempatnya sederhana
-tapi kopi tak ada duanya.
+    accuracy                         0.6630       181
+   macro avg     0.5530    0.5476    0.5425       181
+weighted avg     0.6355    0.6630    0.6444       181
 
-Main course Beff Bulgogi nya enak,,buat nunggu sambil mobil dicuci memang cocok,,, Tapi SANGAT disayangkan Nyuci Mobil Antrian Ke 5 nunggunya sampe 3,5 jam... Tolong kecepatan Carwash nya lebih d perhatikan, boleh lah tenaga Kerjanya di tambah😪😪 … cuci mobil hampir 2 jam pdhl gak antri🥲 ac di cafe nya juga mati jadi puanass, mana bawa bayi..niatnya nongki santai sambil nyuci mobil jadi gak nyantai karna terlalu lama, kepanasan dan bayi rewel😩 … kurang luas tempatnya, image nya hanya sekedar tempat konsumen nunggu cuci mobil.,
+
+catatan iterasi 5
+data labeled_all (after merge) : 1055 data
+
+$ python train_svm.py
+[train] Training SVM (TF-IDF + LinearSVC)...
+[train] Accuracy: 0.6730
+              precision    recall  f1-score   support
+
+    negative     0.6400    0.6275    0.6337        51
+     neutral     0.3333    0.1538    0.2105        39
+    positive     0.7273    0.8595    0.7879       121
+
+    accuracy                         0.6730       211
+   macro avg     0.5669    0.5469    0.5440       211
+weighted avg     0.6334    0.6730    0.6439       211
+
+[train] Saved model -> models\svm_sentiment_pipeline.joblib
+
+
+catatan iterasi 6
+data labeled_all (after merge) : 1188 data
+[train] Accuracy: 0.7101
+              precision    recall  f1-score   support
+
+    negative     0.7407    0.7143    0.7273        56
+     neutral     0.3947    0.3333    0.3614        45
+    positive     0.7808    0.8321    0.8057       137
+
+    accuracy                         0.7101       238
+   macro avg     0.6388    0.6266    0.6315       238
+weighted avg     0.6984    0.7101    0.7032       238
+
+[train] Saved model -> models\svm_sentiment_pipeline.joblib
+
+
+catatan iterasi 7
+
+data labeled_all (after merge) : 1302 data
+$ python train_svm.py
+[train] Accuracy: 0.7088
+              precision    recall  f1-score   support
+
+    negative     0.6716    0.7377    0.7031        61
+     neutral     0.3571    0.1961    0.2532        51
+    positive     0.7831    0.8725    0.8254       149
+
+    accuracy                         0.7088       261
+   macro avg     0.6040    0.6021    0.5939       261
+weighted avg     0.6738    0.7088    0.6850       261
+
+
+catatan iterasi 8
+
+data labeled_all (after merge) : 1403 data
+[train] Accuracy: 0.7438
+              precision    recall  f1-score   support
+
+    negative     0.7667    0.7188    0.7419        64
+     neutral     0.4773    0.3818    0.4242        55
+    positive     0.8023    0.8765    0.8378       162
+
+    accuracy                         0.7438       281
+   macro avg     0.6821    0.6590    0.6680       281
+weighted avg     0.7305    0.7438    0.7350       281
 

@@ -37,7 +37,7 @@ def main(test_size=0.2, random_state=42, save_iter_model=False, iter_tag="latest
     print("[train] Training SVM (TF-IDF + LinearSVC)...")
     pipe = Pipeline([
         ("tfidf", TfidfVectorizer(**TFIDF_PARAMS)),
-        ("svm", LinearSVC(class_weight="balanced", max_iter=20000))
+        ("svm", LinearSVC(class_weight="balanced", C=1.0, max_iter=20000))
     ])
     pipe.fit(X_train, y_train)
     y_pred = pipe.predict(X_val)

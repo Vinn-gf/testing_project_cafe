@@ -9,7 +9,45 @@ import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { API_ENDPOINTS } from "../utils/api_endpoints";
 
 const BASE_API_URL = "http://localhost:5000";
-const GO_MAPS_KEY = process.env.REACT_APP_GOMAPS_API_KEY;
+// const GO_MAPS_KEY = process.env.REACT_APP_GOMAPS_API_KEY;
+
+// Haversine helper: returns meters between two coords
+const haversineMeters = (lat1, lon1, lat2, lon2) => {
+  const toNum = (v) => (v === null || v === undefined ? NaN : Number(v));
+  const a1 = toNum(lat1);
+  const o1 = toNum(lon1);
+  const a2 = toNum(lat2);
+  const o2 = toNum(lon2);
+  if (
+    !Number.isFinite(a1) ||
+    !Number.isFinite(o1) ||
+    !Number.isFinite(a2) ||
+    !Number.isFinite(o2)
+  ) {
+    return NaN;
+  }
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371000; // Earth's radius in meters
+
+  const φ1 = toRad(a1);
+  const φ2 = toRad(a2);
+  const Δφ = toRad(a2 - a1);
+  const Δλ = toRad(o2 - o1);
+
+  const sinDphi = Math.sin(Δφ / 2);
+  const sinDlambda = Math.sin(Δλ / 2);
+  const a =
+    sinDphi * sinDphi + Math.cos(φ1) * Math.cos(φ2) * sinDlambda * sinDlambda;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
+// format meters -> "123 m" or "1.23 km"
+const formatDistanceText = (meters) => {
+  if (!Number.isFinite(meters) || isNaN(meters)) return "N/A";
+  if (meters < 1000) return `${Math.round(meters)} m`;
+  return `${(meters / 1000).toFixed(2)} km`;
+};
 
 const RecommendationPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,43 +99,68 @@ const RecommendationPage = () => {
       })
       .catch((err) => {
         console.error(err);
+        setError("Failed to fetch recommendations.");
       })
       .finally(() => setLoading(false));
   }, [userId]);
 
-  // 3) once we have both recs and userLocation, compute distances
+  // 3) once we have both recs and userLocation, compute distances using Haversine
   useEffect(() => {
     if (!userLocation || recommendations.length === 0) return;
 
-    // for each cafe, fetch its coords then call distance matrix
     const fetchAllDistances = async () => {
+      setdistanceLoading(true);
       const results = {};
+
       await Promise.all(
         recommendations.map(async (cafe) => {
           try {
             // 3a) get full cafe detail
-            const info = await axios.get(
+            const infoResp = await axios.get(
               `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafe.cafe_id}`,
               { headers: { "ngrok-skip-browser-warning": "true" } }
             );
-            const { latitude, longitude } = info.data;
-            // 3b) distance matrix
-            const origins = `${userLocation.lat},${userLocation.lng}`;
-            const destinations = `${latitude},${longitude}`;
-            const dm = await axios.get(
-              `https://maps.gomaps.pro/maps/api/distancematrix/json?origins=${origins}&destinations=${destinations}&key=${GO_MAPS_KEY}`
+            const info = infoResp.data || {};
+            // Try multiple possible coordinate field names for robustness
+            const latitude =
+              info.latitude ??
+              info.lat ??
+              info.lintang ??
+              info.latitude_cafe ??
+              info.latitude_kafe ??
+              null;
+            const longitude =
+              info.longitude ??
+              info.lon ??
+              info.lng ??
+              info.bujur ??
+              info.longitude_cafe ??
+              info.longitude_kafe ??
+              null;
+
+            const latNum = latitude !== null ? Number(latitude) : NaN;
+            const lonNum = longitude !== null ? Number(longitude) : NaN;
+
+            if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) {
+              results[cafe.cafe_id] = "N/A";
+              return;
+            }
+
+            // 3b) compute Haversine distance (meters)
+            const meters = haversineMeters(
+              userLocation.lat,
+              userLocation.lng,
+              latNum,
+              lonNum
             );
-            const elem = dm.data.rows?.[0]?.elements?.[0];
-            results[cafe.cafe_id] =
-              elem && elem.status === "OK" && elem.distance
-                ? elem.distance.text
-                : "N/A";
+            results[cafe.cafe_id] = formatDistanceText(meters);
           } catch (e) {
-            console.warn("Distance fetch error for", cafe.cafe_id, e);
+            console.warn("Distance fetch/compute error for", cafe.cafe_id, e);
             results[cafe.cafe_id] = "N/A";
           }
         })
       );
+
       setDistances(results);
       setdistanceLoading(false);
     };

@@ -1,0 +1,11 @@
+{
+  "w_cf": [0.45],
+  "w_vf": [0.15],
+  "w_co": [0.15],
+  "w_sent": [0.15],
+  "w_rating": [0.10],
+  "K": 6,
+  "last_n": 1,
+  "sample_size": 50,
+  "max_combinations": 10
+}

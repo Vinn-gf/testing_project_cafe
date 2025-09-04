@@ -241,6 +241,81 @@ def login_user(data):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+# === tambahan admin: login_admin & get_admin_by_id ===
+def login_admin(data):
+    """
+    data: { "username": "...", "password": "..." }
+    returns: (jsonify(...), status_code)
+    """
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        # ambil admin berdasarkan username
+        query = "SELECT id_admin, username, password FROM admin_tables WHERE username = %s"
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        db.close()
+
+        if result:
+            id_admin_db, user_db, stored_password = result
+            if str(stored_password) == str(password):
+                # sukses, kembalikan info admin (tanpa password)
+                return jsonify({"message": "Login successful", "admin_id": id_admin_db, "username": user_db}), 200
+            else:
+                return jsonify({"error": "Wrong password"}), 401
+        else:
+            return jsonify({"error": "Admin not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+def get_admin_by_id(id_admin):
+    """
+    Mengambil data admin berdasarkan id_admin.
+    Mengembalikan dict (atau None jika tidak ada).
+    Struktur mengikuti pattern get_user_by_id.
+    """
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+
+        # ambil kolom tabel admin_tables (lebih aman jika struktur kolom berubah)
+        cursor.execute("SHOW COLUMNS FROM admin_tables")
+        columns = [col[0] for col in cursor.fetchall()]
+
+        query = "SELECT * FROM admin_tables WHERE id_admin = %s"
+        cursor.execute(query, (id_admin,))
+        result = cursor.fetchone()
+        db.close()
+
+        if result:
+            od = OrderedDict()
+            for idx, col in enumerate(columns):
+                od[col] = result[idx]
+            return od
+        else:
+            return None
+    except Exception as e:
+        return {"error": str(e)}
+
+# === akhir tambahan admin ===
+
 def get_user_by_id(id_user):
     try:
         db = mysql.connector.connect(
@@ -573,6 +648,22 @@ def api_user_by_id(id_user):
 @app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
 def api_reviews(id_kafe):
     return jsonify(get_reviews(id_kafe))
+
+# Admin endpoints (routes)
+@app.route('/api/login_admin', methods=['POST'])
+def api_login_admin():
+    data = request.get_json()
+    return login_admin(data)
+
+@app.route('/api/admin/<int:id_admin>', methods=['GET'])
+def api_get_admin(id_admin):
+    admin = get_admin_by_id(id_admin)
+    if isinstance(admin, dict) and admin.get("error"):
+        return jsonify(admin), 500
+    if admin:
+        return jsonify(admin), 200
+    else:
+        return jsonify({"error": "Admin not found"}), 404
 
 @app.route('/api/sentiment/<int:id_kafe>', methods=['GET'])
 def api_sentiment(id_kafe):

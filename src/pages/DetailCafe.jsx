@@ -1,3 +1,4 @@
+// DetailCafe.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ColorRing } from "react-loader-spinner";
@@ -24,6 +25,38 @@ const DetailCafe = () => {
   const reviewsPerPage = 5;
   const navigate = useNavigate();
 
+  // --- Helper: Haversine formula (returns meters) ---
+  const haversineMeters = (lat1, lon1, lat2, lon2) => {
+    // Validate numbers
+    const a1 = Number(lat1);
+    const o1 = Number(lon1);
+    const a2 = Number(lat2);
+    const o2 = Number(lon2);
+    if (
+      !Number.isFinite(a1) ||
+      !Number.isFinite(o1) ||
+      !Number.isFinite(a2) ||
+      !Number.isFinite(o2)
+    ) {
+      return NaN;
+    }
+
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const R = 6371000; // Earth's radius in meters
+
+    const φ1 = toRad(a1);
+    const φ2 = toRad(a2);
+    const Δφ = toRad(a2 - a1);
+    const Δλ = toRad(o2 - o1);
+
+    const sinDphi = Math.sin(Δφ / 2);
+    const sinDlambda = Math.sin(Δλ / 2);
+    const a =
+      sinDphi * sinDphi + Math.cos(φ1) * Math.cos(φ2) * sinDlambda * sinDlambda;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   // 1) Ambil detail kafe
   useEffect(() => {
     const fetchCafe = async () => {
@@ -44,9 +77,9 @@ const DetailCafe = () => {
     fetchCafe();
   }, [id]);
 
-  // 2) Ambil reviews untuk kafe ini
+  // 2) Ambil reviews untuk kafe ini + panggil sentiment API lalu merge/replace
   useEffect(() => {
-    const fetchReviews = async () => {
+    const fetchReviewsAndSentiment = async () => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_REVIEWS}${id}`,
@@ -54,13 +87,61 @@ const DetailCafe = () => {
             headers: { "ngrok-skip-browser-warning": true },
           }
         );
-        setReviews(response.data);
+        const rawReviews = Array.isArray(response.data) ? response.data : [];
+        // set reviews awal terlebih dahulu agar UI tetap responsif
+        setReviews(rawReviews);
+
+        // Panggil API sentiment (backend Anda telah menyediakan endpoint ini)
+        try {
+          const sentimentResp = await axios.get(
+            `${process.env.REACT_APP_URL_SERVER}/api/sentiment/${id}`,
+            {
+              headers: { "ngrok-skip-browser-warning": true },
+              timeout: 10000,
+            }
+          );
+          const analyzed = sentimentResp.data;
+
+          if (Array.isArray(analyzed) && analyzed.length > 0) {
+            // Jika backend mengembalikan array hasil analisis (dengan field `sentiment`),
+            // gunakan langsung array tersebut supaya label sentiment terpampang.
+            setReviews(analyzed);
+          } else if (typeof analyzed === "object" && analyzed !== null) {
+            // Jika backend mengembalikan object, coba merge berdasarkan 'ulasan' atau 'username'
+            const lookup = {};
+            if (Array.isArray(analyzed.reviews)) {
+              analyzed.reviews.forEach((a) => {
+                const key = `${a.username ?? ""}||${a.ulasan ?? ""}`;
+                lookup[key] = a.sentiment ?? a.label ?? null;
+              });
+            } else {
+              Object.values(analyzed).forEach((a) => {
+                if (a && typeof a === "object") {
+                  const key = `${a.username ?? ""}||${a.ulasan ?? ""}`;
+                  lookup[key] = a.sentiment ?? a.label ?? null;
+                }
+              });
+            }
+
+            const merged = rawReviews.map((r) => {
+              const key = `${r.username ?? ""}||${r.ulasan ?? ""}`;
+              const sentimentLabel = lookup[key] ?? r.sentiment ?? null;
+              return { ...r, sentiment: sentimentLabel };
+            });
+            setReviews(merged);
+          } else {
+            setReviews(rawReviews);
+          }
+        } catch (sentErr) {
+          console.warn("Sentiment API error:", sentErr?.message ?? sentErr);
+          setReviews(rawReviews);
+        }
       } catch (err) {
         setError(err.message);
       }
     };
     if (cafe) {
-      fetchReviews();
+      fetchReviewsAndSentiment();
     }
   }, [cafe, id]);
 
@@ -98,7 +179,6 @@ const DetailCafe = () => {
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
         );
         const data = response.data;
-        // parsing café yang sudah dikunjungi (JSON string) → array objek { id_cafe: … }
         let visitedArr = [];
         if (data.cafe_telah_dikunjungi) {
           try {
@@ -121,19 +201,25 @@ const DetailCafe = () => {
     fetchUserPreferences();
   }, []);
 
-  // 5) Hitung jarak ke kafe via Google Distance Matrix
+  // 5) Hitung jarak ke kafe via Haversine (tarik garis lurus)
   useEffect(() => {
-    const fetchDistance = async () => {
+    const computeDistance = () => {
       if (!userLocation || !cafe) return;
 
-      const { latitude: userLat, longitude: userLong } = userLocation;
-      const { latitude: cafeLat, longitude: cafeLong } = cafe;
+      const userLat = Number(userLocation.latitude);
+      const userLon = Number(userLocation.longitude);
+
+      const cafeLat = cafe.latitude ?? null;
+      const cafeLon = cafe.longitude ?? null;
+
+      const cLat = cafeLat !== null ? Number(cafeLat) : NaN;
+      const cLon = cafeLon !== null ? Number(cafeLon) : NaN;
 
       if (
-        isNaN(userLat) ||
-        isNaN(userLong) ||
-        isNaN(cafeLat) ||
-        isNaN(cafeLong)
+        !Number.isFinite(userLat) ||
+        !Number.isFinite(userLon) ||
+        !Number.isFinite(cLat) ||
+        !Number.isFinite(cLon)
       ) {
         setError("Invalid coordinates. Distance calculation failed.");
         setDistance("N/A");
@@ -142,32 +228,26 @@ const DetailCafe = () => {
       }
 
       setDistanceLoading(true);
-      const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
-      const destinations = `${cafeLat},${cafeLong}`;
-      const origins = `${userLat},${userLong}`;
-      const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destinations}&origins=${origins}&key=${apiKey}`;
-
       try {
-        const axiosInstance = axios.create({ timeout: 5000 });
-        const response = await axiosInstance.get(url);
-        const data = response.data;
-        if (data.status !== "OK") {
-          throw new Error(`API Error: ${data.status}`);
-        }
-        if (data.rows.length > 0 && data.rows[0].elements.length > 0) {
-          setDistance(data.rows[0].elements[0].distance.text);
-        } else {
+        const meters = haversineMeters(userLat, userLon, cLat, cLon);
+        if (!Number.isFinite(meters) || isNaN(meters)) {
           setDistance("N/A");
+        } else {
+          const formatted =
+            meters < 1000
+              ? `${Math.round(meters)} m`
+              : `${(meters / 1000).toFixed(2)} km`;
+          setDistance(formatted);
         }
-      } catch (err) {
-        console.error("Error fetching distance:", err.message);
-        setError("Failed to calculate distance. Please try again.");
+      } catch (e) {
+        console.error("Haversine error:", e);
         setDistance("N/A");
       } finally {
         setDistanceLoading(false);
       }
     };
-    fetchDistance();
+
+    computeDistance();
   }, [userLocation, cafe]);
 
   // 6) Handler search bar
@@ -197,13 +277,12 @@ const DetailCafe = () => {
     ? userPreferences.cafe_telah_dikunjungi.map((v) => parseInt(v.id_cafe, 10))
     : [];
 
-  // Ambil ID kafe (titik “nomor” di database kita)
   const cafeId = cafe?.nomor ?? cafe?.id_cafe;
   const alreadyVisited = cafeId
     ? visitedIds.includes(parseInt(cafeId, 10))
     : false;
 
-  // 9) Handle "Mark as Visited"
+  // 9) Handle "Mark as Visited" atau kafe yang sudah dikunjungi oleh user
   const handleMarkVisited = async () => {
     setError("");
     setSuccess("");
@@ -217,7 +296,6 @@ const DetailCafe = () => {
       setError("Cafe data not available.");
       return;
     }
-    // Cek ulang apakah memang sudah dikunjungi
     if (visitedIds.includes(parseInt(cafeId, 10))) {
       setSuccess("Cafe already marked as visited.");
       return;
@@ -232,7 +310,6 @@ const DetailCafe = () => {
       setSuccess(
         response.data.message || "Cafe marked as visited successfully!"
       );
-      // Perbarui langsung state local agar tombol berubah menjadi "Already Visited"
       setUserPreferences((prev) => {
         const prevVisited = Array.isArray(prev.cafe_telah_dikunjungi)
           ? prev.cafe_telah_dikunjungi
@@ -274,6 +351,16 @@ const DetailCafe = () => {
   } catch {
     backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
   }
+
+  const sentimentBadgeClass = (label) => {
+    if (!label) return "bg-gray-400 text-white";
+    const l = String(label).toLowerCase();
+    if (l.includes("pos") || l.includes("positive"))
+      return "bg-green-500 text-white";
+    if (l.includes("neg") || l.includes("negative"))
+      return "bg-red-500 text-white";
+    return "bg-yellow-400 text-black"; // neutral / unknown
+  };
 
   return (
     <div className="overflow-hidden bg-[#2D3738] min-h-screen">
@@ -461,7 +548,20 @@ const DetailCafe = () => {
             <div key={index} className="border rounded-lg">
               <div className="border-b-2 border-[#E3DCC2] w-full">
                 <div className="flex items-center justify-between m-2">
-                  <h3 className="text-xl font-bold">{review.nama}</h3>
+                  <h3 className="text-xl font-bold flex items-center gap-2">
+                    {review.username}
+                    {/* Label sentiment kecil di samping judul review */}
+                    <span
+                      className={`text-sm px-2 py-1 rounded ${sentimentBadgeClass(
+                        review.sentiment
+                      )}`}
+                      style={{ marginLeft: 8 }}
+                    >
+                      {review.sentiment
+                        ? String(review.sentiment).toUpperCase()
+                        : "N/A"}
+                    </span>
+                  </h3>
                 </div>
               </div>
               <p className="m-2">{review.ulasan}</p>

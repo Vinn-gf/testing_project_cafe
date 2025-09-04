@@ -1,3 +1,4 @@
+// HomePage.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ColorRing } from "react-loader-spinner";
@@ -12,6 +13,38 @@ const parseDistance = (distanceText) => {
   const parts = distanceText.split(" ");
   const num = parseFloat(parts[0].replace(",", "."));
   return parts[1]?.toLowerCase() === "km" ? num * 1000 : num;
+};
+
+// Haversine helper (returns meters)
+const haversineMeters = (lat1, lon1, lat2, lon2) => {
+  const toNum = (v) => (v === null || v === undefined ? NaN : Number(v));
+  const a1 = toNum(lat1);
+  const o1 = toNum(lon1);
+  const a2 = toNum(lat2);
+  const o2 = toNum(lon2);
+  if (
+    !Number.isFinite(a1) ||
+    !Number.isFinite(o1) ||
+    !Number.isFinite(a2) ||
+    !Number.isFinite(o2)
+  ) {
+    return NaN;
+  }
+
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371000; // Earth radius in meters
+
+  const φ1 = toRad(a1);
+  const φ2 = toRad(a2);
+  const Δφ = toRad(a2 - a1);
+  const Δλ = toRad(o2 - o1);
+
+  const sinDphi = Math.sin(Δφ / 2);
+  const sinDlambda = Math.sin(Δλ / 2);
+  const a =
+    sinDphi * sinDphi + Math.cos(φ1) * Math.cos(φ2) * sinDlambda * sinDlambda;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 };
 
 const HomePage = () => {
@@ -82,77 +115,97 @@ const HomePage = () => {
       .catch((e) => setError(e.message));
   }, []);
 
-  // 4) Compute distances & recommendations
+  // 4) Compute distances & recommendations using Haversine
   useEffect(() => {
     (async () => {
       if (!userLocation || !userPreferences || cafes.length === 0) return;
-      const apiKey = process.env.REACT_APP_GOMAPS_API_KEY;
-      const { latitude: uLat, longitude: uLng } = userLocation;
 
-      const withDistance = await Promise.all(
-        cafes.map(async (c) => {
-          // Validate cafe coordinates
-          if (!c.latitude || !c.longitude) {
-            console.log(
-              `Skipping cafe ${c.nama_kafe} due to missing coordinates.`
-            );
+      try {
+        const { latitude: uLat, longitude: uLng } = userLocation;
+
+        const withDistance = cafes.map((c) => {
+          // Robust extraction of cafe coordinates (try several field names)
+          const cafeLat =
+            c.latitude ??
+            c.lat ??
+            c.latitude_cafe ??
+            c.latitude_kafe ??
+            c.lintang ??
+            null;
+          const cafeLon =
+            c.longitude ??
+            c.lon ??
+            c.lng ??
+            c.longitude_cafe ??
+            c.longitude_kafe ??
+            c.bujur ??
+            null;
+
+          const cLat = cafeLat !== null ? Number(cafeLat) : NaN;
+          const cLon = cafeLon !== null ? Number(cafeLon) : NaN;
+
+          if (!Number.isFinite(cLat) || !Number.isFinite(cLon)) {
+            // missing/invalid coords
             return { ...c, distance: "N/A" };
           }
 
-          try {
-            // Ensure coordinates are properly formatted without spaces
-            const destinations = `${c.latitude},${c.longitude}`;
-            const origins = `${uLat},${uLng}`;
-            const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destinations}&origins=${origins}&key=${apiKey}`;
-
-            const { data } = await axios.get(url);
-
-            if (data.status !== "OK") {
-              throw new Error(`API Error: ${data.status}`);
-            }
-
-            const el = data.rows?.[0]?.elements?.[0] || {};
-            return { ...c, distance: el.distance?.text || "N/A" };
-          } catch (error) {
-            console.error(
-              `Error fetching distance for cafe ${c.nama_kafe}:`,
-              error.message
-            );
+          const meters = haversineMeters(uLat, uLng, cLat, cLon);
+          if (!Number.isFinite(meters) || isNaN(meters)) {
             return { ...c, distance: "N/A" };
           }
-        })
-      );
+          const formatted =
+            meters < 1000
+              ? `${Math.round(meters)} m`
+              : `${(meters / 1000).toFixed(2)} km`;
+          return { ...c, distance: formatted };
+        });
 
-      const minM = parseFloat(userPreferences.preferensi_jarak_minimal) * 1000;
-      const maxM = parseFloat(userPreferences.preferensi_jarak_maksimal) * 1000;
-      const mid = (minM + maxM) / 2;
-      const facs = userPreferences.preferensi_fasilitas
-        .split(",")
-        .map((s) => s.trim().toLowerCase());
+        // Parse preferences distances (assume preferences stored in km as before)
+        const minPrefKm = parseFloat(userPreferences.preferensi_jarak_minimal);
+        const maxPrefKm = parseFloat(userPreferences.preferensi_jarak_maksimal);
 
-      let filtered = withDistance.filter((c) => {
-        const d = parseDistance(c.distance);
-        return (
-          d >= minM &&
-          d <= maxM &&
-          facs.every((f) => c.fasilitas?.toLowerCase().includes(f))
-        );
-      });
+        // If invalid, fall back to wide default range
+        const minM = Number.isFinite(minPrefKm) ? minPrefKm * 1000 : 0;
+        const maxM = Number.isFinite(maxPrefKm)
+          ? maxPrefKm * 1000
+          : Number.POSITIVE_INFINITY;
+        const mid = (minM + maxM) / 2;
 
-      if (filtered.length === 0) {
-        filtered = withDistance
-          .filter((c) =>
-            facs.some((f) => c.fasilitas?.toLowerCase().includes(f))
-          )
-          .sort(
-            (a, b) =>
-              Math.abs(parseDistance(a.distance) - mid) -
-              Math.abs(parseDistance(b.distance) - mid)
-          );
+        const facsRaw = userPreferences.preferensi_fasilitas || "";
+        const facs = facsRaw
+          .split(",")
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean);
+
+        // Filter by distance and facilities
+        let filtered = withDistance.filter((c) => {
+          const d = parseDistance(c.distance);
+          const facilitiesOk =
+            facs.length === 0 ||
+            facs.every((f) => (c.fasilitas ?? "").toLowerCase().includes(f));
+          return d >= minM && d <= maxM && facilitiesOk;
+        });
+
+        if (filtered.length === 0) {
+          // fallback: pick cafes that have at least one facility and sort by closeness to mid
+          filtered = withDistance
+            .filter((c) =>
+              facs.some((f) => (c.fasilitas ?? "").toLowerCase().includes(f))
+            )
+            .sort(
+              (a, b) =>
+                Math.abs(parseDistance(a.distance) - mid) -
+                Math.abs(parseDistance(b.distance) - mid)
+            );
+        }
+
+        setRecommendedCafes(filtered.slice(0, 6));
+      } catch (e) {
+        console.error("Error computing distances/recommendations:", e);
+        setError("Failed to compute recommendations.");
+      } finally {
+        setDistanceLoading(false);
       }
-
-      setRecommendedCafes(filtered.slice(0, 6));
-      setDistanceLoading(false);
     })();
   }, [userLocation, userPreferences, cafes]);
 

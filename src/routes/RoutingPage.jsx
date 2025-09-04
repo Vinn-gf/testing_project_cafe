@@ -14,6 +14,9 @@ import ProfilePage from "../pages/ProfilePage";
 import MenuPage from "../pages/MenuPage";
 import FeedbackPage from "../pages/FeedbackPage";
 import RecommendationPage from "../pages/RecommendationPage";
+import LoginPageAdmin from "../pages/auth/AdminAuth/LoginPageAdmin";
+import ProtectedTokenAdmin from "../components/ProtectedComponents/ProtectedTokenAdmin";
+import AdminProfile from "../pages/AdminPages/AdminProfile";
 
 const RoutingPage = () => {
   return (
@@ -21,6 +24,15 @@ const RoutingPage = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/admin" element={<LoginPageAdmin />} />
+        <Route
+          path="/admin_profile"
+          element={
+            <ProtectedTokenAdmin>
+              <AdminProfile />
+            </ProtectedTokenAdmin>
+          }
+        />
         <Route
           path="/user_preferences"
           element={

@@ -32,7 +32,7 @@ const LoginPageAdmin = () => {
       CookieStorage.set(CookieKeys.AuthToken, "Token Autentikasi");
       CookieStorage.set(CookieKeys.AdminToken, data.admin_id);
       setTimeout(() => {
-        navigate(`/admin_profile`);
+        navigate(`/dashboard`);
       }, 1500);
     } catch (err) {
       setError(err.response.data.message);
@@ -104,12 +104,6 @@ const LoginPageAdmin = () => {
             Login Admin
           </button>
         </form>
-
-        <p className="text-center text-sm mt-4">
-          <Link to="/" className="text-[#a6a867] hover:underline">
-            Back to Home
-          </Link>
-        </p>
       </div>
     </div>
   );

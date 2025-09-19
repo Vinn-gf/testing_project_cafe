@@ -542,7 +542,39 @@ def add_user_feedback(data):
         return {"message": "Feedback berhasil disimpan"}, 201
     except Exception as e:
         return {"error": str(e)}, 500
+    
+# --- Feedback: ambil semua feedback dari tabel feedback_tables ---
+def get_all_feedbacks():
+    """
+    Ambil semua baris dari feedback_tables dan kembalikan sebagai list of OrderedDict.
+    Jika terjadi error, kembalikan dict {"error": "..."} agar caller dapat mengembalikan status 500.
+    """
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="cafe_databases"
+        )
+        cursor = db.cursor()
+        # ambil nama kolom (sama style seperti fungsi lain)
+        cursor.execute("SHOW COLUMNS FROM feedback_tables")
+        columns = [col[0] for col in cursor.fetchall()]
 
+        cursor.execute("SELECT * FROM feedback_tables")
+        rows = cursor.fetchall()
+        db.close()
+
+        results = []
+        for row in rows:
+            od = OrderedDict()
+            for idx, col in enumerate(columns):
+                od[col] = row[idx]
+            results.append(od)
+        return results
+
+    except Exception as e:
+        return {"error": str(e)}
 
 # Feedback
 @app.route('/api/feedback', methods=['POST'])
@@ -550,6 +582,13 @@ def api_add_feedback():
     data = request.get_json()
     result, status = add_user_feedback(data)
     return jsonify(result), status
+
+@app.route('/api/feedbacks', methods=['GET'])
+def api_get_all_feedbacks():
+    feedbacks = get_all_feedbacks()
+    if isinstance(feedbacks, dict) and feedbacks.get("error"):
+        return jsonify(feedbacks), 500
+    return jsonify(feedbacks), 200
 
 # Menu
 @app.route('/api/favorite_menu/<int:id_user>', methods=['GET'])

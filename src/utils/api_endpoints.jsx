@@ -13,4 +13,6 @@ export const API_ENDPOINTS = {
   GET_MENU_BY_ID: "/api/menu/",
   ADD_FAVORITE_MENU: "/api/user/favorite_menu",
   ADD_FEEDBACK: "/api/feedback",
+  GET_FEEDBACK: "/api/feedbacks",
+  GET_ADMIN_BY_ID: "/api/admin/",
 };

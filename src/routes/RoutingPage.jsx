@@ -16,7 +16,10 @@ import FeedbackPage from "../pages/FeedbackPage";
 import RecommendationPage from "../pages/RecommendationPage";
 import LoginPageAdmin from "../pages/auth/AdminAuth/LoginPageAdmin";
 import ProtectedTokenAdmin from "../components/ProtectedComponents/ProtectedTokenAdmin";
-import AdminProfile from "../pages/AdminPages/AdminProfile";
+import AdminWelcomePage from "../pages/AdminPages/AdminWelcomePage";
+import AdminManageUsers from "../pages/AdminPages/AdminManageUsers";
+import AdminManageCafes from "../pages/AdminPages/AdminManageCafes";
+import AdminManageFeedbacks from "../pages/AdminPages/AdminManageFeedbacks";
 
 const RoutingPage = () => {
   return (
@@ -26,10 +29,34 @@ const RoutingPage = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<LoginPageAdmin />} />
         <Route
-          path="/admin_profile"
+          path="/dashboard"
           element={
             <ProtectedTokenAdmin>
-              <AdminProfile />
+              <AdminWelcomePage />
+            </ProtectedTokenAdmin>
+          }
+        />
+        <Route
+          path="/manage_users"
+          element={
+            <ProtectedTokenAdmin>
+              <AdminManageUsers />
+            </ProtectedTokenAdmin>
+          }
+        />
+        <Route
+          path="/manage_cafes"
+          element={
+            <ProtectedTokenAdmin>
+              <AdminManageCafes />
+            </ProtectedTokenAdmin>
+          }
+        />
+        <Route
+          path="/manage_feedbacks"
+          element={
+            <ProtectedTokenAdmin>
+              <AdminManageFeedbacks />
             </ProtectedTokenAdmin>
           }
         />

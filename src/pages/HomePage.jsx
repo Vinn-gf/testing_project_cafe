@@ -1,4 +1,4 @@
-// HomePage.jsx
+// src/pages/HomePage.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ColorRing } from "react-loader-spinner";
@@ -10,7 +10,7 @@ import { FaStar } from "react-icons/fa";
 
 const parseDistance = (distanceText) => {
   if (!distanceText || distanceText === "N/A") return Infinity;
-  const parts = distanceText.split(" ");
+  const parts = String(distanceText).split(" ");
   const num = parseFloat(parts[0].replace(",", "."));
   return parts[1]?.toLowerCase() === "km" ? num * 1000 : num;
 };
@@ -47,6 +47,15 @@ const haversineMeters = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
+const formatDistanceText = (meters) => {
+  if (!Number.isFinite(meters) || isNaN(meters)) return "N/A";
+  if (meters < 1000) return `${Math.round(meters)} m`;
+  return `${(meters / 1000).toFixed(2)} km`;
+};
+
+const RECOMMEND_API =
+  process.env.REACT_APP_RECOMMEND_URL || "http://localhost:5000";
+
 const HomePage = () => {
   const [cafes, setCafes] = useState([]);
   const [recommendedCafes, setRecommendedCafes] = useState([]);
@@ -68,7 +77,7 @@ const HomePage = () => {
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
           { headers: { "ngrok-skip-browser-warning": true } }
         );
-        setCafes(data);
+        setCafes(Array.isArray(data) ? data : []);
       } catch (e) {
         setError(e.message);
       } finally {
@@ -97,7 +106,7 @@ const HomePage = () => {
     );
   }, []);
 
-  // 3) Load user preferences
+  // 3) Load user preferences (and visited history inside user object)
   useEffect(() => {
     const uid = CookieStorage.get(CookieKeys.UserToken);
     if (!uid) {
@@ -115,11 +124,120 @@ const HomePage = () => {
       .catch((e) => setError(e.message));
   }, []);
 
-  // 4) Compute distances & recommendations using Haversine
+  // Helper: determines if user has visited history
+  const userHasVisited = (prefs) => {
+    if (!prefs) return false;
+    try {
+      const raw =
+        prefs.cafe_telah_dikunjungi ?? prefs.cafe_telah_dikunjungi_list ?? null;
+      if (!raw) return false;
+      // could be JSON string or array
+      if (typeof raw === "string") {
+        const arr = JSON.parse(raw || "[]");
+        return Array.isArray(arr) && arr.length > 0;
+      }
+      return Array.isArray(raw) && raw.length > 0;
+    } catch {
+      return false;
+    }
+  };
+
+  // 4) Decide: demographic filtering OR UBCF recommendations
   useEffect(() => {
     (async () => {
       if (!userLocation || !userPreferences || cafes.length === 0) return;
 
+      setDistanceLoading(true);
+      const uid = CookieStorage.get(CookieKeys.UserToken);
+
+      // If user has visited history -> use UBCF recommendations from RECOMMEND_API
+      const hasVisited = userHasVisited(userPreferences);
+
+      if (hasVisited) {
+        // Try fetch UBCF recommendations
+        try {
+          const resp = await axios.get(`${RECOMMEND_API}/api/recommend/${uid}`);
+          const recs = resp.data?.recommendations ?? [];
+          // recs format: array of { cafe_id, nama_kafe, alamat, rating, score, matched_menu, ... }
+          // We'll compute distances (haversine) per cafe_id by fetching cafe detail
+          const distancesMap = {};
+          const enriched = await Promise.all(
+            recs.map(async (r) => {
+              const cafeId =
+                r.cafe_id ?? r.cafe_id ?? r.cafe ?? r.id_cafe ?? null;
+              let info = null;
+              try {
+                const infoResp = await axios.get(
+                  `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`,
+                  { headers: { "ngrok-skip-browser-warning": true } }
+                );
+                info = infoResp.data || {};
+              } catch (err) {
+                info = {};
+              }
+
+              // try various coordinate fields
+              const latitude =
+                info.latitude ??
+                info.lat ??
+                info.lintang ??
+                info.latitude_cafe ??
+                info.latitude_kafe ??
+                null;
+              const longitude =
+                info.longitude ??
+                info.lon ??
+                info.lng ??
+                info.bujur ??
+                info.longitude_cafe ??
+                info.longitude_kafe ??
+                null;
+
+              const latNum = latitude !== null ? Number(latitude) : NaN;
+              const lonNum = longitude !== null ? Number(longitude) : NaN;
+
+              let distText = "N/A";
+              if (Number.isFinite(latNum) && Number.isFinite(lonNum)) {
+                const meters = haversineMeters(
+                  userLocation.latitude,
+                  userLocation.longitude,
+                  latNum,
+                  lonNum
+                );
+                distText = formatDistanceText(meters);
+              }
+
+              distancesMap[cafeId] = distText;
+
+              // Normalize object so rendering easier: provide fields similar to demographic branch
+              return {
+                source: "ubcf",
+                cafe_id: cafeId,
+                nomor: cafeId, // keep `nomor` for link route compatibility
+                nama_kafe: r.nama_kafe ?? info.nama_kafe ?? r.name ?? "",
+                alamat: r.alamat ?? info.alamat ?? "",
+                rating: r.rating ?? info.rating ?? 0,
+                distance: distText,
+                matched_menu: r.matched_menu ?? r.matched_menu ?? [],
+                // do NOT show score on homepage; still keep it internally if needed
+                _score: r.score ?? null,
+              };
+            })
+          );
+
+          setRecommendedCafes(enriched.slice(0, 6));
+          setDistanceLoading(false);
+          return;
+        } catch (err) {
+          // if recommend API fails, fallback to demographic filtering
+          console.warn(
+            "UBCF recommend fetch failed, fallback to demographic:",
+            err?.message || err
+          );
+        }
+      }
+
+      // --- demographic filtering fallback (or when no history) ---
       try {
         const { latitude: uLat, longitude: uLng } = userLocation;
 
@@ -199,7 +317,9 @@ const HomePage = () => {
             );
         }
 
-        setRecommendedCafes(filtered.slice(0, 6));
+        // Tag as demographic source to be able to conditionally render score etc.
+        const tagged = filtered.map((x) => ({ ...x, source: "demographic" }));
+        setRecommendedCafes(tagged.slice(0, 6));
       } catch (e) {
         console.error("Error computing distances/recommendations:", e);
         setError("Failed to compute recommendations.");
@@ -350,49 +470,73 @@ const HomePage = () => {
           Recommended Cafes Based on Your Preferences
         </h1>
         <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {recommendedCafes.map((c, idx) => {
-            const img = (() => {
-              try {
-                return require(`../assets/image/card-cafe-${c.nomor}.jpg`);
-              } catch {
-                return require(`../assets/image/card-cafe.jpg`);
-              }
-            })();
-            return (
-              <div
-                key={idx}
-                className="bg-[#1B2021] rounded-md shadow-lg overflow-hidden font-montserrat"
-              >
-                <Link to={`/detailcafe/${c.nomor}`}>
-                  <div
-                    className="relative h-60 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${img})` }}
-                  >
-                    <div className="absolute bottom-0 inset-x-0 bg-black bg-opacity-50 p-2">
-                      <h1 className="text-[1.3rem] font-bold text-[#E3DCC2]">
-                        {c.nama_kafe}
-                      </h1>
+          {recommendedCafes.length < 1 ? (
+            <p className="text-gray-400 font-montserrat col-span-full">
+              No recommendations available.
+            </p>
+          ) : (
+            recommendedCafes.map((c, idx) => {
+              const img = (() => {
+                try {
+                  return require(`../assets/image/card-cafe-${c.nomor}.jpg`);
+                } catch {
+                  return require(`../assets/image/card-cafe.jpg`);
+                }
+              })();
+
+              // fields vary by source: demographic uses c.nomor, ubcf uses c.cafe_id (we already set nomor)
+              return (
+                <div
+                  key={idx}
+                  className="bg-[#1B2021] rounded-md shadow-lg overflow-hidden font-montserrat"
+                >
+                  <Link to={`/detailcafe/${c.nomor}`}>
+                    <div
+                      className="relative h-60 bg-cover bg-center"
+                      style={{ backgroundImage: `url(${img})` }}
+                    >
+                      <div className="absolute bottom-0 inset-x-0 bg-black bg-opacity-50 p-2">
+                        <h1 className="text-[1.3rem] font-bold text-[#E3DCC2]">
+                          {c.nama_kafe}
+                        </h1>
+                      </div>
                     </div>
+                  </Link>
+                  <div className="p-4 flex flex-col gap-2 text-[#E3DCC2] text-[.95rem]">
+                    <div className="flex items-center gap-2">
+                      <FaLocationDot />
+                      <p>{c.alamat}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaStar />
+                      <p>{c.rating}</p>
+                    </div>
+
+                    {/* If demographic branch show nothing special (kept previous behavior).
+                        If you later want to display demographic score, you can add it here.
+                        IMPORTANT: when source === 'ubcf' do NOT display score on Homepage. */}
+                    {c.source !== "ubcf" && c.score && (
+                      <p>
+                        Score: <strong>{c.score}</strong>
+                      </p>
+                    )}
+
+                    {c.distance && (
+                      <p>
+                        Berjarak <strong>{c.distance}</strong> dari lokasi Anda
+                      </p>
+                    )}
+
+                    {c.matched_menu && c.matched_menu.length > 0 && (
+                      <div className="text-[#e3dcc2] text-[.95rem]">
+                        Menu: <strong>{c.matched_menu.join(", ")}</strong>
+                      </div>
+                    )}
                   </div>
-                </Link>
-                <div className="p-4 flex flex-col gap-2 text-[#E3DCC2] text-[.95rem]">
-                  <div className="flex items-center gap-2">
-                    <FaLocationDot />
-                    <p>{c.alamat}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FaStar />
-                    <p>{c.rating}</p>
-                  </div>
-                  {c.distance && (
-                    <p>
-                      Berjarak <strong>{c.distance}</strong> dari lokasi Anda
-                    </p>
-                  )}
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </div>

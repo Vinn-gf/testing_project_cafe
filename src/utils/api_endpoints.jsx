@@ -1,18 +1,29 @@
 export const API_ENDPOINTS = {
+  // authentication
   LOGIN: "/api/login",
   LOGIN_ADMIN: "/api/login_admin",
   REGISTER: "/api/register",
   USER_PREFERENCES: "/api/user/preferences",
+  // cafes
   GET_ALL_CAFES: "/api/data",
   GET_SEARCH_CAFE: "/api/search/",
-  GET_REVIEWS: "/api/reviews/",
-  GET_USER_BY_ID: "/api/users/",
   GET_DETAIL_CAFE: "/api/cafe/",
+  DELETE_CAFE: "/api/cafe/",
+  UPDATE_CAFE: "/api/cafe/",
   GET_VISITED_CAFES: "/api/visited/",
+  // reviews
+  GET_REVIEWS: "/api/reviews/",
+  // users
+  GET_USER_BY_ID: "/api/users/",
+  DELETE_USER: "/api/users/",
   VISITED_CAFES: "/api/user/visited",
+  // menu
   GET_MENU_BY_ID: "/api/menu/",
   ADD_FAVORITE_MENU: "/api/user/favorite_menu",
+  // feedback
   ADD_FEEDBACK: "/api/feedback",
   GET_FEEDBACK: "/api/feedbacks",
+  DELETE_FEEDBACK: "/api/feedback/",
+  // admin
   GET_ADMIN_BY_ID: "/api/admin/",
 };

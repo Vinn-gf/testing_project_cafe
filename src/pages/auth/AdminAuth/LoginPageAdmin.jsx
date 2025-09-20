@@ -1,7 +1,7 @@
 // src/pages/admin/LoginPageAdmin.jsx
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../../../utils/cookies";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../utils/api_endpoints";

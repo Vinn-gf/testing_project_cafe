@@ -1,7 +1,399 @@
-import React from "react";
+// src/pages/admin/AdminManageUsers.jsx
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  FaBars,
+  FaTimes,
+  FaUsers,
+  FaStore,
+  FaCommentDots,
+  FaSignOutAlt,
+  FaTrashAlt,
+  FaEye,
+} from "react-icons/fa";
+import axios from "axios";
+import { CookieKeys, CookieStorage } from "../../utils/cookies";
+import { API_ENDPOINTS } from "../../utils/api_endpoints";
 
 const AdminManageUsers = () => {
-  return <div>Manage Users</div>;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminProfile, setAdminProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [usersError, setUsersError] = useState(null);
+
+  const navigate = useNavigate();
+  const ADMIN_COOKIE_KEY = CookieKeys?.AdminToken ?? "AdminToken";
+
+  useEffect(() => {
+    // fetch admin profile if cookie exists (same pattern as welcome page)
+    const adminId = CookieStorage.get(ADMIN_COOKIE_KEY);
+    if (!adminId) return;
+    (async () => {
+      setLoadingProfile(true);
+      try {
+        if (!API_ENDPOINTS?.GET_ADMIN_BY_ID) {
+          setLoadingProfile(false);
+          return;
+        }
+        const resp = await axios.get(
+          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ADMIN_BY_ID}${adminId}`,
+          { headers: { "ngrok-skip-browser-warning": true } }
+        );
+        setAdminProfile(resp.data || null);
+      } catch (err) {
+        console.warn("Failed fetching admin profile:", err?.message || err);
+        setAdminProfile(null);
+      } finally {
+        setLoadingProfile(false);
+      }
+    })();
+  }, [ADMIN_COOKIE_KEY]);
+
+  // fetch users list
+  useEffect(() => {
+    let mounted = true;
+    const fetchUsers = async () => {
+      setLoadingUsers(true);
+      setUsersError(null);
+      try {
+        // API_ENDPOINTS.GET_USER_BY_ID is '/api/users/' (trailing slash).
+        // Build base '/api/users' by removing trailing slash for safety.
+        const usersPath = (
+          API_ENDPOINTS.GET_USER_BY_ID || "/api/users/"
+        ).replace(/\/$/, "");
+        const resp = await axios.get(
+          `${process.env.REACT_APP_URL_SERVER}${usersPath}`,
+          { headers: { "ngrok-skip-browser-warning": true } }
+        );
+        if (!mounted) return;
+        if (Array.isArray(resp.data)) {
+          setUsers(resp.data);
+        } else {
+          // if server returns object with error
+          setUsers([]);
+          if (resp.data && resp.data.error) {
+            setUsersError(resp.data.error);
+          }
+        }
+      } catch (err) {
+        console.error("Failed fetching users:", err?.message || err);
+        if (!mounted) return;
+        setUsers([]);
+        setUsersError(err?.message || "Failed to fetch users");
+      } finally {
+        if (mounted) setLoadingUsers(false);
+      }
+    };
+    fetchUsers();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleLogout = () => {
+    try {
+      CookieStorage.remove(ADMIN_COOKIE_KEY);
+      CookieStorage.remove(CookieKeys.AuthToken ?? "DataToken");
+      CookieStorage.remove(CookieKeys.UserToken ?? "UserToken");
+    } catch (e) {
+      console.warn("Error clearing cookies:", e);
+    }
+    navigate("/admin");
+  };
+
+  const refreshUsers = async () => {
+    setLoadingUsers(true);
+    setUsersError(null);
+    try {
+      const usersPath = (API_ENDPOINTS.GET_USER_BY_ID || "/api/users/").replace(
+        /\/$/,
+        ""
+      );
+      const resp = await axios.get(
+        `${process.env.REACT_APP_URL_SERVER}${usersPath}`,
+        { headers: { "ngrok-skip-browser-warning": true } }
+      );
+      if (Array.isArray(resp.data)) setUsers(resp.data);
+      else setUsers([]);
+    } catch (err) {
+      console.error("Failed refreshing users:", err?.message || err);
+      setUsers([]);
+      setUsersError(err?.message || "Failed to fetch users");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleDeleteUser = async (id_user) => {
+    const ok = window.confirm(
+      `Are you sure you want to delete user with id ${id_user}? This action cannot be undone.`
+    );
+    if (!ok) return;
+    try {
+      const delPath = (API_ENDPOINTS.GET_USER_BY_ID || "/api/users/").replace(
+        /\/$/,
+        ""
+      );
+      const resp = await axios.delete(
+        `${process.env.REACT_APP_URL_SERVER}${delPath}/${id_user}`,
+        { headers: { "ngrok-skip-browser-warning": true } }
+      );
+      // On success, refresh list
+      await refreshUsers();
+      // Optionally show success message via console
+      console.info("Delete result:", resp.data);
+    } catch (err) {
+      console.error("Failed to delete user:", err?.message || err);
+      alert("Failed to delete user: " + (err?.message || "unknown error"));
+    }
+  };
+
+  return (
+    <div className="min-h-screen font-montserrat bg-[#1B2021] text-[#E3DCC2]">
+      <div className="flex">
+        {/* Sidebar */}
+        <aside
+          className={`fixed z-30 top-0 left-0 h-full transform transition-transform duration-200 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+            md:translate-x-0 md:static md:w-64 w-64`}
+        >
+          <div className="h-screen bg-[#1B2021] border-r border-[#2d3738] p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  aria-label="Toggle sidebar"
+                  className="md:hidden text-[#E3DCC2] focus:outline-none"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <FaTimes size={18} />
+                </button>
+                <Link
+                  to="/dashboard"
+                  className="text-xl font-bold tracking-widest"
+                >
+                  Vinn.
+                </Link>
+              </div>
+            </div>
+
+            <nav className="mt-8">
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href="/manage_users"
+                    className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] text-[#a6a867] transition-colors"
+                  >
+                    <FaUsers /> <span>Manage Users</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/manage_cafes"
+                    className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] transition-colors"
+                  >
+                    <FaStore /> <span>Manage Cafe</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/manage_feedbacks"
+                    className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] transition-colors"
+                  >
+                    <FaCommentDots /> <span>Manage Feedbacks</span>
+                  </a>
+                </li>
+
+                <li className="mt-6 border-t border-[#2d2f2f] pt-4">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] transition-colors"
+                  >
+                    <FaSignOutAlt /> <span>Logout</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </aside>
+
+        {/* Overlay for small screens when sidebar is open */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Main content */}
+        <div className="min-h-screen overflow-hidden">
+          {/* Top bar */}
+          <header className="flex items-center justify-between p-4 border-b border-[#2d2f2f] md:border-none lg:border-none">
+            <div className="flex items-center gap-3">
+              <button
+                className="text-[#E3DCC2] md:hidden p-2 rounded hover:bg-[#2d3738] focus:outline-none"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open sidebar"
+              >
+                <FaBars size={18} />
+              </button>
+              <h2 className="text-lg font-semibold text-[#E3DCC2]">
+                Manage Users
+              </h2>
+            </div>
+          </header>
+
+          {/* Page content */}
+          <main className="">
+            <div className="w-full bg-[#1B2021] p-6">
+              <div className="w-full rounded-2xl shadow-md">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-[#E3DCC2]">Users</h3>
+                </div>
+
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full divide-y divide-[#2d2f2f]">
+                    <thead>
+                      <tr className="text-left text-sm text-[#cfc9b0]">
+                        <th className="px-4 py-2">ID</th>
+                        <th className="px-4 py-2">Username</th>
+                        <th className="px-4 py-2">Min Dist</th>
+                        <th className="px-4 py-2">Max Dist</th>
+                        <th className="px-4 py-2">Facilities Pref</th>
+                        <th className="px-4 py-2">Visited Cafes</th>
+                        <th className="px-4 py-2">Favorite Menus</th>
+                        <th className="px-4 py-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#2d2f2f]">
+                      {loadingUsers ? (
+                        <tr>
+                          <td
+                            colSpan="8"
+                            className="px-4 py-6 text-center text-[#cfc9b0]"
+                          >
+                            Loading users...
+                          </td>
+                        </tr>
+                      ) : usersError ? (
+                        <tr>
+                          <td
+                            colSpan="8"
+                            className="px-4 py-6 text-center text-red-400"
+                          >
+                            {usersError}
+                          </td>
+                        </tr>
+                      ) : users.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan="8"
+                            className="px-4 py-6 text-center text-[#cfc9b0]"
+                          >
+                            No users found.
+                          </td>
+                        </tr>
+                      ) : (
+                        users.map((u, idx) => {
+                          // defensive extraction - fields may vary
+                          const id_user =
+                            u.id_user ?? u.id ?? u.user_id ?? u.ID ?? null;
+                          const username = u.username ?? u.user ?? "";
+                          const minDist =
+                            u.preferensi_jarak_minimal ??
+                            u.minimum_distance_preference ??
+                            "";
+                          const maxDist =
+                            u.preferensi_jarak_maksimal ??
+                            u.maximum_distance_preference ??
+                            "";
+                          const facPref =
+                            u.preferensi_fasilitas ??
+                            u.facilities_preference ??
+                            "";
+                          const visited =
+                            u.cafe_telah_dikunjungi ??
+                            u.cafe_telah_dikunjungi_list ??
+                            "";
+                          const favMenus =
+                            u.menu_yang_disukai ?? u.menu_yang_disukai ?? "";
+
+                          // format possibly long JSON strings for table
+                          const prettyVisited =
+                            typeof visited === "string" && visited.length > 60
+                              ? visited.slice(0, 60) + "..."
+                              : JSON.stringify(visited);
+
+                          const prettyFavMenus =
+                            typeof favMenus === "string" && favMenus.length > 60
+                              ? favMenus.slice(0, 60) + "..."
+                              : JSON.stringify(favMenus);
+
+                          return (
+                            <tr key={idx} className="text-sm text-[#E3DCC2]">
+                              <td className="px-4 py-3">{id_user ?? "—"}</td>
+                              <td className="px-4 py-3">{username}</td>
+                              <td className="px-4 py-3">{minDist ?? "—"}</td>
+                              <td className="px-4 py-3">{maxDist ?? "—"}</td>
+                              <td className="px-4 py-3">{facPref ?? "—"}</td>
+                              <td className="px-4 py-3">
+                                <div className="max-w-xs truncate">
+                                  {prettyVisited}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="max-w-xs truncate">
+                                  {prettyFavMenus}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  {/* view/details could navigate to a detail page - placeholder */}
+                                  <button
+                                    title="View"
+                                    onClick={() =>
+                                      alert(
+                                        `User details:\n\n${JSON.stringify(
+                                          u,
+                                          null,
+                                          2
+                                        )}`
+                                      )
+                                    }
+                                    className="p-2 rounded hover:bg-[#2d3738] transition-colors"
+                                  >
+                                    <FaEye />
+                                  </button>
+
+                                  <button
+                                    title="Delete user"
+                                    onClick={() => handleDeleteUser(id_user)}
+                                    className="p-2 rounded hover:bg-red-700 transition-colors text-red-400"
+                                  >
+                                    <FaTrashAlt />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="mt-4 text-sm text-[#cfc9b0]">
+                  Showing <strong>{users.length}</strong> users.
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AdminManageUsers;

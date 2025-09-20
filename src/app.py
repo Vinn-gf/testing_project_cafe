@@ -576,7 +576,100 @@ def get_all_feedbacks():
     except Exception as e:
         return {"error": str(e)}
 
-# Feedback
+# --- Baru: delete / update helpers for user, cafe, feedback ---
+
+def delete_user_by_id(id_user):
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM user_tables WHERE id_user = %s", (id_user,))
+        db.commit()
+        deleted = cursor.rowcount
+        db.close()
+        if deleted:
+            return {"message": f"User {id_user} berhasil dihapus"}, 200
+        else:
+            return {"error": "User tidak ditemukan"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+def delete_cafe_by_nomor(nomor):
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM cafe_tables WHERE nomor = %s", (nomor,))
+        db.commit()
+        deleted = cursor.rowcount
+        db.close()
+        if deleted:
+            return {"message": f"Cafe nomor {nomor} berhasil dihapus"}, 200
+        else:
+            return {"error": "Cafe tidak ditemukan"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+def update_cafe_by_nomor(nomor, data):
+    """
+    Update kolom-kolom pada cafe_tables berdasarkan keys yang ada di `data`.
+    Kita baca kolom tabel secara dinamis dan hanya update kolom yang valid (kecuali primary key 'nomor').
+    """
+    if not isinstance(data, dict) or not data:
+        return {"error": "Payload harus berformat JSON dan berisi field untuk diupdate"}, 400
+
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+        # ambil kolom tabel
+        cursor.execute("SHOW COLUMNS FROM cafe_tables")
+        columns = [col[0] for col in cursor.fetchall()]
+        # jangan update primary key 'nomor'
+        valid_cols = [c for c in columns if c.lower() != "nomor" and c in data]
+
+        if not valid_cols:
+            db.close()
+            return {"error": "Tidak ada field valid untuk diupdate"}, 400
+
+        set_clauses = ", ".join([f"{col} = %s" for col in valid_cols])
+        params = [data[col] for col in valid_cols]
+        params.append(nomor)
+
+        query = f"UPDATE cafe_tables SET {set_clauses} WHERE nomor = %s"
+        cursor.execute(query, tuple(params))
+        db.commit()
+        updated = cursor.rowcount
+        db.close()
+
+        if updated:
+            return {"message": f"Cafe nomor {nomor} berhasil diperbarui"}, 200
+        else:
+            return {"error": "Cafe tidak ditemukan atau tidak ada perubahan"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+def delete_feedback_by_id(id_feedback):
+    try:
+        db = mysql.connector.connect(
+            host="localhost", user="root", password="", database="cafe_databases"
+        )
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM feedback_tables WHERE id_feedback = %s", (id_feedback,))
+        db.commit()
+        deleted = cursor.rowcount
+        db.close()
+        if deleted:
+            return {"message": f"Feedback {id_feedback} berhasil dihapus"}, 200
+        else:
+            return {"error": "Feedback tidak ditemukan"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+# Feedback endpoints
 @app.route('/api/feedback', methods=['POST'])
 def api_add_feedback():
     data = request.get_json()
@@ -589,6 +682,12 @@ def api_get_all_feedbacks():
     if isinstance(feedbacks, dict) and feedbacks.get("error"):
         return jsonify(feedbacks), 500
     return jsonify(feedbacks), 200
+
+# New: delete feedback by id
+@app.route('/api/feedback/<int:id_feedback>', methods=['DELETE'])
+def api_delete_feedback(id_feedback):
+    result, status = delete_feedback_by_id(id_feedback)
+    return jsonify(result), status
 
 # Menu
 @app.route('/api/favorite_menu/<int:id_user>', methods=['GET'])
@@ -676,14 +775,19 @@ def api_get_all_users():
         return jsonify(users), 500
     return jsonify(users), 200    
 
-@app.route('/api/users/<int:id_user>', methods=['GET'])
+# GET user by id AND DELETE user by id (support both methods on same route)
+@app.route('/api/users/<int:id_user>', methods=['GET', 'DELETE'])
 def api_user_by_id(id_user):
-    user = get_user_by_id(id_user)
-    if user:
-        return jsonify(user)
-    else:
-        return jsonify({"error": "User not found"}), 404
-    
+    if request.method == 'GET':
+        user = get_user_by_id(id_user)
+        if user:
+            return jsonify(user)
+        else:
+            return jsonify({"error": "User not found"}), 404
+    elif request.method == 'DELETE':
+        result, status = delete_user_by_id(id_user)
+        return jsonify(result), status
+
 @app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
 def api_reviews(id_kafe):
     return jsonify(get_reviews(id_kafe))
@@ -735,13 +839,25 @@ def api_menu_by_id(id_cafe):
 def api_search(keyword):
     return jsonify(get_data(keyword))
 
-@app.route('/api/cafe/<int:nomor>', methods=['GET'])
+# GET / PUT / DELETE cafe by nomor (support multiple methods on same route)
+@app.route('/api/cafe/<int:nomor>', methods=['GET', 'PUT', 'DELETE'])
 def api_cafe(nomor):
-    cafe = get_data_by_id(nomor)
-    if cafe:
-        return jsonify(cafe)
-    else:
-        return jsonify({"error": "Cafe not found"}), 404
+    if request.method == 'GET':
+        cafe = get_data_by_id(nomor)
+        if cafe:
+            return jsonify(cafe)
+        else:
+            return jsonify({"error": "Cafe not found"}), 404
+
+    if request.method == 'PUT':
+        # update cafe
+        data = request.get_json() or {}
+        result, status = update_cafe_by_nomor(nomor, data)
+        return jsonify(result), status
+
+    if request.method == 'DELETE':
+        result, status = delete_cafe_by_nomor(nomor)
+        return jsonify(result), status
     
 @app.route('/api/register', methods=['POST'])
 def api_register():

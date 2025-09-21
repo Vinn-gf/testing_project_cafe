@@ -183,7 +183,7 @@ const MenuPage = () => {
       <div className="p-4 bg-[#1B2021]">
         <div className="mx-auto w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
-            Vinn.
+            RecSys.
           </Link>
           <div className="hidden md:flex space-x-10">
             <Link to="/" className="hover:text-gray-200">
@@ -194,6 +194,9 @@ const MenuPage = () => {
             </Link>
             <Link to="/profile" className="hover:text-gray-200">
               Profile
+            </Link>
+            <Link to="/feedback" className="hover:text-gray-200">
+              Feedback
             </Link>
             <h1
               className="hover:text-gray-200 cursor-pointer"
@@ -232,6 +235,12 @@ const MenuPage = () => {
               className="block p-2 text-[#E3DCC2] hover:text-gray-200"
             >
               Profile
+            </Link>
+            <Link
+              to="/feedback"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
+              Feedback
             </Link>
             <h1
               className="block p-2 text-[#E3DCC2] hover:text-gray-200 cursor-pointer"

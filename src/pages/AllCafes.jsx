@@ -77,7 +77,7 @@ const AllCafes = () => {
       <div className="p-4 bg-[#1B2021] font-montserrat">
         <div className="mx-auto w-[90%] md:w-[95%] lg:w-[90%] flex justify-between items-center text-[#E3DCC2]">
           <Link to="/" className="text-xl font-bold tracking-widest">
-            Vinn.
+            RecSys.
           </Link>
           <div className="hidden md:flex space-x-10">
             <Link to="/" className="hover:text-gray-200">
@@ -88,6 +88,9 @@ const AllCafes = () => {
             </Link>
             <Link to="/profile" className="hover:text-gray-200">
               Profile
+            </Link>
+            <Link to="/feedback" className="hover:text-gray-200">
+              Feedback
             </Link>
             <h1
               className="hover:text-gray-200 cursor-pointer"
@@ -126,6 +129,12 @@ const AllCafes = () => {
               className="block p-2 text-[#E3DCC2] hover:text-gray-200"
             >
               Profile
+            </Link>
+            <Link
+              to="/feedback"
+              className="block p-2 text-[#E3DCC2] hover:text-gray-200"
+            >
+              Feedback
             </Link>
             <Link
               to="#"

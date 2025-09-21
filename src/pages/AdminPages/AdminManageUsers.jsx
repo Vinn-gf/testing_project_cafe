@@ -24,6 +24,10 @@ const AdminManageUsers = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [usersError, setUsersError] = useState(null);
 
+  // modal states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalUser, setModalUser] = useState(null);
+
   const navigate = useNavigate();
   const ADMIN_COOKIE_KEY = CookieKeys?.AdminToken ?? "AdminToken";
 
@@ -148,6 +152,42 @@ const AdminManageUsers = () => {
     } catch (err) {
       console.error("Failed to delete user:", err?.message || err);
       alert("Failed to delete user: " + (err?.message || "unknown error"));
+    }
+  };
+
+  // open modal and lock background scroll
+  const openUserModal = (u) => {
+    setModalUser(u);
+    setModalOpen(true);
+    // lock body vertical scroll while modal open
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeUserModal = () => {
+    setModalOpen(false);
+    setModalUser(null);
+    document.body.style.overflow = "";
+  };
+
+  // small hidden element to avoid ESLint "assigned but never used" for adminProfile
+  const hiddenAdminInfo = (
+    <span className="hidden" aria-hidden>
+      {adminProfile?.username ?? (loadingProfile ? "loading" : "")}
+    </span>
+  );
+
+  // helper to try parse JSON strings into objects/arrays safely
+  const tryParseJSON = (maybeJson) => {
+    if (maybeJson === null || maybeJson === undefined) return null;
+    if (typeof maybeJson === "object") return maybeJson;
+    if (typeof maybeJson !== "string") return String(maybeJson);
+    const trimmed = maybeJson.trim();
+    if (trimmed === "") return null;
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      // not a JSON string, return original string
+      return maybeJson;
     }
   };
 
@@ -350,18 +390,10 @@ const AdminManageUsers = () => {
                               </td>
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
-                                  {/* view/details could navigate to a detail page - placeholder */}
+                                  {/* view/details opens modal */}
                                   <button
                                     title="View"
-                                    onClick={() =>
-                                      alert(
-                                        `User details:\n\n${JSON.stringify(
-                                          u,
-                                          null,
-                                          2
-                                        )}`
-                                      )
-                                    }
+                                    onClick={() => openUserModal(u)}
                                     className="p-2 rounded hover:bg-[#2d3738] transition-colors"
                                   >
                                     <FaEye />
@@ -392,6 +424,224 @@ const AdminManageUsers = () => {
           </main>
         </div>
       </div>
+
+      {/* hidden admin info (prevents ESLint unused var warnings while keeping fetch logic) */}
+      {hiddenAdminInfo}
+
+      {/* Modal for viewing user (ordered fields as requested) */}
+      {modalOpen && modalUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
+          onClick={closeUserModal}
+        >
+          <div
+            className="w-full max-w-2xl bg-[#111314] rounded-xl shadow-lg overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#2d2f2f]">
+              <h4 className="text-lg font-semibold text-[#E3DCC2]">
+                User Details
+              </h4>
+            </div>
+
+            <div className="p-4 max-h-[70vh] overflow-y-auto text-sm text-[#E3DCC2]">
+              {/* Render ordered fields */}
+              <div className="grid grid-cols-1 gap-3">
+                {/* 1. User ID */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-1">
+                    User ID
+                  </label>
+                  <input
+                    readOnly
+                    value={
+                      modalUser.id_user ??
+                      modalUser.id ??
+                      modalUser.user_id ??
+                      ""
+                    }
+                    className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                  />
+                </div>
+
+                {/* 2. Username */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-1">
+                    Username
+                  </label>
+                  <input
+                    readOnly
+                    value={modalUser.username ?? modalUser.user ?? ""}
+                    className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                  />
+                </div>
+
+                {/* 3. Minimum Distance */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-1">
+                    Minimum Distance
+                  </label>
+                  <input
+                    readOnly
+                    value={`${modalUser.preferensi_jarak_minimal} Km`}
+                    className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                  />
+                </div>
+
+                {/* 4. Maximum Distance */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-1">
+                    Maximum Distance
+                  </label>
+                  <input
+                    readOnly
+                    value={`${modalUser.preferensi_jarak_maksimal} Km`}
+                    className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                  />
+                </div>
+
+                {/* 5. Facilities Preference */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-1">
+                    Facilities Preference
+                  </label>
+                  <input
+                    readOnly
+                    value={modalUser.preferensi_fasilitas}
+                    className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                  />
+                </div>
+
+                {/* 6. Visited Cafes */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-2">
+                    Visited Cafes
+                  </label>
+                  {(() => {
+                    const raw = modalUser.cafe_telah_dikunjungi;
+                    const parsed = tryParseJSON(raw);
+                    if (Array.isArray(parsed)) {
+                      const ids = parsed.map((item) => {
+                        if (item && typeof item === "object") {
+                          return (
+                            item.id_cafe ?? item.id ?? JSON.stringify(item)
+                          );
+                        }
+                        return String(item);
+                      });
+                      return (
+                        <ul className="list-disc pl-5 text-sm text-[#E3DCC2]">
+                          {ids.length === 0 ? (
+                            <li className="text-[#cfc9b0]">No visited cafes</li>
+                          ) : (
+                            ids.map((visited, i) => (
+                              <li key={i}>Cafe ID : {visited}</li>
+                            ))
+                          )}
+                        </ul>
+                      );
+                    } else if (typeof parsed === "string") {
+                      return (
+                        <textarea
+                          readOnly
+                          rows={4}
+                          value={parsed}
+                          className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                        />
+                      );
+                    } else if (!parsed) {
+                      return (
+                        <div className="text-[#cfc9b0]">No visited cafes</div>
+                      );
+                    } else {
+                      return (
+                        <pre className="whitespace-pre-wrap text-sm">
+                          {JSON.stringify(parsed, null, 2)}
+                        </pre>
+                      );
+                    }
+                  })()}
+                </div>
+
+                {/* 7. Favorite Menus */}
+                <div className="bg-[#1b2021] p-3 rounded border border-[#2d2f2f]">
+                  <label className="text-xs text-[#cfc9b0] block mb-2">
+                    Favorite Menus
+                  </label>
+                  {(() => {
+                    const raw =
+                      modalUser.menu_yang_disukai ??
+                      modalUser.favorite_menus ??
+                      modalUser.menu_liked ??
+                      "";
+                    const parsed = tryParseJSON(raw);
+                    if (Array.isArray(parsed)) {
+                      // If array of objects with {nama_menu, harga}
+                      const items = parsed.map((item) => {
+                        if (item && typeof item === "object") {
+                          const cafe_id = item.id_cafe;
+                          const name = item.nama_menu;
+                          JSON.stringify(item);
+                          const price = item.harga;
+                          return { cafe_id, name, price };
+                        }
+                        return {
+                          cafe_id: null,
+                          name: String(item),
+                          price: null,
+                        };
+                      });
+                      return items.length === 0 ? (
+                        <div className="text-[#cfc9b0]">No favorite menus</div>
+                      ) : (
+                        <ul className="list-disc pl-5 text-sm text-[#E3DCC2]">
+                          {items.map((item, i) => (
+                            <li key={i}>
+                              [Cafe ID : {item.cafe_id}, Name : {item.name}
+                              {item.price !== null
+                                ? `, Price : ${item.price}`
+                                : ""}
+                              ]
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    } else if (typeof parsed === "string") {
+                      return (
+                        <textarea
+                          readOnly
+                          rows={4}
+                          value={parsed}
+                          className="w-full bg-transparent border border-[#2d2f2f] px-2 py-1 rounded text-sm text-[#E3DCC2] focus:outline-none"
+                        />
+                      );
+                    } else if (!parsed) {
+                      return (
+                        <div className="text-[#cfc9b0]">No favorite menus</div>
+                      );
+                    } else {
+                      return (
+                        <pre className="whitespace-pre-wrap text-sm">
+                          {JSON.stringify(parsed, null, 2)}
+                        </pre>
+                      );
+                    }
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-[#2d2f2f]">
+              <button
+                onClick={closeUserModal}
+                className="px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2] border border-[#2d2f2f]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

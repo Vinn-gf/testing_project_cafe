@@ -28,6 +28,10 @@ const AdminManageUsers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalUser, setModalUser] = useState(null);
 
+  // pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+
   const navigate = useNavigate();
   const ADMIN_COOKIE_KEY = CookieKeys?.AdminToken ?? "AdminToken";
 
@@ -63,8 +67,6 @@ const AdminManageUsers = () => {
       setLoadingUsers(true);
       setUsersError(null);
       try {
-        // API_ENDPOINTS.GET_USER_BY_ID is '/api/users/' (trailing slash).
-        // Build base '/api/users' by removing trailing slash for safety.
         const usersPath = (
           API_ENDPOINTS.GET_USER_BY_ID || "/api/users/"
         ).replace(/\/$/, "");
@@ -76,7 +78,6 @@ const AdminManageUsers = () => {
         if (Array.isArray(resp.data)) {
           setUsers(resp.data);
         } else {
-          // if server returns object with error
           setUsers([]);
           if (resp.data && resp.data.error) {
             setUsersError(resp.data.error);
@@ -96,6 +97,14 @@ const AdminManageUsers = () => {
       mounted = false;
     };
   }, []);
+
+  // ensure currentPage valid when users length changes
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(users.length / usersPerPage));
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+    if (currentPage < 1) setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [users]);
 
   const handleLogout = () => {
     try {
@@ -120,8 +129,17 @@ const AdminManageUsers = () => {
         `${process.env.REACT_APP_URL_SERVER}${usersPath}`,
         { headers: { "ngrok-skip-browser-warning": true } }
       );
-      if (Array.isArray(resp.data)) setUsers(resp.data);
-      else setUsers([]);
+      if (Array.isArray(resp.data)) {
+        setUsers(resp.data);
+        // adjust current page if needed
+        const totalPages = Math.max(
+          1,
+          Math.ceil(resp.data.length / usersPerPage)
+        );
+        if (currentPage > totalPages) setCurrentPage(totalPages);
+      } else {
+        setUsers([]);
+      }
     } catch (err) {
       console.error("Failed refreshing users:", err?.message || err);
       setUsers([]);
@@ -191,6 +209,27 @@ const AdminManageUsers = () => {
     }
   };
 
+  // pagination helpers
+  const totalUsers = users.length;
+  const totalPages = Math.max(1, Math.ceil(totalUsers / usersPerPage));
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const endIndex = startIndex + usersPerPage;
+  const displayedUsers = users.slice(startIndex, endIndex);
+
+  const goToPage = (page) => {
+    const p = Math.min(Math.max(1, page), totalPages);
+    setCurrentPage(p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) goToPage(currentPage - 1);
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) goToPage(currentPage + 1);
+  };
+
   return (
     <div className="min-h-screen font-montserrat bg-[#1B2021] text-[#E3DCC2]">
       <div className="flex">
@@ -214,7 +253,7 @@ const AdminManageUsers = () => {
                   to="/dashboard"
                   className="text-xl font-bold tracking-widest"
                 >
-                  Vinn.
+                  RecSys.
                 </Link>
               </div>
             </div>
@@ -268,9 +307,9 @@ const AdminManageUsers = () => {
         )}
 
         {/* Main content */}
-        <div className="min-h-screen overflow-hidden">
+        <div className="flex-1 min-h-screen overflow-hidden">
           {/* Top bar */}
-          <header className="flex items-center justify-between p-4 border-b border-[#2d2f2f] md:border-none lg:border-none">
+          <header className="flex items-center justify-between p-4 border-b border-[#2d2f2f] md:border-none">
             <div className="flex items-center gap-3">
               <button
                 className="text-[#E3DCC2] md:hidden p-2 rounded hover:bg-[#2d3738] focus:outline-none"
@@ -279,18 +318,26 @@ const AdminManageUsers = () => {
               >
                 <FaBars size={18} />
               </button>
-              <h2 className="text-lg font-semibold text-[#E3DCC2]">
+              <h2 className="text-lg font-semibold text-[#E3DCC2] sm:block md:hidden">
                 Manage Users
               </h2>
             </div>
           </header>
 
           {/* Page content */}
-          <main className="">
-            <div className="w-full bg-[#1B2021] p-6">
+          <main className="p-6 sm:p-6 px-6">
+            <div className="max-w-6xl mx-auto bg-[#111314] rounded-2xl shadow-md p-6 sm:p-6 md:px-6">
               <div className="w-full rounded-2xl shadow-md">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-[#E3DCC2]">Users</h3>
+                  <div>
+                    <button
+                      onClick={refreshUsers}
+                      className="px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2] border border-[#2d2f2f]"
+                    >
+                      Refresh
+                    </button>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto w-full">
@@ -336,7 +383,7 @@ const AdminManageUsers = () => {
                           </td>
                         </tr>
                       ) : (
-                        users.map((u, idx) => {
+                        displayedUsers.map((u, idx) => {
                           // defensive extraction - fields may vary
                           const id_user =
                             u.id_user ?? u.id ?? u.user_id ?? u.ID ?? null;
@@ -357,8 +404,7 @@ const AdminManageUsers = () => {
                             u.cafe_telah_dikunjungi ??
                             u.cafe_telah_dikunjungi_list ??
                             "";
-                          const favMenus =
-                            u.menu_yang_disukai ?? u.menu_yang_disukai ?? "";
+                          const favMenus = u.menu_yang_disukai ?? "";
 
                           // format possibly long JSON strings for table
                           const prettyVisited =
@@ -372,7 +418,10 @@ const AdminManageUsers = () => {
                               : JSON.stringify(favMenus);
 
                           return (
-                            <tr key={idx} className="text-sm text-[#E3DCC2]">
+                            <tr
+                              key={String(id_user) + "-" + idx}
+                              className="text-sm text-[#E3DCC2]"
+                            >
                               <td className="px-4 py-3">{id_user ?? "—"}</td>
                               <td className="px-4 py-3">{username}</td>
                               <td className="px-4 py-3">{minDist ?? "—"}</td>
@@ -416,8 +465,107 @@ const AdminManageUsers = () => {
                   </table>
                 </div>
 
-                <div className="mt-4 text-sm text-[#cfc9b0]">
-                  Showing <strong>{users.length}</strong> users.
+                {/* Pagination controls */}
+                <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "bg-[#1B2021] hover:bg-[#2d3738]"
+                      } text-[#E3DCC2] border border-[#2d2f2f]`}
+                      aria-label="Previous page"
+                    >
+                      Previous
+                    </button>
+
+                    <div className="hidden sm:flex items-center gap-1">
+                      {totalPages <= 7 ? (
+                        Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                          (p) => (
+                            <button
+                              key={p}
+                              onClick={() => goToPage(p)}
+                              className={`px-2 py-1 rounded ${
+                                p === currentPage
+                                  ? "bg-[#2d3738] text-white"
+                                  : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                              } border border-[#2d2f2f]`}
+                            >
+                              {p}
+                            </button>
+                          )
+                        )
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => goToPage(1)}
+                            className={`px-2 py-1 rounded ${
+                              currentPage === 1
+                                ? "bg-[#2d3738] text-white"
+                                : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                            } border border-[#2d2f2f]`}
+                          >
+                            1
+                          </button>
+
+                          {currentPage > 4 && <span className="px-2">...</span>}
+
+                          {Array.from({ length: 3 }, (_, i) => {
+                            const midStart = Math.max(
+                              2,
+                              Math.min(currentPage - 1, totalPages - 3)
+                            );
+                            return midStart + i;
+                          })
+                            .filter((p) => p > 1 && p < totalPages)
+                            .map((p) => (
+                              <button
+                                key={p}
+                                onClick={() => goToPage(p)}
+                                className={`px-2 py-1 rounded ${
+                                  p === currentPage
+                                    ? "bg-[#2d3738] text-white"
+                                    : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                                } border border-[#2d2f2f]`}
+                              >
+                                {p}
+                              </button>
+                            ))}
+
+                          {currentPage < totalPages - 3 && (
+                            <span className="px-2">...</span>
+                          )}
+
+                          <button
+                            onClick={() => goToPage(totalPages)}
+                            className={`px-2 py-1 rounded ${
+                              currentPage === totalPages
+                                ? "bg-[#2d3738] text-white"
+                                : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                            } border border-[#2d2f2f]`}
+                          >
+                            {totalPages}
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === totalPages
+                          ? "opacity-50 cursor-not-allowed"
+                          : "bg-[#1B2021] hover:bg-[#2d3738]"
+                      } text-[#E3DCC2] border border-[#2d2f2f]`}
+                      aria-label="Next page"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -576,12 +724,10 @@ const AdminManageUsers = () => {
                       "";
                     const parsed = tryParseJSON(raw);
                     if (Array.isArray(parsed)) {
-                      // If array of objects with {nama_menu, harga}
                       const items = parsed.map((item) => {
                         if (item && typeof item === "object") {
                           const cafe_id = item.id_cafe;
                           const name = item.nama_menu;
-                          JSON.stringify(item);
                           const price = item.harga;
                           return { cafe_id, name, price };
                         }

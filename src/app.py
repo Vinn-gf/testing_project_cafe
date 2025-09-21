@@ -1,25 +1,49 @@
-from flask import Flask, jsonify, request
+# app.py
+from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_cors import CORS
 from sentiment import analyze_reviews
 import mysql.connector
 from collections import OrderedDict
 from copy import deepcopy
 import json
+import os
+from werkzeug.utils import secure_filename
+import uuid
 
 app = Flask(__name__)
 CORS(app)
 
-# sentiment_analyzer = SentimentAnalyzer()
+# ---------------- Upload configuration ----------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads", "cafes")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB
+app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
+
+def allowed_file(filename):
+    if "." not in filename:
+        return False
+    ext = filename.rsplit(".", 1)[1].lower()
+    return ext in ALLOWED_EXTENSIONS
+
+# ---------------- Database helpers (use your DB config) ----------------
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "cafe_databases"
+}
+
+def get_db_connection():
+    return mysql.connector.connect(**DB_CONFIG)
+
+# ---------------- Existing functions (kept/merged) ----------------
 
 def get_data(search_term=None):
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cafe_databases"
-    )
+    db = get_db_connection()
     cursor = db.cursor()
-
     cursor.execute("SHOW COLUMNS FROM cafe_tables")
     columns = [col[0] for col in cursor.fetchall()]
 
@@ -30,6 +54,7 @@ def get_data(search_term=None):
         cursor.execute("SELECT * FROM cafe_tables")
 
     data = cursor.fetchall()
+    cursor.close()
     db.close()
     
     results = []
@@ -41,12 +66,7 @@ def get_data(search_term=None):
     return results
 
 def get_menu(search_term=None):
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cafe_databases"
-    )
+    db = get_db_connection()
     cursor = db.cursor()
 
     cursor.execute("SHOW COLUMNS FROM menu_tables")
@@ -59,6 +79,7 @@ def get_menu(search_term=None):
         cursor.execute("SELECT * FROM menu_tables")
 
     data = cursor.fetchall()
+    cursor.close()
     db.close()
     
     results = []
@@ -70,29 +91,21 @@ def get_menu(search_term=None):
     return results
 
 def get_menu_by_id(id_cafe):
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cafe_databases"
-    )
+    db = get_db_connection()
     cursor = db.cursor()
 
-    # Ambil nama kolom
     cursor.execute("SHOW COLUMNS FROM menu_tables")
     columns = [col[0] for col in cursor.fetchall()]
 
-    # Ambil semua baris untuk id_cafe
     query = "SELECT * FROM menu_tables WHERE id_cafe = %s"
     cursor.execute(query, (id_cafe,))
     rows = cursor.fetchall()
+    cursor.close()
     db.close()
 
-    # Jika tidak ada baris, kembalikan None
     if not rows:
         return None
 
-    # Ubah setiap baris menjadi OrderedDict dan kumpulkan
     menus = []
     for row in rows:
         od = OrderedDict()
@@ -102,14 +115,8 @@ def get_menu_by_id(id_cafe):
 
     return menus
 
-
 def get_data_by_id(nomor):
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cafe_databases"
-    )
+    db = get_db_connection()
     cursor = db.cursor()
 
     cursor.execute("SHOW COLUMNS FROM cafe_tables")
@@ -118,6 +125,7 @@ def get_data_by_id(nomor):
     query = "SELECT * FROM cafe_tables WHERE nomor = %s"
     cursor.execute(query, (nomor,))
     data = cursor.fetchone()
+    cursor.close()
     db.close()
 
     if data:
@@ -130,13 +138,9 @@ def get_data_by_id(nomor):
 
 def get_reviews(id_kafe=None):
     db = None
+    cursor = None
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
         cursor.execute("SHOW COLUMNS FROM review_tables")
         columns = [col[0] for col in cursor.fetchall()]
@@ -155,11 +159,10 @@ def get_reviews(id_kafe=None):
                 od[col] = row[idx]
             results.append(od)
 
-        # Deduplikasi berdasarkan tuple dari semua kolom (preserve order)
+        # deduplicate preserving order
         seen = set()
         unique_results = []
         for item in results:
-            # buat key dari nilai-nilai kolom, gunakan None jika tidak ada
             key = tuple(item.get(col) for col in columns)
             if key not in seen:
                 seen.add(key)
@@ -171,7 +174,8 @@ def get_reviews(id_kafe=None):
         return {"error": str(e)}
     finally:
         try:
-            cursor.close()
+            if cursor:
+                cursor.close()
         except:
             pass
         try:
@@ -180,128 +184,108 @@ def get_reviews(id_kafe=None):
         except:
             pass
 
-def register_user(data):
+# ---------------- User / auth functions ----------------
+
+def register_user_helper(data):
     username = data.get("username")
     password = data.get("password")
 
     if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
+        return {"error": "Username and password are required"}, 400
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
 
         cursor.execute("SELECT * FROM user_tables WHERE username = %s", (username,))
         if cursor.fetchone():
+            cursor.close()
             db.close()
-            return jsonify({"error": "Username already exists"}), 400
+            return {"error": "Username already exists"}, 400
 
         query = "INSERT INTO user_tables (username, password) VALUES (%s, %s)"
         cursor.execute(query, (username, password))
         db.commit()
         user_id = cursor.lastrowid
+        cursor.close()
         db.close()
 
-        return jsonify({"message": "User registered successfully", "user_id": user_id}), 201
+        return {"message": "User registered successfully", "user_id": user_id}, 201
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-def login_user(data):
+        return {"error": str(e)}, 500
+
+def login_user_helper(data):
     username = data.get("username")
     password = data.get("password")
 
     if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
+        return {"error": "Username and password are required"}, 400
 
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
         query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas FROM user_tables WHERE username = %s"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
+        cursor.close()
         db.close()
 
         if result:
-            user_id, user, stored_password, preferensi_jarak_minimal_user, preferensi_jarak_maksimal_user, preferensi_fasilitas_user, = result
+            user_id, user, stored_password, preferensi_jarak_minimal_user, preferensi_jarak_maksimal_user, preferensi_fasilitas_user = result
             if stored_password == password:
-                return jsonify({"message": "Login successful", "user_id": user_id, "minimum_distance_preference": preferensi_jarak_minimal_user, "maximum_distance_preference": preferensi_jarak_maksimal_user, "facilities_preference": preferensi_fasilitas_user}), 200
+                return {
+                    "message": "Login successful",
+                    "user_id": user_id,
+                    "minimum_distance_preference": preferensi_jarak_minimal_user,
+                    "maximum_distance_preference": preferensi_jarak_maksimal_user,
+                    "facilities_preference": preferensi_fasilitas_user
+                }, 200
             else:
-                return jsonify({"error": "Wrong password"}), 401
+                return {"error": "Wrong password"}, 401
         else:
-            return jsonify({"error": "User not found"}), 404
+            return {"error": "User not found"}, 404
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-# === tambahan admin: login_admin & get_admin_by_id ===
-def login_admin(data):
-    """
-    data: { "username": "...", "password": "..." }
-    returns: (jsonify(...), status_code)
-    """
+        return {"error": str(e)}, 500
+
+# --- Admin functions ---
+
+def login_admin_helper(data):
     username = data.get("username")
     password = data.get("password")
 
     if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
+        return {"error": "Username and password are required"}, 400
 
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-        # ambil admin berdasarkan username
         query = "SELECT id_admin, username, password FROM admin_tables WHERE username = %s"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
+        cursor.close()
         db.close()
 
         if result:
             id_admin_db, user_db, stored_password = result
             if str(stored_password) == str(password):
-                # sukses, kembalikan info admin (tanpa password)
-                return jsonify({"message": "Login successful", "admin_id": id_admin_db, "username": user_db}), 200
+                return {"message": "Login successful", "admin_id": id_admin_db, "username": user_db}, 200
             else:
-                return jsonify({"error": "Wrong password"}), 401
+                return {"error": "Wrong password"}, 401
         else:
-            return jsonify({"error": "Admin not found"}), 404
-
+            return {"error": "Admin not found"}, 404
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return {"error": str(e)}, 500
 
 def get_admin_by_id(id_admin):
-    """
-    Mengambil data admin berdasarkan id_admin.
-    Mengembalikan dict (atau None jika tidak ada).
-    Struktur mengikuti pattern get_user_by_id.
-    """
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-
-        # ambil kolom tabel admin_tables (lebih aman jika struktur kolom berubah)
         cursor.execute("SHOW COLUMNS FROM admin_tables")
         columns = [col[0] for col in cursor.fetchall()]
 
         query = "SELECT * FROM admin_tables WHERE id_admin = %s"
         cursor.execute(query, (id_admin,))
         result = cursor.fetchone()
+        cursor.close()
         db.close()
 
         if result:
@@ -314,20 +298,16 @@ def get_admin_by_id(id_admin):
     except Exception as e:
         return {"error": str(e)}
 
-# === akhir tambahan admin ===
+# ---------------- User retrieval + update preferences ----------------
 
 def get_user_by_id(id_user):
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
         query = "SELECT id_user, username, password, preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas, cafe_telah_dikunjungi, menu_yang_disukai FROM user_tables WHERE id_user = %s"
         cursor.execute(query, (id_user,))
         result = cursor.fetchone()
+        cursor.close()
         db.close()
         if result:
             return {
@@ -345,7 +325,7 @@ def get_user_by_id(id_user):
     except Exception as e:
         return {"error": str(e)}
 
-def update_user_preferences(data):
+def update_user_preferences_helper(data):
     user_id = data.get("user_id")
     preferensi_jarak_minimal = data.get("preferensi_jarak_minimal")
     preferensi_jarak_maksimal = data.get("preferensi_jarak_maksimal")
@@ -355,21 +335,18 @@ def update_user_preferences(data):
         return {"error": "User id is required"}, 400
 
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
         query = """UPDATE user_tables 
                    SET preferensi_jarak_minimal = %s, preferensi_jarak_maksimal = %s, preferensi_fasilitas = %s 
                    WHERE id_user = %s"""
         cursor.execute(query, (preferensi_jarak_minimal, preferensi_jarak_maksimal, preferensi_fasilitas, user_id))
         db.commit()
+        updated = cursor.rowcount
+        cursor.close()
         db.close()
         
-        if cursor.rowcount > 0:
+        if updated:
             return {"message": "User preferences updated successfully"}, 200
         else:
             return {"error": "User not found or no changes made"}, 404
@@ -377,50 +354,35 @@ def update_user_preferences(data):
     except Exception as e:
         return {"error": str(e)}, 500
 
-# Visited Cafes
+# ---------------- Visited cafes + favorites + feedback ----------------
+
 def get_visited_cafe(id_user):
-    """
-    Ambil field cafe_telah_dikunjungi yang sudah berupa JSON array:
-    e.g. '[{"id_cafe":25},{"id_cafe":4},{"id_cafe":17}]'
-    Return: list of dicts [{ "id_cafe": …}, …]
-    """
     try:
-        db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-        cursor.execute(
-            "SELECT cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s",
-            (id_user,)
-        )
+        cursor.execute("SELECT cafe_telah_dikunjungi FROM user_tables WHERE id_user = %s", (id_user,))
         row = cursor.fetchone()
+        cursor.close()
         db.close()
 
         if row is None:
-            return None  # user tidak ditemukan
+            return None
 
         raw = row[0] or "[]"
         try:
             visited = json.loads(raw)
-            # pastikan formatnya list of dicts dengan key 'id_cafe'
             if isinstance(visited, list):
                 return [v for v in visited if isinstance(v, dict) and "id_cafe" in v]
             else:
                 return []
         except json.JSONDecodeError:
-            return []  # JSON rusak, return empty
-
+            return []
     except Exception as e:
         return {"error": str(e)}
 
-def add_visited_cafe(id_user, cafe_id):
+def add_visited_cafe_helper(id_user, cafe_id):
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
 
         query = """
@@ -435,6 +397,7 @@ def add_visited_cafe(id_user, cafe_id):
         cursor.execute(query, (cafe_id, id_user))
         db.commit()
         updated = cursor.rowcount
+        cursor.close()
         db.close()
 
         if updated:
@@ -445,21 +408,13 @@ def add_visited_cafe(id_user, cafe_id):
     except Exception as e:
         return {"error": str(e)}, 500
 
-
 def get_favorite_menu(id_user):
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-        cursor.execute(
-            "SELECT menu_yang_disukai FROM user_tables WHERE id_user = %s",
-            (id_user,)
-        )
+        cursor.execute("SELECT menu_yang_disukai FROM user_tables WHERE id_user = %s", (id_user,))
         row = cursor.fetchone()
+        cursor.close()
         db.close()
 
         if not row:
@@ -472,7 +427,7 @@ def get_favorite_menu(id_user):
     except Exception as e:
         return {"error": str(e)}
     
-def add_favorite_menu(data):
+def add_favorite_menu_helper(data):
     user_id   = data.get("user_id")
     id_cafe   = data.get("id_cafe")
     nama_menu = data.get("nama_menu")
@@ -482,9 +437,7 @@ def add_favorite_menu(data):
         return {"error": "user_id, id_cafe, nama_menu, dan harga wajib diisi"}, 400
 
     try:
-        db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
 
         query = """
@@ -504,6 +457,7 @@ def add_favorite_menu(data):
         cursor.execute(query, params)
         db.commit()
         updated = cursor.rowcount
+        cursor.close()
         db.close()
 
         if updated:
@@ -513,9 +467,8 @@ def add_favorite_menu(data):
 
     except Exception as e:
         return {"error": str(e)}, 500
-    
-# Feedback
-def add_user_feedback(data):
+
+def add_user_feedback_helper(data):
     id_user = data.get("id_user")
     user_feedback = data.get("user_feedback")
 
@@ -523,46 +476,28 @@ def add_user_feedback(data):
         return {"error": "Field id_user dan user_feedback wajib diisi"}, 400
 
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
 
-        query = """
-            INSERT INTO feedback_tables (id_user, user_feedback)
-            VALUES (%s, %s)
-        """
+        query = "INSERT INTO feedback_tables (id_user, user_feedback) VALUES (%s, %s)"
         cursor.execute(query, (id_user, user_feedback))
         db.commit()
+        cursor.close()
         db.close()
-
         return {"message": "Feedback berhasil disimpan"}, 201
     except Exception as e:
         return {"error": str(e)}, 500
     
-# --- Feedback: ambil semua feedback dari tabel feedback_tables ---
 def get_all_feedbacks():
-    """
-    Ambil semua baris dari feedback_tables dan kembalikan sebagai list of OrderedDict.
-    Jika terjadi error, kembalikan dict {"error": "..."} agar caller dapat mengembalikan status 500.
-    """
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-        # ambil nama kolom (sama style seperti fungsi lain)
         cursor.execute("SHOW COLUMNS FROM feedback_tables")
         columns = [col[0] for col in cursor.fetchall()]
 
         cursor.execute("SELECT * FROM feedback_tables")
         rows = cursor.fetchall()
+        cursor.close()
         db.close()
 
         results = []
@@ -576,17 +511,16 @@ def get_all_feedbacks():
     except Exception as e:
         return {"error": str(e)}
 
-# --- Baru: delete / update helpers for user, cafe, feedback ---
+# ---------------- New helpers: delete user / cafe / feedback / update cafe ----------------
 
-def delete_user_by_id(id_user):
+def delete_user_by_id_helper(id_user):
     try:
-        db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
         cursor.execute("DELETE FROM user_tables WHERE id_user = %s", (id_user,))
         db.commit()
         deleted = cursor.rowcount
+        cursor.close()
         db.close()
         if deleted:
             return {"message": f"User {id_user} berhasil dihapus"}, 200
@@ -595,15 +529,29 @@ def delete_user_by_id(id_user):
     except Exception as e:
         return {"error": str(e)}, 500
 
-def delete_cafe_by_nomor(nomor):
+def delete_cafe_by_nomor_helper(nomor):
     try:
-        db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
-        )
+        # remove image file associated if exists
+        db = get_db_connection()
         cursor = db.cursor()
+        cursor.execute("SELECT gambar_kafe FROM cafe_tables WHERE nomor = %s", (nomor,))
+        row = cursor.fetchone()
+        if row and row[0]:
+            path = row[0]
+            if isinstance(path, str) and path.startswith("/uploads/cafes/"):
+                fname = os.path.basename(path)
+                full = os.path.join(UPLOAD_FOLDER, fname)
+                try:
+                    if os.path.exists(full):
+                        os.remove(full)
+                except Exception as e:
+                    # non-fatal
+                    print("Failed to remove cafe image file:", e)
+
         cursor.execute("DELETE FROM cafe_tables WHERE nomor = %s", (nomor,))
         db.commit()
         deleted = cursor.rowcount
+        cursor.close()
         db.close()
         if deleted:
             return {"message": f"Cafe nomor {nomor} berhasil dihapus"}, 200
@@ -612,26 +560,20 @@ def delete_cafe_by_nomor(nomor):
     except Exception as e:
         return {"error": str(e)}, 500
 
-def update_cafe_by_nomor(nomor, data):
-    """
-    Update kolom-kolom pada cafe_tables berdasarkan keys yang ada di `data`.
-    Kita baca kolom tabel secara dinamis dan hanya update kolom yang valid (kecuali primary key 'nomor').
-    """
+def update_cafe_by_nomor_helper(nomor, data):
     if not isinstance(data, dict) or not data:
         return {"error": "Payload harus berformat JSON dan berisi field untuk diupdate"}, 400
 
     try:
-        db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-        # ambil kolom tabel
         cursor.execute("SHOW COLUMNS FROM cafe_tables")
         columns = [col[0] for col in cursor.fetchall()]
-        # jangan update primary key 'nomor'
+        # exclude primary key 'nomor'
         valid_cols = [c for c in columns if c.lower() != "nomor" and c in data]
 
         if not valid_cols:
+            cursor.close()
             db.close()
             return {"error": "Tidak ada field valid untuk diupdate"}, 400
 
@@ -643,6 +585,7 @@ def update_cafe_by_nomor(nomor, data):
         cursor.execute(query, tuple(params))
         db.commit()
         updated = cursor.rowcount
+        cursor.close()
         db.close()
 
         if updated:
@@ -652,15 +595,14 @@ def update_cafe_by_nomor(nomor, data):
     except Exception as e:
         return {"error": str(e)}, 500
 
-def delete_feedback_by_id(id_feedback):
+def delete_feedback_by_id_helper(id_feedback):
     try:
-        db = mysql.connector.connect(
-            host="localhost", user="root", password="", database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
         cursor.execute("DELETE FROM feedback_tables WHERE id_feedback = %s", (id_feedback,))
         db.commit()
         deleted = cursor.rowcount
+        cursor.close()
         db.close()
         if deleted:
             return {"message": f"Feedback {id_feedback} berhasil dihapus"}, 200
@@ -669,11 +611,45 @@ def delete_feedback_by_id(id_feedback):
     except Exception as e:
         return {"error": str(e)}, 500
 
+# ---------------- Upload image helpers ----------------
+
+def get_existing_cafe_image(nomor):
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT gambar_kafe FROM cafe_tables WHERE nomor = %s", (nomor,))
+        row = cursor.fetchone()
+        cursor.close()
+        db.close()
+        if row:
+            return row[0]
+        return None
+    except Exception as e:
+        print("Error fetching existing cafe image:", e)
+        return None
+
+def update_cafe_image_path(nomor, image_path):
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+        query = "UPDATE cafe_tables SET gambar_kafe = %s WHERE nomor = %s"
+        cursor.execute(query, (image_path, nomor))
+        db.commit()
+        updated = cursor.rowcount
+        cursor.close()
+        db.close()
+        return bool(updated)
+    except Exception as e:
+        print("Error updating gambar_kafe:", e)
+        return False
+
+# ---------------- Routes (endpoints) ----------------
+
 # Feedback endpoints
 @app.route('/api/feedback', methods=['POST'])
 def api_add_feedback():
-    data = request.get_json()
-    result, status = add_user_feedback(data)
+    data = request.get_json() or {}
+    result, status = add_user_feedback_helper(data)
     return jsonify(result), status
 
 @app.route('/api/feedbacks', methods=['GET'])
@@ -683,10 +659,9 @@ def api_get_all_feedbacks():
         return jsonify(feedbacks), 500
     return jsonify(feedbacks), 200
 
-# New: delete feedback by id
 @app.route('/api/feedback/<int:id_feedback>', methods=['DELETE'])
 def api_delete_feedback(id_feedback):
-    result, status = delete_feedback_by_id(id_feedback)
+    result, status = delete_feedback_by_id_helper(id_feedback)
     return jsonify(result), status
 
 # Menu
@@ -701,8 +676,8 @@ def api_get_favorite_menu(id_user):
 
 @app.route('/api/user/favorite_menu', methods=['POST'])
 def api_add_favorite_menu():
-    data = request.get_json()
-    result, status = add_favorite_menu(data)
+    data = request.get_json() or {}
+    result, status = add_favorite_menu_helper(data)
     return jsonify(result), status
 
 # Visited Cafes
@@ -717,45 +692,30 @@ def api_get_visited_cafe(id_user):
 
 @app.route('/api/visited/<int:id_user>', methods=['POST'])
 def api_add_visited_cafe(id_user):
-    # 1. Ambil JSON body
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Request body harus berformat JSON"}), 400
-
-    # 2. Pastikan field "id_cafe" ada
+    data = request.get_json() or {}
     cafe_id = data.get("id_cafe")
     if cafe_id is None:
         return jsonify({"error": "Field id_cafe wajib diisi"}), 400
-
-    # 3. Panggil helper untuk menambah cafe ke array JSON
-    payload, status_code = add_visited_cafe(id_user, cafe_id)
-
-    # 4. Wrap hasil helper dengan jsonify dan kembalikan status code-nya
-    return jsonify(payload), status_code
+    result, status = add_visited_cafe_helper(id_user, cafe_id)
+    return jsonify(result), status
 
 @app.route('/api/user/preferences', methods=['POST'])
 def api_update_user_preferences():
-    data = request.get_json()
-    result, status = update_user_preferences(data)
+    data = request.get_json() or {}
+    result, status = update_user_preferences_helper(data)
     return jsonify(result), status
 
 # Users
 def get_all_users():
-    """Ambil semua user dari tabel user_tables."""
     try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="cafe_databases"
-        )
+        db = get_db_connection()
         cursor = db.cursor()
-        # Ambil semua kolom, atau pilih kolom yang Anda butuhkan
         cursor.execute("SHOW COLUMNS FROM user_tables")
         columns = [col[0] for col in cursor.fetchall()]
 
         cursor.execute("SELECT * FROM user_tables")
         rows = cursor.fetchall()
+        cursor.close()
         db.close()
 
         results = []
@@ -775,28 +735,24 @@ def api_get_all_users():
         return jsonify(users), 500
     return jsonify(users), 200    
 
-# GET user by id AND DELETE user by id (support both methods on same route)
 @app.route('/api/users/<int:id_user>', methods=['GET', 'DELETE'])
 def api_user_by_id(id_user):
     if request.method == 'GET':
         user = get_user_by_id(id_user)
         if user:
-            return jsonify(user)
+            return jsonify(user), 200
         else:
             return jsonify({"error": "User not found"}), 404
     elif request.method == 'DELETE':
-        result, status = delete_user_by_id(id_user)
+        result, status = delete_user_by_id_helper(id_user)
         return jsonify(result), status
 
-@app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
-def api_reviews(id_kafe):
-    return jsonify(get_reviews(id_kafe))
-
-# Admin endpoints (routes)
+# Admin endpoints
 @app.route('/api/login_admin', methods=['POST'])
 def api_login_admin():
-    data = request.get_json()
-    return login_admin(data)
+    data = request.get_json() or {}
+    result, status = login_admin_helper(data)
+    return jsonify(result), status
 
 @app.route('/api/admin/<int:id_admin>', methods=['GET'])
 def api_get_admin(id_admin):
@@ -808,6 +764,7 @@ def api_get_admin(id_admin):
     else:
         return jsonify({"error": "Admin not found"}), 404
 
+# Sentiment
 @app.route('/api/sentiment/<int:id_kafe>', methods=['GET'])
 def api_sentiment(id_kafe):
     reviews = get_reviews(id_kafe)
@@ -820,13 +777,14 @@ def api_sentiment(id_kafe):
 
     return jsonify(analyzed), 200
 
+# Data endpoints (cafes / menus)
 @app.route('/api/data', methods=['GET'])
 def api_data():
-    return jsonify(get_data())
+    return jsonify(get_data()), 200
 
 @app.route('/api/menus', methods=['GET'])
 def api_menu():
-    return jsonify(get_menu())
+    return jsonify(get_menu()), 200
 
 @app.route('/api/menu/<int:id_cafe>', methods=['GET'])
 def api_menu_by_id(id_cafe):
@@ -837,37 +795,102 @@ def api_menu_by_id(id_cafe):
 
 @app.route('/api/search/<keyword>', methods=['GET'])
 def api_search(keyword):
-    return jsonify(get_data(keyword))
+    return jsonify(get_data(keyword)), 200
 
-# GET / PUT / DELETE cafe by nomor (support multiple methods on same route)
+# GET / PUT / DELETE cafe by nomor + upload image
 @app.route('/api/cafe/<int:nomor>', methods=['GET', 'PUT', 'DELETE'])
 def api_cafe(nomor):
     if request.method == 'GET':
         cafe = get_data_by_id(nomor)
         if cafe:
-            return jsonify(cafe)
+            return jsonify(cafe), 200
         else:
             return jsonify({"error": "Cafe not found"}), 404
 
     if request.method == 'PUT':
-        # update cafe
         data = request.get_json() or {}
-        result, status = update_cafe_by_nomor(nomor, data)
+        result, status = update_cafe_by_nomor_helper(nomor, data)
         return jsonify(result), status
 
     if request.method == 'DELETE':
-        result, status = delete_cafe_by_nomor(nomor)
+        result, status = delete_cafe_by_nomor_helper(nomor)
         return jsonify(result), status
-    
+
+# Upload image for a cafe
+@app.route('/api/cafe/<int:nomor>/upload_image', methods=['POST'])
+def api_upload_cafe_image(nomor):
+    cafe = get_data_by_id(nomor)
+    if not cafe:
+        return jsonify({"error": "Cafe not found"}), 404
+
+    if "image" not in request.files:
+        return jsonify({"error": "No file part with key 'image'"}), 400
+    file = request.files["image"]
+    if file.filename == "":
+        return jsonify({"error": "Empty filename"}), 400
+    if not allowed_file(file.filename):
+        return jsonify({"error": f"File extension not allowed. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
+
+    filename_secure = secure_filename(file.filename)
+    ext = filename_secure.rsplit(".", 1)[-1].lower()
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    save_path = os.path.join(UPLOAD_FOLDER, unique_name)
+
+    try:
+        # attempt to remove previous image file if exists
+        prev_path = get_existing_cafe_image(nomor)
+        if prev_path and isinstance(prev_path, str) and prev_path.startswith("/uploads/cafes/"):
+            prev_fname = os.path.basename(prev_path)
+            prev_full = os.path.join(UPLOAD_FOLDER, prev_fname)
+            if os.path.exists(prev_full):
+                try:
+                    os.remove(prev_full)
+                except Exception as e:
+                    print("Failed to remove previous image:", e)
+
+        file.save(save_path)
+        db_rel_path = f"/uploads/cafes/{unique_name}"
+        ok = update_cafe_image_path(nomor, db_rel_path)
+        if not ok:
+            try:
+                os.remove(save_path)
+            except:
+                pass
+            return jsonify({"error": "Failed to update database"}), 500
+
+        return jsonify({"message": "Image uploaded", "gambar_kafe": db_rel_path}), 201
+
+    except Exception as e:
+        print("Error saving uploaded file:", e)
+        return jsonify({"error": str(e)}), 500
+
+# Serve uploaded images
+@app.route('/uploads/cafes/<path:filename>', methods=['GET'])
+def serve_cafe_image(filename):
+    try:
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    except Exception:
+        abort(404)
+
+# Registration / login endpoints
 @app.route('/api/register', methods=['POST'])
 def api_register():
-    data = request.get_json()
-    return register_user(data)
+    data = request.get_json() or {}
+    result, status = register_user_helper(data)
+    return jsonify(result), status
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
-    data = request.get_json()
-    return login_user(data)
+    data = request.get_json() or {}
+    result, status = login_user_helper(data)
+    return jsonify(result), status
 
+# Reviews endpoint example
+@app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
+def api_reviews(id_kafe):
+    return jsonify(get_reviews(id_kafe)), 200
+
+# ----------------- Run -----------------
 if __name__ == "__main__":
+    # debug True for development only
     app.run(port=8080, debug=True)

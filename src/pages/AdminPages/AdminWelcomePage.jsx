@@ -208,9 +208,9 @@ const AdminWelcomePage = () => {
                 </button>
                 <Link
                   to="/dashboard"
-                  className="text-xl font-bold tracking-widest"
+                  className="text-xl font-bold tracking-widest text-[#a6a867]"
                 >
-                  Vinn.
+                  RecSys.
                 </Link>
               </div>
             </div>

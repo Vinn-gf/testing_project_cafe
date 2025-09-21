@@ -25,6 +25,9 @@ const AdminManageFeedbacks = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFeedback, setModalFeedback] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const feedbacksPerPage = 5;
+
   const navigate = useNavigate();
   const location = useLocation();
   const ADMIN_COOKIE_KEY = CookieKeys?.AdminToken ?? "AdminToken";
@@ -49,16 +52,13 @@ const AdminManageFeedbacks = () => {
           headers: { "ngrok-skip-browser-warning": true },
         }
       );
-      // Accept array or object response; normalize to array
       const data = resp?.data;
       if (Array.isArray(data)) {
         setFeedbacks(data);
         setLoading(false);
         return;
       }
-      // If server returned an object (maybe wrapper), try to find array inside
       if (data && typeof data === "object") {
-        // If it contains array fields like 'feedbacks' or similar, try those
         const arrCandidate = data.feedbacks || data.data || null;
         if (Array.isArray(arrCandidate)) {
           setFeedbacks(arrCandidate);
@@ -66,7 +66,7 @@ const AdminManageFeedbacks = () => {
           return;
         }
       }
-      // As final fallback try alternate endpoint (/api/feedbacks)
+      // fallback to alternate endpoint
       const altResp = await axios.get(
         `${process.env.REACT_APP_URL_SERVER}${altFbEndpoint}`,
         {
@@ -76,7 +76,7 @@ const AdminManageFeedbacks = () => {
       const altData = altResp?.data;
       setFeedbacks(Array.isArray(altData) ? altData : []);
     } catch (err) {
-      // Try alternate endpoint if first failed
+      // try alternate endpoint if first failed
       try {
         const altResp = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${altFbEndpoint}`,
@@ -107,6 +107,16 @@ const AdminManageFeedbacks = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
+  // keep currentPage valid whenever feedbacks length changes
+  useEffect(() => {
+    const totalPages = Math.max(
+      1,
+      Math.ceil(feedbacks.length / feedbacksPerPage)
+    );
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+    if (currentPage < 1) setCurrentPage(1);
+  }, [feedbacks, currentPage]);
+
   const handleDeleteFeedback = async (id) => {
     if (!id) return;
     const ok = window.confirm(
@@ -117,7 +127,6 @@ const AdminManageFeedbacks = () => {
     setLoading(true);
     setError(null);
 
-    // try primary DELETE then fallback
     const tryDelete = async (basePath) =>
       axios.delete(`${process.env.REACT_APP_URL_SERVER}${basePath}/${id}`, {
         headers: { "ngrok-skip-browser-warning": true },
@@ -155,15 +164,6 @@ const AdminManageFeedbacks = () => {
     document.body.style.overflow = "";
   };
 
-  const activeClass = (key) => {
-    const p = location.pathname || "";
-    if (key === "manage_users") return p.includes("manage_users");
-    if (key === "manage_cafes") return p.includes("manage_cafes");
-    if (key === "manage_feedbacks") return p.includes("manage_feedbacks");
-    if (key === "dashboard") return p === "/admin" || p === "/dashboard";
-    return false;
-  };
-
   const handleLogout = () => {
     try {
       CookieStorage.remove(ADMIN_COOKIE_KEY);
@@ -187,14 +187,37 @@ const AdminManageFeedbacks = () => {
     }
   };
 
+  // pagination helpers
+  const totalFeedbacks = feedbacks.length;
+  const totalPages = Math.max(1, Math.ceil(totalFeedbacks / feedbacksPerPage));
+  const startIndex = (currentPage - 1) * feedbacksPerPage;
+  const displayedFeedbacks = feedbacks.slice(
+    startIndex,
+    startIndex + feedbacksPerPage
+  );
+
+  const goToPage = (page) => {
+    const p = Math.min(Math.max(1, page), totalPages);
+    setCurrentPage(p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) goToPage(currentPage - 1);
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) goToPage(currentPage + 1);
+  };
+
   return (
     <div className="min-h-screen font-montserrat bg-[#1B2021] text-[#E3DCC2] overflow-x-hidden">
       <div className="flex">
         {/* Sidebar */}
         <aside
-          className={`fixed z-30 top-0 left-0 h-full transform transition-transform duration-200 ease-in-out
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-            md:translate-x-0 md:static md:w-64 w-64`}
+          className={`fixed z-30 top-0 left-0 h-full transform transition-transform duration-200 ease-in-out ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:static md:w-64 w-64`}
         >
           <div className="h-screen bg-[#1B2021] border-r border-[#2d3738] p-4">
             <div className="flex items-center justify-between">
@@ -210,7 +233,7 @@ const AdminManageFeedbacks = () => {
                   to="/dashboard"
                   className="text-xl font-bold tracking-widest"
                 >
-                  Vinn.
+                  RecSys.
                 </Link>
               </div>
             </div>
@@ -220,11 +243,7 @@ const AdminManageFeedbacks = () => {
                 <li>
                   <Link
                     to="/manage_users"
-                    className={`flex items-center gap-3 px-3 py-2 rounded transition-colors ${
-                      activeClass("manage_users")
-                        ? "bg-[#2d3738] text-white"
-                        : "hover:bg-[#2d3738]"
-                    }`}
+                    className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] transition-colors"
                   >
                     <FaUsers /> <span>Manage Users</span>
                   </Link>
@@ -232,11 +251,7 @@ const AdminManageFeedbacks = () => {
                 <li>
                   <Link
                     to="/manage_cafes"
-                    className={`flex items-center gap-3 px-3 py-2 rounded transition-colors ${
-                      activeClass("manage_cafes")
-                        ? "bg-[#2d3738] text-white"
-                        : "hover:bg-[#2d3738]"
-                    }`}
+                    className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] transition-colors"
                   >
                     <FaStore /> <span>Manage Cafe</span>
                   </Link>
@@ -244,7 +259,7 @@ const AdminManageFeedbacks = () => {
                 <li>
                   <Link
                     to="/manage_feedbacks"
-                    className="flex items-center gap-3 px-3 py-2 rounded transition-colors hover:bg-[#2d3738] text-[#a6a867]"
+                    className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#2d3738] text-[#a6a867] transition-colors"
                   >
                     <FaCommentDots /> <span>Manage Feedbacks</span>
                   </Link>
@@ -263,7 +278,7 @@ const AdminManageFeedbacks = () => {
           </div>
         </aside>
 
-        {/* overlay for small screens */}
+        {/* Overlay for small screens */}
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
@@ -272,8 +287,8 @@ const AdminManageFeedbacks = () => {
         )}
 
         {/* Main */}
-        <div className="flex-1 min-h-screen">
-          <header className="flex items-center justify-between p-4 border-b border-[#2d2f2f]">
+        <div className="flex-1 min-h-screen overflow-hidden">
+          <header className="flex items-center justify-between p-4 border-b border-[#2d2f2f] md:border-none">
             <div className="flex items-center gap-3">
               <button
                 className="text-[#E3DCC2] md:hidden p-2 rounded hover:bg-[#2d3738] focus:outline-none"
@@ -282,14 +297,14 @@ const AdminManageFeedbacks = () => {
               >
                 <FaBars size={18} />
               </button>
-              <h2 className="text-lg font-semibold text-[#E3DCC2]">
+              <h2 className="text-lg font-semibold text-[#E3DCC2] block sm:block md:hidden">
                 Manage Feedbacks
               </h2>
             </div>
           </header>
 
-          <main className="p-6">
-            <div className="bg-[#111314] rounded-2xl p-6 shadow-md">
+          <main className="p-6 sm:p-6 md:px-6">
+            <div className="bg-[#111314] rounded-2xl p-6 shadow-mdp-6 sm:p-6 md:px-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold text-[#E3DCC2]">Feedbacks</h3>
                 <div></div>
@@ -345,8 +360,7 @@ const AdminManageFeedbacks = () => {
                             </td>
                           </tr>
                         ) : (
-                          feedbacks.map((f, i) => {
-                            // try to handle various field names
+                          displayedFeedbacks.map((f, i) => {
                             const id_fb =
                               f.id_feedback ?? f.id ?? f.id_fb ?? f.ID ?? null;
                             const id_user =
@@ -355,7 +369,10 @@ const AdminManageFeedbacks = () => {
                               f.user_feedback ?? f.feedback ?? f.body ?? "";
 
                             return (
-                              <tr key={i} className="text-sm text-[#E3DCC2]">
+                              <tr
+                                key={String(id_fb) + "-" + i}
+                                className="text-sm text-[#E3DCC2]"
+                              >
                                 <td className="px-4 py-3">{id_fb ?? "—"}</td>
                                 <td className="px-4 py-3">{id_user ?? "—"}</td>
                                 <td className="px-4 py-3">
@@ -393,8 +410,112 @@ const AdminManageFeedbacks = () => {
                 </div>
               </div>
 
-              <div className="mt-4 text-sm text-[#cfc9b0]">
-                Showing <strong>{feedbacks.length}</strong> feedbacks.
+              {/* Pagination controls */}
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="text-sm text-[#cfc9b0]">
+                  Showing <strong>{displayedFeedbacks.length}</strong> of{" "}
+                  <strong>{totalFeedbacks}</strong> feedbacks.
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === 1
+                        ? "opacity-50 cursor-not-allowed"
+                        : "bg-[#1B2021] hover:bg-[#2d3738]"
+                    } text-[#E3DCC2] border border-[#2d2f2f]`}
+                    aria-label="Previous page"
+                  >
+                    Previous
+                  </button>
+
+                  <div className="hidden sm:flex items-center gap-1">
+                    {totalPages <= 7 ? (
+                      Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (p) => (
+                          <button
+                            key={p}
+                            onClick={() => goToPage(p)}
+                            className={`px-2 py-1 rounded ${
+                              p === currentPage
+                                ? "bg-[#2d3738] text-white"
+                                : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                            } border border-[#2d2f2f]`}
+                          >
+                            {p}
+                          </button>
+                        )
+                      )
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => goToPage(1)}
+                          className={`px-2 py-1 rounded ${
+                            currentPage === 1
+                              ? "bg-[#2d3738] text-white"
+                              : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                          } border border-[#2d2f2f]`}
+                        >
+                          1
+                        </button>
+
+                        {currentPage > 4 && <span className="px-2">...</span>}
+
+                        {Array.from({ length: 3 }, (_, i) => {
+                          const midStart = Math.max(
+                            2,
+                            Math.min(currentPage - 1, totalPages - 3)
+                          );
+                          return midStart + i;
+                        })
+                          .filter((p) => p > 1 && p < totalPages)
+                          .map((p) => (
+                            <button
+                              key={p}
+                              onClick={() => goToPage(p)}
+                              className={`px-2 py-1 rounded ${
+                                p === currentPage
+                                  ? "bg-[#2d3738] text-white"
+                                  : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                              } border border-[#2d2f2f]`}
+                            >
+                              {p}
+                            </button>
+                          ))}
+
+                        {currentPage < totalPages - 3 && (
+                          <span className="px-2">...</span>
+                        )}
+
+                        <button
+                          onClick={() => goToPage(totalPages)}
+                          className={`px-2 py-1 rounded ${
+                            currentPage === totalPages
+                              ? "bg-[#2d3738] text-white"
+                              : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                          } border border-[#2d2f2f]`}
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === totalPages
+                        ? "opacity-50 cursor-not-allowed"
+                        : "bg-[#1B2021] hover:bg-[#2d3738]"
+                    } text-[#E3DCC2] border border-[#2d2f2f]`}
+                    aria-label="Next page"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </main>

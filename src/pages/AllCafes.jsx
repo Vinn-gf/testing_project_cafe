@@ -1,3 +1,4 @@
+// src/pages/AllCafes.jsx
 import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,22 +16,26 @@ const AllCafes = () => {
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
 
+  const baseUrl = (process.env.REACT_APP_URL_SERVER || "").replace(/\/$/, "");
+
   useEffect(() => {
     const fetchCafe = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_ALL_CAFES}`,
-          { headers: { "ngrok-skip-browser-warning": true } }
+          `${baseUrl}${API_ENDPOINTS.GET_ALL_CAFES}`,
+          {
+            headers: { "ngrok-skip-browser-warning": true },
+          }
         );
-        setCafes(response.data);
+        setCafes(response.data || []);
       } catch (err) {
-        setError(err.message);
+        setError(err.message || "Failed to fetch cafes");
       } finally {
         setLoading(false);
       }
     };
     fetchCafe();
-  }, []);
+  }, [baseUrl]);
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -40,7 +45,7 @@ const AllCafes = () => {
   };
 
   const totalCafes = cafes.length;
-  const totalPages = Math.ceil(totalCafes / cafesPerPage);
+  const totalPages = Math.ceil(totalCafes / cafesPerPage) || 1;
   const indexOfLastCafe = currentPage * cafesPerPage;
   const indexOfFirstCafe = indexOfLastCafe - cafesPerPage;
   const currentCafes = cafes.slice(indexOfFirstCafe, indexOfLastCafe);
@@ -70,6 +75,16 @@ const AllCafes = () => {
   if (error) {
     return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
   }
+
+  const getCafeImageUrl = (gambar_kafe) => {
+    const defaultImg = `${process.env.PUBLIC_URL}/images/card-cafe.jpg`;
+    if (!gambar_kafe) return defaultImg;
+    if (typeof gambar_kafe === "string" && gambar_kafe.trim().startsWith("/")) {
+      return `${baseUrl}${gambar_kafe}`;
+    }
+    // fallback: treat as filename in public/images
+    return `${process.env.PUBLIC_URL}/images/${gambar_kafe}`;
+  };
 
   return (
     <div className="bg-[#2D3738] overflow-hidden">
@@ -150,9 +165,8 @@ const AllCafes = () => {
           </div>
         )}
       </div>
-      {/* Navbar */}
 
-      {/* Search Section */}
+      {/* Search */}
       <div className="px-4">
         <form
           onSubmit={handleSearch}
@@ -174,16 +188,11 @@ const AllCafes = () => {
         </form>
       </div>
 
-      {/* Cafe List Section */}
+      {/* List */}
       <div className="p-4">
         <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {currentCafes.map((cafe, index) => {
-            let backgroundImageUrl;
-            try {
-              backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
-            } catch {
-              backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
-            }
+            const imgUrl = getCafeImageUrl(cafe.gambar_kafe);
             return (
               <div
                 key={index}
@@ -192,7 +201,7 @@ const AllCafes = () => {
                 <Link to={`/detailcafe/${cafe.nomor}`}>
                   <div
                     className="relative h-[21rem] bg-cover bg-center rounded-t-md"
-                    style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+                    style={{ backgroundImage: `url("${imgUrl}")` }}
                   >
                     <div className="text-[#E3DCC2] absolute bottom-0 inset-x-0 bg-black bg-opacity-50 p-2 h-[18%]">
                       <h1 className="text-[1.2rem] font-extrabold">
@@ -207,7 +216,7 @@ const AllCafes = () => {
           })}
         </div>
 
-        {/* Pagination Section */}
+        {/* Pagination */}
         <div className="w-[90%] md:w-[95%] lg:w-[90%] mx-auto flex flex-col sm:flex-row justify-center items-center mt-8 gap-4">
           <button
             onClick={handlePrevPage}

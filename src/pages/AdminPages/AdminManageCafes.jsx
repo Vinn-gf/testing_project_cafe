@@ -178,7 +178,7 @@ const AdminManageCafes = () => {
   };
 
   return (
-    <div className="min-h-screen font-montserrat bg-[#1B2021] text-[#E3DCC2]">
+    <div className="overflow-hidden min-h-screen font-montserrat bg-[#1B2021] text-[#E3DCC2]">
       <div className="flex">
         {/* Sidebar */}
         <aside
@@ -254,7 +254,7 @@ const AdminManageCafes = () => {
         )}
 
         {/* Main */}
-        <div className="flex-1 min-h-screen">
+        <div className="flex-1 min-h-screen overflow-hidden">
           <header className="flex items-center justify-between p-4 border-b border-[#2d2f2f] md:border-none">
             <div className="flex items-center gap-3">
               <button
@@ -272,160 +272,123 @@ const AdminManageCafes = () => {
 
           <main className="p-6 sm:p-6 md:px-6">
             <div className="max-w-6xl mx-auto bg-[#111314] rounded-2xl p-6 shadow-md sm:p-6 md:px-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-[#E3DCC2]">Cafes</h3>
-              </div>
+              <div className="w-full rounded-2xl shadow-md">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-[#E3DCC2]">Cafes</h3>
+                </div>
 
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-[#2d2f2f]">
-                  <thead>
-                    <tr className="text-left text-sm text-[#cfc9b0]">
-                      <th className="px-4 py-2">Nomor</th>
-                      <th className="px-4 py-2">Gambar</th>
-                      <th className="px-4 py-2">Nama Kafe</th>
-                      <th className="px-4 py-2">Alamat</th>
-                      <th className="px-4 py-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#2d2f2f]">
-                    {loading ? (
-                      <tr>
-                        <td
-                          colSpan="5"
-                          className="px-4 py-6 text-center text-[#cfc9b0]"
-                        >
-                          Loading cafes...
-                        </td>
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full divide-y divide-[#2d2f2f]">
+                    <thead>
+                      <tr className="text-left text-sm text-[#cfc9b0]">
+                        <th className="px-4 py-2">Nomor</th>
+                        <th className="px-4 py-2">Gambar</th>
+                        <th className="px-4 py-2">Nama Kafe</th>
+                        <th className="px-4 py-2">Alamat</th>
+                        <th className="px-4 py-2">Actions</th>
                       </tr>
-                    ) : error ? (
-                      <tr>
-                        <td
-                          colSpan="5"
-                          className="px-4 py-6 text-center text-red-400"
-                        >
-                          {error}
-                        </td>
-                      </tr>
-                    ) : cafes.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan="5"
-                          className="px-4 py-6 text-center text-[#cfc9b0]"
-                        >
-                          No cafes found.
-                        </td>
-                      </tr>
-                    ) : (
-                      displayedCafes.map((c, idx) => {
-                        const imageUrl =
-                          c.gambar_kafe &&
-                          typeof c.gambar_kafe === "string" &&
-                          c.gambar_kafe.startsWith("/")
-                            ? `${baseUrl}${c.gambar_kafe}`
-                            : null;
-                        return (
-                          <tr
-                            key={String(c.nomor) + "-" + idx}
-                            className="text-sm text-[#E3DCC2]"
+                    </thead>
+                    <tbody className="divide-y divide-[#2d2f2f]">
+                      {loading ? (
+                        <tr>
+                          <td
+                            colSpan="5"
+                            className="px-4 py-6 text-center text-[#cfc9b0]"
                           >
-                            <td className="px-4 py-3">{c.nomor}</td>
-                            <td className="px-4 py-3">
-                              {imageUrl ? (
-                                <img
-                                  src={imageUrl}
-                                  alt={c.nama_kafe}
-                                  className="h-16 w-28 object-cover rounded"
-                                />
-                              ) : (
-                                <div className="h-16 w-28 bg-[#1b2021] flex items-center justify-center rounded text-sm text-[#cfc9b0]">
-                                  No Image
+                            Loading cafes...
+                          </td>
+                        </tr>
+                      ) : error ? (
+                        <tr>
+                          <td
+                            colSpan="5"
+                            className="px-4 py-6 text-center text-red-400"
+                          >
+                            {error}
+                          </td>
+                        </tr>
+                      ) : cafes.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan="5"
+                            className="px-4 py-6 text-center text-[#cfc9b0]"
+                          >
+                            No cafes found.
+                          </td>
+                        </tr>
+                      ) : (
+                        displayedCafes.map((c, idx) => {
+                          const imageUrl =
+                            c.gambar_kafe &&
+                            typeof c.gambar_kafe === "string" &&
+                            c.gambar_kafe.startsWith("/")
+                              ? `${baseUrl}${c.gambar_kafe}`
+                              : null;
+                          return (
+                            <tr
+                              key={String(c.nomor) + "-" + idx}
+                              className="text-sm text-[#E3DCC2]"
+                            >
+                              <td className="px-4 py-3">{c.nomor}</td>
+                              <td className="px-4 py-3">
+                                {imageUrl ? (
+                                  <img
+                                    src={imageUrl}
+                                    alt={c.nama_kafe}
+                                    className="h-16 w-28 object-cover rounded"
+                                  />
+                                ) : (
+                                  <div className="h-16 w-28 bg-[#1b2021] flex items-center justify-center rounded text-sm text-[#cfc9b0]">
+                                    No Image
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">{c.nama_kafe}</td>
+                              <td className="px-4 py-3">{c.alamat}</td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => openUploadModal(c)}
+                                    className="flex items-center gap-2 px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] border border-[#2d2f2f]"
+                                  >
+                                    <FaUpload /> Upload Image
+                                  </button>
                                 </div>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">{c.nama_kafe}</td>
-                            <td className="px-4 py-3">{c.alamat}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => openUploadModal(c)}
-                                  className="flex items-center gap-2 px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] border border-[#2d2f2f]"
-                                >
-                                  <FaUpload /> Upload Image
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
 
-              {/* Pagination controls */}
-              <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded ${
-                      currentPage === 1
-                        ? "opacity-50 cursor-not-allowed"
-                        : "bg-[#1B2021] hover:bg-[#2d3738]"
-                    } text-[#E3DCC2] border border-[#2d2f2f]`}
-                    aria-label="Previous page"
-                  >
-                    Previous
-                  </button>
+                {/* Pagination controls */}
+                <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "bg-[#1B2021] hover:bg-[#2d3738]"
+                      } text-[#E3DCC2] border border-[#2d2f2f]`}
+                      aria-label="Previous page"
+                    >
+                      Previous
+                    </button>
 
-                  {/* page numbers (show up to 7 numbers with truncation if many) */}
-                  <div className="hidden sm:flex items-center gap-1">
-                    {/*
+                    {/* page numbers (show up to 7 numbers with truncation if many) */}
+                    <div className="hidden sm:flex items-center gap-1">
+                      {/*
                       Simple pagination rendering:
                       - If totalPages <= 7, show all
                       - Else show first, maybe ..., few around current, ..., last
                     */}
-                    {totalPages <= 7 ? (
-                      Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        (p) => (
-                          <button
-                            key={p}
-                            onClick={() => goToPage(p)}
-                            className={`px-2 py-1 rounded ${
-                              p === currentPage
-                                ? "bg-[#2d3738] text-white"
-                                : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
-                            } border border-[#2d2f2f]`}
-                          >
-                            {p}
-                          </button>
-                        )
-                      )
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => goToPage(1)}
-                          className={`px-2 py-1 rounded ${
-                            currentPage === 1
-                              ? "bg-[#2d3738] text-white"
-                              : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
-                          } border border-[#2d2f2f]`}
-                        >
-                          1
-                        </button>
-
-                        {currentPage > 4 && <span className="px-2">...</span>}
-
-                        {Array.from({ length: 3 }, (_, i) => {
-                          // center on current page
-                          const midStart = Math.max(
-                            2,
-                            Math.min(currentPage - 1, totalPages - 3)
-                          );
-                          return midStart + i;
-                        })
-                          .filter((p) => p > 1 && p < totalPages)
-                          .map((p) => (
+                      {totalPages <= 7 ? (
+                        Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                          (p) => (
                             <button
                               key={p}
                               onClick={() => goToPage(p)}
@@ -437,38 +400,77 @@ const AdminManageCafes = () => {
                             >
                               {p}
                             </button>
-                          ))}
+                          )
+                        )
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => goToPage(1)}
+                            className={`px-2 py-1 rounded ${
+                              currentPage === 1
+                                ? "bg-[#2d3738] text-white"
+                                : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                            } border border-[#2d2f2f]`}
+                          >
+                            1
+                          </button>
 
-                        {currentPage < totalPages - 3 && (
-                          <span className="px-2">...</span>
-                        )}
+                          {currentPage > 4 && <span className="px-2">...</span>}
 
-                        <button
-                          onClick={() => goToPage(totalPages)}
-                          className={`px-2 py-1 rounded ${
-                            currentPage === totalPages
-                              ? "bg-[#2d3738] text-white"
-                              : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
-                          } border border-[#2d2f2f]`}
-                        >
-                          {totalPages}
-                        </button>
-                      </>
-                    )}
+                          {Array.from({ length: 3 }, (_, i) => {
+                            // center on current page
+                            const midStart = Math.max(
+                              2,
+                              Math.min(currentPage - 1, totalPages - 3)
+                            );
+                            return midStart + i;
+                          })
+                            .filter((p) => p > 1 && p < totalPages)
+                            .map((p) => (
+                              <button
+                                key={p}
+                                onClick={() => goToPage(p)}
+                                className={`px-2 py-1 rounded ${
+                                  p === currentPage
+                                    ? "bg-[#2d3738] text-white"
+                                    : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                                } border border-[#2d2f2f]`}
+                              >
+                                {p}
+                              </button>
+                            ))}
+
+                          {currentPage < totalPages - 3 && (
+                            <span className="px-2">...</span>
+                          )}
+
+                          <button
+                            onClick={() => goToPage(totalPages)}
+                            className={`px-2 py-1 rounded ${
+                              currentPage === totalPages
+                                ? "bg-[#2d3738] text-white"
+                                : "bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2]"
+                            } border border-[#2d2f2f]`}
+                          >
+                            {totalPages}
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === totalPages
+                          ? "opacity-50 cursor-not-allowed"
+                          : "bg-[#1B2021] hover:bg-[#2d3738]"
+                      } text-[#E3DCC2] border border-[#2d2f2f]`}
+                      aria-label="Next page"
+                    >
+                      Next
+                    </button>
                   </div>
-
-                  <button
-                    onClick={nextPage}
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded ${
-                      currentPage === totalPages
-                        ? "opacity-50 cursor-not-allowed"
-                        : "bg-[#1B2021] hover:bg-[#2d3738]"
-                    } text-[#E3DCC2] border border-[#2d2f2f]`}
-                    aria-label="Next page"
-                  >
-                    Next
-                  </button>
                 </div>
               </div>
             </div>

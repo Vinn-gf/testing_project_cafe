@@ -104,7 +104,7 @@ def get_menu_by_id(id_cafe):
     db.close()
 
     if not rows:
-        return None
+        return []
 
     menus = []
     for row in rows:
@@ -301,6 +301,10 @@ def get_admin_by_id(id_admin):
 # ---------------- User retrieval + update preferences ----------------
 
 def get_user_by_id(id_user):
+    """
+    Returns user record and attempts to parse cafe_telah_dikunjungi and menu_yang_disukai
+    so frontend receives arrays/objects when possible.
+    """
     try:
         db = get_db_connection()
         cursor = db.cursor()
@@ -310,6 +314,43 @@ def get_user_by_id(id_user):
         cursor.close()
         db.close()
         if result:
+            raw_visited = result[6]
+            raw_fav = result[7]
+
+            # Try parse JSON fields
+            visited_parsed = []
+            if raw_visited is None:
+                visited_parsed = []
+            else:
+                if isinstance(raw_visited, (list, dict)):
+                    visited_parsed = raw_visited if isinstance(raw_visited, list) else [raw_visited]
+                else:
+                    try:
+                        visited_parsed = json.loads(raw_visited)
+                        if isinstance(visited_parsed, dict):
+                            visited_parsed = [visited_parsed]
+                        elif not isinstance(visited_parsed, list):
+                            visited_parsed = []
+                    except Exception:
+                        # fallback: empty or raw string
+                        visited_parsed = []
+
+            fav_parsed = []
+            if raw_fav is None:
+                fav_parsed = []
+            else:
+                if isinstance(raw_fav, (list, dict)):
+                    fav_parsed = raw_fav if isinstance(raw_fav, list) else [raw_fav]
+                else:
+                    try:
+                        fav_parsed = json.loads(raw_fav)
+                        if isinstance(fav_parsed, dict):
+                            fav_parsed = [fav_parsed]
+                        elif not isinstance(fav_parsed, list):
+                            fav_parsed = []
+                    except Exception:
+                        fav_parsed = []
+
             return {
                 "id_user": result[0],
                 "username": result[1],
@@ -317,8 +358,8 @@ def get_user_by_id(id_user):
                 "preferensi_jarak_minimal": result[3],
                 "preferensi_jarak_maksimal": result[4],
                 "preferensi_fasilitas": result[5],
-                "cafe_telah_dikunjungi": result[6],
-                "menu_yang_disukai": result[7]
+                "cafe_telah_dikunjungi": visited_parsed,
+                "menu_yang_disukai": fav_parsed
             }
         else:
             return None
@@ -366,7 +407,7 @@ def get_visited_cafe(id_user):
         db.close()
 
         if row is None:
-            return None
+            return []
 
         raw = row[0] or "[]"
         try:
@@ -375,7 +416,7 @@ def get_visited_cafe(id_user):
                 return [v for v in visited if isinstance(v, dict) and "id_cafe" in v]
             else:
                 return []
-        except json.JSONDecodeError:
+        except Exception:
             return []
     except Exception as e:
         return {"error": str(e)}
@@ -418,12 +459,17 @@ def get_favorite_menu(id_user):
         db.close()
 
         if not row:
-            return None
+            return []
 
-        raw = row[0] or ""
-        visited = [c.strip() for c in raw.split(",") if c.strip()]
-        return visited
-
+        raw = row[0] or "[]"
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, list):
+                return parsed
+            else:
+                return [parsed]
+        except Exception:
+            return []
     except Exception as e:
         return {"error": str(e)}
     
@@ -531,7 +577,6 @@ def delete_user_by_id_helper(id_user):
 
 def delete_cafe_by_nomor_helper(nomor):
     try:
-        # remove image file associated if exists
         db = get_db_connection()
         cursor = db.cursor()
         cursor.execute("SELECT gambar_kafe FROM cafe_tables WHERE nomor = %s", (nomor,))
@@ -545,7 +590,6 @@ def delete_cafe_by_nomor_helper(nomor):
                     if os.path.exists(full):
                         os.remove(full)
                 except Exception as e:
-                    # non-fatal
                     print("Failed to remove cafe image file:", e)
 
         cursor.execute("DELETE FROM cafe_tables WHERE nomor = %s", (nomor,))
@@ -685,7 +729,7 @@ def api_add_favorite_menu():
 def api_get_visited_cafe(id_user):
     result = get_visited_cafe(id_user)
     if result is None:
-        return jsonify({"error": "User tidak ditemukan"}), 404
+        return jsonify([]), 200
     if isinstance(result, dict) and result.get("error"):
         return jsonify(result), 500
     return jsonify(result), 200
@@ -787,10 +831,10 @@ def api_menu():
     return jsonify(get_menu()), 200
 
 @app.route('/api/menu/<int:id_cafe>', methods=['GET'])
-def api_menu_by_id(id_cafe):
+def api_menu_by_id_route(id_cafe):
     menus = get_menu_by_id(id_cafe)
     if menus is None:
-        return jsonify({"error": "Menu not found"}), 404
+        return jsonify([]), 200
     return jsonify(menus), 200
 
 @app.route('/api/search/<keyword>', methods=['GET'])
@@ -892,5 +936,4 @@ def api_reviews(id_kafe):
 
 # ----------------- Run -----------------
 if __name__ == "__main__":
-    # debug True for development only
     app.run(port=8080, debug=True)

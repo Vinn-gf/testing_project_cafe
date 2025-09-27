@@ -8,8 +8,10 @@ import axios from "axios";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { API_ENDPOINTS } from "../utils/api_endpoints";
 
-const BASE_API_URL = "http://localhost:5000";
-// const GO_MAPS_KEY = process.env.REACT_APP_GOMAPS_API_KEY;
+const baseUrl = (process.env.REACT_APP_RECOMMENDATION_URL || "").replace(
+  /\/$/,
+  ""
+);
 
 // Haversine helper: returns meters between two coords
 const haversineMeters = (lat1, lon1, lat2, lon2) => {
@@ -91,7 +93,7 @@ const RecommendationPage = () => {
       return;
     }
     axios
-      .get(`${BASE_API_URL}/api/recommend/${userId}`, {
+      .get(`${baseUrl}/api/recommend/${userId}`, {
         headers: { "ngrok-skip-browser-warning": "true" },
       })
       .then((resp) => {
@@ -99,6 +101,7 @@ const RecommendationPage = () => {
       })
       .catch((err) => {
         console.error(err);
+        console.log(baseUrl, "url");
         setError("Failed to fetch recommendations.");
       })
       .finally(() => setLoading(false));

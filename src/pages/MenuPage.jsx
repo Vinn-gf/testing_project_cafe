@@ -39,89 +39,122 @@ const MenuPage = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all"); // all | Makanan | Minuman
-  const [sortOrder, setSortOrder] = useState(null); // 'asc' or 'desc'
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const itemsPerPage = 9;
 
   // 1) fetch cafe name
   useEffect(() => {
+    if (!cafeId) return;
     axios
       .get(
         `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`
       )
-      .then(({ data }) => setCafeName(data.nama_kafe)) // ambil nama_kafe
-      .catch((e) => console.error(e));
+      .then(({ data }) => setCafeName(data.nama_kafe || ""))
+      .catch((e) =>
+        console.warn(
+          "fetch cafe name error:",
+          e.response?.data?.error || e.message
+        )
+      );
   }, [cafeId]);
 
-  // 2) fetch menus + user’s favorites & visited cafes
+  // 2) fetch menus + user favorites & visited
   useEffect(() => {
-    async function load() {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        // menus
         const { data: menuData } = await axios.get(
           `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_MENU_BY_ID}${cafeId}`,
           { headers: { "ngrok-skip-browser-warning": true } }
         );
-        setMenus(menuData);
+        if (!mounted) return;
+        setMenus(Array.isArray(menuData) ? menuData : []);
 
-        // user record
+        if (!userId) {
+          setLikedMenus(new Set());
+          setVisitedCafes(new Set());
+          return;
+        }
+
         const { data: user } = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}/api/users/${userId}`
+          `${process.env.REACT_APP_URL_SERVER}/api/users/${userId}`,
+          {
+            headers: { "ngrok-skip-browser-warning": true },
+          }
         );
 
-        // favorites
-        const favArray = normalizeFavorites(user.menu_yang_disukai);
+        const favArray = normalizeFavorites(user?.menu_yang_disukai);
         const favSet = new Set(
-          favArray
-            .filter((e) => Number(e.id_cafe) === Number(cafeId))
-            .map((e) => e.nama_menu)
+          (favArray || [])
+            .filter((e) => {
+              if (!e) return false;
+              if (typeof e === "string") return false;
+              return Number(e.id_cafe) === Number(cafeId);
+            })
+            .map((e) => String(e.nama_menu))
         );
         setLikedMenus(favSet);
 
-        // visited cafes: sekarang user.cafe_telah_dikunjungi adalah JSON array of { id_cafe }
         let visitedArray = [];
-        if (Array.isArray(user.cafe_telah_dikunjungi)) {
+        if (Array.isArray(user?.cafe_telah_dikunjungi)) {
           visitedArray = user.cafe_telah_dikunjungi;
-        } else if (typeof user.cafe_telah_dikunjungi === "string") {
+        } else if (typeof user?.cafe_telah_dikunjungi === "string") {
           try {
             const parsed = JSON.parse(user.cafe_telah_dikunjungi);
             if (Array.isArray(parsed)) visitedArray = parsed;
           } catch {}
+        } else {
+          visitedArray = [];
         }
-        // buat set of numeric ids
+
         const visitedSet = new Set(
-          visitedArray.map((v) => Number(v.id_cafe)).filter((n) => !isNaN(n))
+          visitedArray
+            .map((v) => {
+              if (v === null || v === undefined) return NaN;
+              if (typeof v === "object")
+                return Number(v.id_cafe ?? v.id ?? v.nomor ?? NaN);
+              return Number(v);
+            })
+            .filter((n) => Number.isFinite(n))
         );
         setVisitedCafes(visitedSet);
       } catch (e) {
-        setError(e.message);
+        console.error("MenuPage load error:", e);
+        if (mounted)
+          setError(e.response?.data?.error || e.message || String(e));
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
-    }
+    };
     load();
+    return () => {
+      mounted = false;
+    };
   }, [cafeId, userId]);
 
-  // format currency
   const formatRupiah = (number) =>
     new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
-    }).format(number);
+    }).format(Number(number || 0));
 
-  // 3) apply search + category filter
-  let filtered = menus
+  let filtered = (menus || [])
     .filter((m) =>
-      m.nama_menu.toLowerCase().includes(searchKeyword.toLowerCase())
+      String(m.nama_menu || "")
+        .toLowerCase()
+        .includes(searchKeyword.toLowerCase())
     )
-    .filter((m) => {
-      if (categoryFilter === "all") return true;
-      return m.kategori === categoryFilter;
-    });
+    .filter((m) =>
+      categoryFilter === "all"
+        ? true
+        : (m.kategori || "").toLowerCase() === categoryFilter.toLowerCase()
+    );
 
-  // 4) apply sort by price
   if (sortOrder) {
     filtered = [...filtered].sort((a, b) => {
       const pa = Number(a.harga);
@@ -130,8 +163,7 @@ const MenuPage = () => {
     });
   }
 
-  // pagination
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
   const startIdx = (currentPage - 1) * itemsPerPage;
   const currentMenus = filtered.slice(startIdx, startIdx + itemsPerPage);
 
@@ -139,24 +171,31 @@ const MenuPage = () => {
   const handleNext = () =>
     currentPage < totalPages && setCurrentPage((p) => p + 1);
 
-  // only add favorite, no unlike—and only if user has visited this cafe
   const addFavorite = async (item) => {
-    if (!visitedCafes.has(Number(cafeId))) return; // cek by cafeId
+    if (!visitedCafes.has(Number(cafeId))) {
+      alert("You must mark this cafe as visited before adding favorites.");
+      return;
+    }
     if (likedMenus.has(item.nama_menu)) return;
     try {
       await axios.post(
         `${process.env.REACT_APP_URL_SERVER}/api/user/favorite_menu`,
         {
           user_id: userId,
-          id_cafe: cafeId,
+          id_cafe: Number(cafeId),
           nama_menu: item.nama_menu,
           harga: item.harga,
         },
         { headers: { "ngrok-skip-browser-warning": true } }
       );
-      setLikedMenus((prev) => new Set(prev).add(item.nama_menu));
+      setLikedMenus((prev) => {
+        const copy = new Set(prev);
+        copy.add(item.nama_menu);
+        return copy;
+      });
     } catch (e) {
       console.error("Failed to add favorite:", e);
+      alert("Gagal menambahkan favorite. Silakan coba lagi.");
     }
   };
 
@@ -329,7 +368,7 @@ const MenuPage = () => {
         <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {currentMenus.map((item) => (
             <div
-              key={item.id_menu}
+              key={item.id_menu ?? item.id ?? item.nama_menu}
               className="bg-[#1B2021] p-4 rounded-lg shadow-md relative"
             >
               <button
@@ -340,6 +379,13 @@ const MenuPage = () => {
                 }
                 className="absolute top-2 right-2 text-red-500 text-xl disabled:opacity-50"
                 aria-label="Like menu"
+                title={
+                  !visitedCafes.has(Number(cafeId))
+                    ? "You need to visit the cafe first"
+                    : likedMenus.has(item.nama_menu)
+                    ? "Already liked"
+                    : "Add to favorites"
+                }
               >
                 {likedMenus.has(item.nama_menu) ? <FaHeart /> : <FaRegHeart />}
               </button>
@@ -353,7 +399,6 @@ const MenuPage = () => {
           ))}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-6">
             <button

@@ -117,38 +117,6 @@ const AdminManageUsers = () => {
     navigate("/admin");
   };
 
-  const refreshUsers = async () => {
-    setLoadingUsers(true);
-    setUsersError(null);
-    try {
-      const usersPath = (API_ENDPOINTS.GET_USER_BY_ID || "/api/users/").replace(
-        /\/$/,
-        ""
-      );
-      const resp = await axios.get(
-        `${process.env.REACT_APP_URL_SERVER}${usersPath}`,
-        { headers: { "ngrok-skip-browser-warning": true } }
-      );
-      if (Array.isArray(resp.data)) {
-        setUsers(resp.data);
-        // adjust current page if needed
-        const totalPages = Math.max(
-          1,
-          Math.ceil(resp.data.length / usersPerPage)
-        );
-        if (currentPage > totalPages) setCurrentPage(totalPages);
-      } else {
-        setUsers([]);
-      }
-    } catch (err) {
-      console.error("Failed refreshing users:", err?.message || err);
-      setUsers([]);
-      setUsersError(err?.message || "Failed to fetch users");
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
   const handleDeleteUser = async (id_user) => {
     const ok = window.confirm(
       `Are you sure you want to delete user with id ${id_user}? This action cannot be undone.`
@@ -163,9 +131,6 @@ const AdminManageUsers = () => {
         `${process.env.REACT_APP_URL_SERVER}${delPath}/${id_user}`,
         { headers: { "ngrok-skip-browser-warning": true } }
       );
-      // On success, refresh list
-      await refreshUsers();
-      // Optionally show success message via console
       console.info("Delete result:", resp.data);
     } catch (err) {
       console.error("Failed to delete user:", err?.message || err);
@@ -330,14 +295,6 @@ const AdminManageUsers = () => {
               <div className="w-full rounded-2xl shadow-md">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-[#E3DCC2]">Users</h3>
-                  <div>
-                    <button
-                      onClick={refreshUsers}
-                      className="px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2] border border-[#2d2f2f]"
-                    >
-                      Refresh
-                    </button>
-                  </div>
                 </div>
 
                 <div className="overflow-x-auto w-full">

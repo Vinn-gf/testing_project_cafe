@@ -53,8 +53,7 @@ const formatDistanceText = (meters) => {
   return `${(meters / 1000).toFixed(2)} km`;
 };
 
-const RECOMMEND_API =
-  process.env.REACT_APP_RECOMMEND_URL || "http://localhost:5000";
+const RECOMMEND_API = process.env.REACT_APP_RECOMMENDATION_URL;
 
 const HomePage = () => {
   const [cafes, setCafes] = useState([]);
@@ -156,8 +155,11 @@ const HomePage = () => {
       if (hasVisited) {
         // Try fetch UBCF recommendations
         try {
+          console.log("url", RECOMMEND_API);
           const resp = await axios.get(`${RECOMMEND_API}/api/recommend/${uid}`);
           const recs = resp.data?.recommendations ?? [];
+          console.log(resp.data, "resp");
+          console.log(recs, "recs");
           // recs format: array of { cafe_id, nama_kafe, alamat, rating, score, matched_menu, ... }
           // We'll compute distances (haversine) per cafe_id by fetching cafe detail
           const distancesMap = {};

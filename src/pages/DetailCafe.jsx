@@ -25,9 +25,10 @@ const DetailCafe = () => {
   const reviewsPerPage = 5;
   const navigate = useNavigate();
 
+  const baseUrl = (process.env.REACT_APP_URL_SERVER || "").replace(/\/$/, "");
+
   // --- Helper: Haversine formula (returns meters) ---
   const haversineMeters = (lat1, lon1, lat2, lon2) => {
-    // Validate numbers
     const a1 = Number(lat1);
     const o1 = Number(lon1);
     const a2 = Number(lat2);
@@ -42,7 +43,7 @@ const DetailCafe = () => {
     }
 
     const toRad = (deg) => (deg * Math.PI) / 180;
-    const R = 6371000; // Earth's radius in meters
+    const R = 6371000; // meters
 
     const φ1 = toRad(a1);
     const φ2 = toRad(a2);
@@ -57,57 +58,73 @@ const DetailCafe = () => {
     return R * c;
   };
 
+  // Utility to safely parse JSON strings (returns array/object or null)
+  const safeParse = (v) => {
+    if (v === null || v === undefined) return null;
+    if (typeof v === "object") return v;
+    if (typeof v !== "string") return String(v);
+    const t = v.trim();
+    if (t === "") return null;
+    try {
+      return JSON.parse(t);
+    } catch {
+      return v;
+    }
+  };
+
   // 1) Ambil detail kafe
   useEffect(() => {
     const fetchCafe = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${id}`,
-          {
-            headers: { "ngrok-skip-browser-warning": true },
-          }
-        );
-        setCafe(response.data);
+        setLoading(true);
+        setError("");
+
+        // prefer constant from API_ENDPOINTS, fallback ke /api/cafe/
+        const detailPath = API_ENDPOINTS.GET_DETAIL_CAFE.replace(/\/$/, "");
+        const resp = await axios.get(`${baseUrl}${detailPath}/${id}`, {
+          headers: { "ngrok-skip-browser-warning": true },
+        });
+        setCafe(resp.data);
       } catch (err) {
-        setError(err.message);
+        console.error("fetch cafe detail:", err);
+        setError(
+          err.response?.data?.error || err.message || "Failed fetching cafe"
+        );
       } finally {
         setLoading(false);
       }
     };
-    fetchCafe();
+    if (id) fetchCafe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // 2) Ambil reviews untuk kafe ini + panggil sentiment API lalu merge/replace
   useEffect(() => {
     const fetchReviewsAndSentiment = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_REVIEWS}${id}`,
+        const resp = await axios.get(
+          `${baseUrl}${API_ENDPOINTS.GET_REVIEWS}${id}`,
           {
             headers: { "ngrok-skip-browser-warning": true },
           }
         );
-        const rawReviews = Array.isArray(response.data) ? response.data : [];
-        // set reviews awal terlebih dahulu agar UI tetap responsif
+        const rawReviews = Array.isArray(resp.data) ? resp.data : [];
         setReviews(rawReviews);
 
-        // Panggil API sentiment (backend Anda telah menyediakan endpoint ini)
+        // optional sentiment call
         try {
           const sentimentResp = await axios.get(
-            `${process.env.REACT_APP_URL_SERVER}/api/sentiment/${id}`,
+            `${baseUrl}/api/sentiment/${id}`,
             {
               headers: { "ngrok-skip-browser-warning": true },
               timeout: 10000,
             }
           );
           const analyzed = sentimentResp.data;
-
           if (Array.isArray(analyzed) && analyzed.length > 0) {
-            // Jika backend mengembalikan array hasil analisis (dengan field `sentiment`),
-            // gunakan langsung array tersebut supaya label sentiment terpampang.
             setReviews(analyzed);
-          } else if (typeof analyzed === "object" && analyzed !== null) {
-            // Jika backend mengembalikan object, coba merge berdasarkan 'ulasan' atau 'username'
+          } else if (analyzed && typeof analyzed === "object") {
+            // Try to merge labelled sentiments into rawReviews
             const lookup = {};
             if (Array.isArray(analyzed.reviews)) {
               analyzed.reviews.forEach((a) => {
@@ -137,12 +154,11 @@ const DetailCafe = () => {
           setReviews(rawReviews);
         }
       } catch (err) {
-        setError(err.message);
+        console.error("fetch reviews:", err);
       }
     };
-    if (cafe) {
-      fetchReviewsAndSentiment();
-    }
+    if (cafe) fetchReviewsAndSentiment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cafe, id]);
 
   // 3) Ambil lokasi user (geolocation)
@@ -171,37 +187,44 @@ const DetailCafe = () => {
     const fetchUserPreferences = async () => {
       const userId = CookieStorage.get(CookieKeys.UserToken);
       if (!userId) {
-        setError("User ID not found. Please login again.");
+        // not logged in => nothing to fetch
+        setUserPreferences(null);
         return;
       }
+
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_USER_BY_ID}${userId}`
-        );
-        const data = response.data;
+        const path = API_ENDPOINTS.GET_USER_BY_ID.replace(/\/$/, "");
+        const resp = await axios.get(`${baseUrl}${path}/${userId}`, {
+          headers: { "ngrok-skip-browser-warning": true },
+        });
+        const data = resp.data || {};
         let visitedArr = [];
-        if (data.cafe_telah_dikunjungi) {
-          try {
-            visitedArr = JSON.parse(data.cafe_telah_dikunjungi);
-            if (!Array.isArray(visitedArr)) {
-              visitedArr = [];
-            }
-          } catch {
-            visitedArr = [];
-          }
+
+        // cafe_telah_dikunjungi may be a JSON string or already array or NULL
+        const rawVisited =
+          data.cafe_telah_dikunjungi ?? data.cafe_telah_dikunjungi_list ?? null;
+        const parsed = safeParse(rawVisited);
+        if (Array.isArray(parsed)) {
+          visitedArr = parsed;
+        } else {
+          // Could be string with comma separation: try fallback parse by regex for numbers
+          visitedArr = [];
         }
+
         setUserPreferences({
           ...data,
           cafe_telah_dikunjungi: visitedArr,
         });
       } catch (err) {
-        setError(err.message);
+        console.warn("Failed fetching user preferences:", err?.message || err);
+        setUserPreferences(null);
       }
     };
     fetchUserPreferences();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 5) Hitung jarak ke kafe via Haversine (tarik garis lurus)
+  // 5) Hitung jarak ke kafe via Haversine
   useEffect(() => {
     const computeDistance = () => {
       if (!userLocation || !cafe) return;
@@ -209,8 +232,8 @@ const DetailCafe = () => {
       const userLat = Number(userLocation.latitude);
       const userLon = Number(userLocation.longitude);
 
-      const cafeLat = cafe.latitude ?? null;
-      const cafeLon = cafe.longitude ?? null;
+      const cafeLat = cafe.latitude ?? cafe.lat ?? null;
+      const cafeLon = cafe.longitude ?? cafe.lng ?? cafe.lon ?? null;
 
       const cLat = cafeLat !== null ? Number(cafeLat) : NaN;
       const cLon = cafeLon !== null ? Number(cafeLon) : NaN;
@@ -260,7 +283,10 @@ const DetailCafe = () => {
 
   // 7) Pagination untuk reviews
   const totalReviews = reviews.length;
-  const totalPageReviews = Math.ceil(totalReviews / reviewsPerPage);
+  const totalPageReviews = Math.max(
+    1,
+    Math.ceil(totalReviews / reviewsPerPage)
+  );
   const indexOfLastReview = currentPage * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
@@ -272,17 +298,22 @@ const DetailCafe = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
-  // 8) Hitung array ID kafe yang sudah dikunjungi (hasil parsing di useEffect nomor 4)
+  // 8) Hitung array ID kafe yang sudah dikunjungi
   const visitedIds = Array.isArray(userPreferences?.cafe_telah_dikunjungi)
-    ? userPreferences.cafe_telah_dikunjungi.map((v) => parseInt(v.id_cafe, 10))
+    ? userPreferences.cafe_telah_dikunjungi
+        .map((v) => {
+          if (v === null || v === undefined) return null;
+          if (typeof v === "object")
+            return Number(v.id_cafe ?? v.id ?? v.nomor ?? null);
+          return Number(v);
+        })
+        .filter((x) => Number.isFinite(x))
     : [];
 
-  const cafeId = cafe?.nomor ?? cafe?.id_cafe;
-  const alreadyVisited = cafeId
-    ? visitedIds.includes(parseInt(cafeId, 10))
-    : false;
+  const cafeId = cafe?.nomor ?? cafe?.id ?? cafe?.nomor_kafe ?? null;
+  const alreadyVisited = cafeId ? visitedIds.includes(Number(cafeId)) : false;
 
-  // 9) Handle "Mark as Visited" atau kafe yang sudah dikunjungi oleh user
+  // 9) Handle "Mark as Visited"
   const handleMarkVisited = async () => {
     setError("");
     setSuccess("");
@@ -296,33 +327,30 @@ const DetailCafe = () => {
       setError("Cafe data not available.");
       return;
     }
-    if (visitedIds.includes(parseInt(cafeId, 10))) {
+    if (visitedIds.includes(Number(cafeId))) {
       setSuccess("Cafe already marked as visited.");
       return;
     }
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL_SERVER}/api/visited/${userId}`,
-        { id_cafe: parseInt(cafeId, 10) },
+      const resp = await axios.post(
+        `${baseUrl}/api/visited/${userId}`,
+        { id_cafe: Number(cafeId) },
         { headers: { "Content-Type": "application/json" } }
       );
-      setSuccess(
-        response.data.message || "Cafe marked as visited successfully!"
-      );
+      setSuccess(resp.data.message || "Cafe marked as visited successfully!");
+      // locally update userPreferences
       setUserPreferences((prev) => {
-        const prevVisited = Array.isArray(prev.cafe_telah_dikunjungi)
+        const prevVisited = Array.isArray(prev?.cafe_telah_dikunjungi)
           ? prev.cafe_telah_dikunjungi
           : [];
         return {
-          ...prev,
-          cafe_telah_dikunjungi: [
-            ...prevVisited,
-            { id_cafe: parseInt(cafeId, 10) },
-          ],
+          ...(prev || {}),
+          cafe_telah_dikunjungi: [...prevVisited, { id_cafe: Number(cafeId) }],
         };
       });
     } catch (err) {
+      console.error("mark visited error:", err);
       setError(
         err.response?.data?.error || "An error occurred. Please try again."
       );
@@ -344,12 +372,30 @@ const DetailCafe = () => {
     );
   }
 
-  // 11) Siapkan background image
-  let backgroundImageUrl;
-  try {
-    backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
-  } catch {
-    backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
+  // 11) Siapkan background image: prefer gambar_kafe field (serving via /uploads/cafes/), fallback ke local asset
+  let backgroundImageUrl = "";
+  if (
+    cafe &&
+    cafe.gambar_kafe &&
+    typeof cafe.gambar_kafe === "string" &&
+    cafe.gambar_kafe.trim() !== ""
+  ) {
+    const rel = cafe.gambar_kafe;
+    if (rel.startsWith("/")) {
+      backgroundImageUrl = `${baseUrl}${rel}`;
+    } else {
+      backgroundImageUrl = `${baseUrl}/${rel}`;
+    }
+  } else {
+    try {
+      backgroundImageUrl = require(`../assets/image/card-cafe-${cafe.nomor}.jpg`);
+    } catch {
+      try {
+        backgroundImageUrl = require(`../assets/image/card-cafe.jpg`);
+      } catch {
+        backgroundImageUrl = ""; // no image
+      }
+    }
   }
 
   const sentimentBadgeClass = (label) => {
@@ -359,7 +405,7 @@ const DetailCafe = () => {
       return "bg-green-500 text-white";
     if (l.includes("neg") || l.includes("negative"))
       return "bg-red-500 text-white";
-    return "bg-yellow-400 text-black"; // neutral / unknown
+    return "bg-yellow-400 text-black";
   };
 
   return (
@@ -490,8 +536,13 @@ const DetailCafe = () => {
           <div className="w-full md:w-1/2">
             <div
               className="card-img-section h-96 bg-cover bg-center bg-no-repeat rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
-              style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-            ></div>
+              style={{
+                backgroundImage: backgroundImageUrl
+                  ? `url(${backgroundImageUrl})`
+                  : undefined,
+                backgroundColor: backgroundImageUrl ? undefined : "#111314",
+              }}
+            />
           </div>
           {/* Informasi Kafe */}
           <div className="w-full md:w-1/2 flex flex-col justify-center text-[#E3DCC2]">
@@ -559,7 +610,6 @@ const DetailCafe = () => {
                 <div className="flex items-center justify-between m-2">
                   <h3 className="text-xl font-bold flex items-center gap-2">
                     {review.username}
-                    {/* Label sentiment kecil di samping judul review */}
                     <span
                       className={`text-sm px-2 py-1 rounded ${sentimentBadgeClass(
                         review.sentiment

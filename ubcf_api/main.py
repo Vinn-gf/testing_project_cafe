@@ -16,7 +16,7 @@ app = Flask(__name__)
 CORS(app)
 
 # read BASE from env if provided, else fallback to previous value
-BASE = "https://2b45eb8ff74e.ngrok-free.app"
+BASE = "http://127.0.0.1:8080"
 BASE = BASE.rstrip("/")
 
 session = requests.Session()
@@ -496,7 +496,7 @@ def api_recommend(uid):
     top6 = dfc.sort_values("score", ascending=False).head(6)
     return jsonify({"recommendations": top6.to_dict("records")})
 
-# -------------------- health / evaluate endpoints (unchanged logic mostly) --------------------
+# -------------------- health / evaluate endpoints (RMSE & MAE only) --------------------
 @app.route("/api/evaluate")
 def api_evaluate():
     users = fetch_all_users()
@@ -529,12 +529,10 @@ def api_evaluate():
 
     K = 10
     w_cf = 0.5; w_vf = 0.2; w_co = 0.2; w_sent_and_rate = 0.1
-    precisions, recalls, f1s, ndcgs = [], [], [], []
 
-    # NEW METRICS aggregates
-    rmse_list = []
+    # NEW: compute per-user MSE & MAE lists then aggregate
+    mse_list = []
     mae_list = []
-    ap_list = []  # average precision per user (single relevant -> 1/rank if found, else 0)
 
     for uid in [int(u.get("id_user", u.get("id", -1))) for u in users if (u.get("id_user") or u.get("id"))]:
         seq = [v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)]
@@ -571,72 +569,34 @@ def api_evaluate():
             sent_and_rate = (sent_n + rating_n) / 2.0
             scores[cid] = (w_cf * cf_n + w_vf * vf_n + w_co * co_n + w_sent_and_rate * sent_and_rate)
 
-        # ensure test_cafe is included in scoring vector for RMSE/MAE/MAP calculations
+        # ensure test_cafe is included in scoring vector for error calculations
         pool_all = list(pool)
         if test_cafe not in pool_all:
             pool_all.append(test_cafe)
-            # if test not in scores, give it score 0 (means model didn't propose it)
             scores[test_cafe] = 0.0
 
-        # build ranked list by score (descending)
-        ranked = sorted(pool_all, key=lambda x: -scores.get(x, 0.0))[:K]  # for precision@K earlier
-        # compute hits / precision/recall/f1/nDCG similar to before (use top-K on full scores)
-        topk = sorted(scores.keys(), key=lambda x: -scores.get(x, 0.0))[:K]
-        hits = 1 if test_cafe in topk else 0
-        precision_u = hits / float(K)
-        recall_u = hits / 1.0
-        f1_u = (2 * precision_u * recall_u / (precision_u + recall_u)) if (precision_u + recall_u) > 0 else 0.0
-        precisions.append(precision_u); recalls.append(recall_u); f1s.append(f1_u)
-
-        # nDCG
-        dcg = 0.0
-        for i, cid in enumerate(topk, start=1):
-            rel = 1 if cid == test_cafe else 0
-            dcg += (2**rel - 1) / np.log2(i + 1)
-        idcg = (2**1 - 1) / np.log2(1 + 1)
-        ndcgs.append(dcg / idcg if idcg > 0 else 0.0)
-
-        # ---------------- NEW: RMSE & MAE & AP per-user ----------------
         # predicted scores vector (for pool_all), actual relevance vector (1 for test_cafe, else 0)
         preds = np.array([float(scores.get(cid, 0.0)) for cid in pool_all], dtype=float)
         actuals = np.array([1.0 if cid == test_cafe else 0.0 for cid in pool_all], dtype=float)
+
         if preds.size > 0:
-            mse = float(np.mean((preds - actuals)**2))
-            rmse_list.append(math.sqrt(mse))
-            mae_list.append(float(np.mean(np.abs(preds - actuals))))
+            mse_u = float(np.mean((preds - actuals) ** 2))
+            mae_u = float(np.mean(np.abs(preds - actuals)))
+            mse_list.append(mse_u)
+            mae_list.append(mae_u)
         else:
-            # fallback (shouldn't happen because pool_all at least contains test_cafe)
-            rmse_list.append(0.0)
+            # fallback safety
+            mse_list.append(0.0)
             mae_list.append(0.0)
 
-        # Average Precision (single relevant item => AP = precision@rank_of_relevant_item = 1 / rank)
-        # build ranking across pool_all by descending score
-        ranked_full = sorted(pool_all, key=lambda x: -scores.get(x, 0.0))
-        try:
-            rank_pos = ranked_full.index(test_cafe) + 1  # 1-based
-            ap = 1.0 / float(rank_pos) if rank_pos > 0 else 0.0
-        except ValueError:
-            ap = 0.0
-        ap_list.append(float(ap))
-
-    precision_k = float(np.mean(precisions)) if precisions else 0.0
-    recall_k = float(np.mean(recalls)) if recalls else 0.0
-    f1_k = float(np.mean(f1s)) if f1s else 0.0
-    ndcg_k = float(np.mean(ndcgs)) if ndcgs else 0.0
-
-    # aggregate new metrics
-    rmse_k = float(np.mean(rmse_list)) if rmse_list else 0.0
-    mae_k = float(np.mean(mae_list)) if mae_list else 0.0
-    map_k = float(np.mean(ap_list)) if ap_list else 0.0
+    # aggregate: mean per-user MSE and MAE, RMSE = sqrt(mean MSE)
+    mean_mse = float(np.mean(mse_list)) if mse_list else 0.0
+    mean_mae = float(np.mean(mae_list)) if mae_list else 0.0
+    rmse_k = math.sqrt(mean_mse) if mean_mse >= 0 else 0.0
 
     return jsonify({
-        "Precision@{}".format(K): round(precision_k, 4),
-        "Recall@{}".format(K): round(recall_k, 4),
-        "F1@{}".format(K): round(f1_k, 4),
-        "nDCG@{}".format(K): round(ndcg_k, 4),
         "RMSE": round(rmse_k, 6),
-        "MAE": round(mae_k, 6),
-        "MAP": round(map_k, 6)
+        "MAE": round(mean_mae, 6)
     })
 
 if __name__ == "__main__":

@@ -37,6 +37,7 @@ const LoginPageAdmin = () => {
     } catch (err) {
       setError(err.response.data.message);
       console.error(err);
+      console.log(err.response.data, "data");
     }
   };
   return (

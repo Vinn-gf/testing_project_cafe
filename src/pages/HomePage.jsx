@@ -53,7 +53,11 @@ const formatDistanceText = (meters) => {
   return `${(meters / 1000).toFixed(2)} km`;
 };
 
-const RECOMMEND_API = process.env.REACT_APP_RECOMMENDATION_URL;
+// read recommendation API base from env, trim trailing slash for consistency
+const RECOMMEND_API = (process.env.REACT_APP_RECOMMENDATION_URL || "").replace(
+  /\/$/,
+  ""
+);
 
 const HomePage = () => {
   const [cafes, setCafes] = useState([]);
@@ -78,7 +82,7 @@ const HomePage = () => {
         );
         setCafes(Array.isArray(data) ? data : []);
       } catch (e) {
-        setError(e.message);
+        setError(e.message || "Failed to load cafes");
       } finally {
         setLoading(false);
       }
@@ -120,7 +124,7 @@ const HomePage = () => {
         }
       )
       .then(({ data }) => setUserPreferences(data))
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message || "Failed to load user"));
   }, []);
 
   // Helper: determines if user has visited history
@@ -130,7 +134,6 @@ const HomePage = () => {
       const raw =
         prefs.cafe_telah_dikunjungi ?? prefs.cafe_telah_dikunjungi_list ?? null;
       if (!raw) return false;
-      // could be JSON string or array
       if (typeof raw === "string") {
         const arr = JSON.parse(raw || "[]");
         return Array.isArray(arr) && arr.length > 0;
@@ -152,90 +155,119 @@ const HomePage = () => {
       // If user has visited history -> use UBCF recommendations from RECOMMEND_API
       const hasVisited = userHasVisited(userPreferences);
 
-      if (hasVisited) {
-        // Try fetch UBCF recommendations
+      if (hasVisited && RECOMMEND_API) {
         try {
-          console.log("url", RECOMMEND_API);
-          const resp = await axios.get(`${RECOMMEND_API}/api/recommend/${uid}`);
-          const recs = resp.data?.recommendations ?? [];
-          console.log(resp.data, "resp");
-          console.log(recs, "recs");
-          // recs format: array of { cafe_id, nama_kafe, alamat, rating, score, matched_menu, ... }
-          // We'll compute distances (haversine) per cafe_id by fetching cafe detail
-          const distancesMap = {};
-          const enriched = await Promise.all(
-            recs.map(async (r) => {
-              const cafeId =
-                r.cafe_id ?? r.cafe_id ?? r.cafe ?? r.id_cafe ?? null;
-              let info = null;
-              try {
-                const infoResp = await axios.get(
-                  `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`,
-                  { headers: { "ngrok-skip-browser-warning": true } }
-                );
-                info = infoResp.data || {};
-              } catch (err) {
-                info = {};
-              }
-
-              // try various coordinate fields
-              const latitude =
-                info.latitude ??
-                info.lat ??
-                info.lintang ??
-                info.latitude_cafe ??
-                info.latitude_kafe ??
-                null;
-              const longitude =
-                info.longitude ??
-                info.lon ??
-                info.lng ??
-                info.bujur ??
-                info.longitude_cafe ??
-                info.longitude_kafe ??
-                null;
-
-              const latNum = latitude !== null ? Number(latitude) : NaN;
-              const lonNum = longitude !== null ? Number(longitude) : NaN;
-
-              let distText = "N/A";
-              if (Number.isFinite(latNum) && Number.isFinite(lonNum)) {
-                const meters = haversineMeters(
-                  userLocation.latitude,
-                  userLocation.longitude,
-                  latNum,
-                  lonNum
-                );
-                distText = formatDistanceText(meters);
-              }
-
-              distancesMap[cafeId] = distText;
-
-              // Normalize object so rendering easier: provide fields similar to demographic branch
-              return {
-                source: "ubcf",
-                cafe_id: cafeId,
-                nomor: cafeId, // keep `nomor` for link route compatibility
-                nama_kafe: r.nama_kafe ?? info.nama_kafe ?? r.name ?? "",
-                alamat: r.alamat ?? info.alamat ?? "",
-                rating: r.rating ?? info.rating ?? 0,
-                distance: distText,
-                matched_menu: r.matched_menu ?? r.matched_menu ?? [],
-                // do NOT show score on homepage; still keep it internally if needed
-                _score: r.score ?? null,
-              };
-            })
+          // call recommend API (with timeout and same header)
+          const resp = await axios.get(
+            `${RECOMMEND_API}/api/recommend/${uid}`,
+            {
+              headers: { "ngrok-skip-browser-warning": true },
+              timeout: 10000,
+            }
           );
 
-          setRecommendedCafes(enriched.slice(0, 6));
-          setDistanceLoading(false);
-          return;
-        } catch (err) {
-          // if recommend API fails, fallback to demographic filtering
+          // Accept several possible shapes:
+          // 1) { recommendations: [ ... ] }
+          // 2) [ ... ] (array directly)
+          // 3) { ... } (maybe object containing array under another key)
+          let recs = [];
+          if (!resp || !resp.data) recs = [];
+          else if (Array.isArray(resp.data)) recs = resp.data;
+          else if (Array.isArray(resp.data.recommendations))
+            recs = resp.data.recommendations;
+          else if (Array.isArray(resp.data.recs)) recs = resp.data.recs;
+          else if (typeof resp.data === "object") {
+            // try to find first array value inside object
+            const arrVals = Object.values(resp.data).find((v) =>
+              Array.isArray(v)
+            );
+            recs = Array.isArray(arrVals) ? arrVals : [];
+          } else {
+            recs = [];
+          }
+
+          // if recs empty, fallback to demographic branch below
+          if (Array.isArray(recs) && recs.length > 0) {
+            // enrich each recommendation with cafe detail & distance (similar behavior as before)
+            const enriched = await Promise.all(
+              recs.map(async (r) => {
+                // extract cafe id robustly
+                const cafeId =
+                  r.cafe_id ?? r.id_cafe ?? r.nomor ?? r.cafe ?? r.id ?? null;
+
+                let info = {};
+                try {
+                  const infoResp = await axios.get(
+                    `${process.env.REACT_APP_URL_SERVER}${API_ENDPOINTS.GET_DETAIL_CAFE}${cafeId}`,
+                    {
+                      headers: { "ngrok-skip-browser-warning": true },
+                      timeout: 8000,
+                    }
+                  );
+                  info = infoResp.data || {};
+                } catch (err) {
+                  info = {};
+                }
+
+                const latitude =
+                  info.latitude ??
+                  info.lat ??
+                  info.lintang ??
+                  info.latitude_cafe ??
+                  info.latitude_kafe ??
+                  null;
+                const longitude =
+                  info.longitude ??
+                  info.lon ??
+                  info.lng ??
+                  info.bujur ??
+                  info.longitude_cafe ??
+                  info.longitude_kafe ??
+                  null;
+
+                const latNum = latitude !== null ? Number(latitude) : NaN;
+                const lonNum = longitude !== null ? Number(longitude) : NaN;
+
+                let distText = "N/A";
+                if (Number.isFinite(latNum) && Number.isFinite(lonNum)) {
+                  const meters = haversineMeters(
+                    userLocation.latitude,
+                    userLocation.longitude,
+                    latNum,
+                    lonNum
+                  );
+                  distText = formatDistanceText(meters);
+                }
+
+                return {
+                  source: "ubcf",
+                  cafe_id: cafeId,
+                  nomor: cafeId,
+                  nama_kafe: r.nama_kafe ?? info.nama_kafe ?? r.name ?? "",
+                  alamat: r.alamat ?? info.alamat ?? "",
+                  rating: r.rating ?? info.rating ?? 0,
+                  distance: distText,
+                  matched_menu: r.matched_menu ?? r.matched_menu ?? [],
+                  _score: r.score ?? null,
+                };
+              })
+            );
+
+            setRecommendedCafes(enriched.slice(0, 6));
+            setDistanceLoading(false);
+            return; // done, no demographic fallback needed
+          } else {
+            // recs empty -> fallthrough to demographic
+            console.warn(
+              "Recommend API returned empty recommendations, fallback to demographic."
+            );
+          }
+        } catch (e) {
           console.warn(
-            "UBCF recommend fetch failed, fallback to demographic:",
-            err?.message || err
+            "Failed to fetch recommendations from RECOMMEND_API, fallback to demographic.",
+            e?.message || e
           );
+          // fallthrough to demographic
         }
       }
 
@@ -280,11 +312,10 @@ const HomePage = () => {
           return { ...c, distance: formatted };
         });
 
-        // Parse preferences distances (assume preferences stored in km as before)
+        // Parse preferences distances (assume preferences stored in km)
         const minPrefKm = parseFloat(userPreferences.preferensi_jarak_minimal);
         const maxPrefKm = parseFloat(userPreferences.preferensi_jarak_maksimal);
 
-        // If invalid, fall back to wide default range
         const minM = Number.isFinite(minPrefKm) ? minPrefKm * 1000 : 0;
         const maxM = Number.isFinite(maxPrefKm)
           ? maxPrefKm * 1000
@@ -297,7 +328,6 @@ const HomePage = () => {
           .map((s) => s.trim().toLowerCase())
           .filter(Boolean);
 
-        // Filter by distance and facilities
         let filtered = withDistance.filter((c) => {
           const d = parseDistance(c.distance);
           const facilitiesOk =
@@ -319,7 +349,6 @@ const HomePage = () => {
             );
         }
 
-        // Tag as demographic source to be able to conditionally render score etc.
         const tagged = filtered.map((x) => ({ ...x, source: "demographic" }));
         setRecommendedCafes(tagged.slice(0, 6));
       } catch (e) {
@@ -495,7 +524,6 @@ const HomePage = () => {
                 }
               })();
 
-              // fields vary by source: demographic uses c.nomor, ubcf uses c.cafe_id (we already set nomor)
               return (
                 <div
                   key={idx}
@@ -523,9 +551,6 @@ const HomePage = () => {
                       <p>{c.rating}</p>
                     </div>
 
-                    {/* If demographic branch show nothing special (kept previous behavior).
-                        If you later want to display demographic score, you can add it here.
-                        IMPORTANT: when source === 'ubcf' do NOT display score on Homepage. */}
                     {c.source !== "ubcf" && c.score && (
                       <p>
                         Score: <strong>{c.score}</strong>

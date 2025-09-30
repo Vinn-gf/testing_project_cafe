@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   GET_ALL_CAFES: "/api/data",
   GET_SEARCH_CAFE: "/api/search/",
   GET_DETAIL_CAFE: "/api/cafe/",
+  CREATE_CAFE: "/api/cafe",
   DELETE_CAFE: "/api/cafe/",
   UPDATE_CAFE: "/api/cafe/",
   GET_VISITED_CAFES: "/api/visited/",

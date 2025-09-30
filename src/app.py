@@ -604,6 +604,71 @@ def delete_cafe_by_nomor_helper(nomor):
     except Exception as e:
         return {"error": str(e)}, 500
 
+# --- Helper: create cafe ---
+def create_cafe_helper(data):
+    """
+    Create a new cafe row in cafe_tables.
+    - data: dict (JSON payload)
+    Returns (result_dict, status_code)
+    """
+    if not isinstance(data, dict) or not data:
+        return {"error": "Payload harus berformat JSON dan tidak kosong"}, 400
+
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        # discover columns in table
+        cursor.execute("SHOW COLUMNS FROM cafe_tables")
+        columns = [col[0] for col in cursor.fetchall()]
+
+        # filter incoming payload to only known columns
+        valid_cols = [c for c in columns if c in data]
+
+        if not valid_cols:
+            cursor.close()
+            db.close()
+            return {"error": "Tidak ada field valid untuk disimpan"}, 400
+
+        # build insert query
+        cols_sql = ", ".join(valid_cols)
+        placeholders = ", ".join(["%s"] * len(valid_cols))
+        params = [data[col] for col in valid_cols]
+
+        query = f"INSERT INTO cafe_tables ({cols_sql}) VALUES ({placeholders})"
+        cursor.execute(query, tuple(params))
+        db.commit()
+
+        # try to determine created primary key
+        try:
+            new_id = cursor.lastrowid if cursor.lastrowid else None
+        except Exception:
+            new_id = None
+
+        # if nomor was provided in payload, use it as identifier when fetching
+        if not new_id and ("nomor" in data and data.get("nomor") is not None):
+            new_id = data.get("nomor")
+
+        # close cursor/db
+        cursor.close()
+        db.close()
+
+        # fetch created row (if get_data_by_id exists)
+        if new_id is not None:
+            created = get_data_by_id(new_id)
+            if created:
+                return created, 201
+            else:
+                return {"message": "Cafe created but failed to fetch created record", "id": new_id}, 201
+
+        # fallback response
+        return {"message": "Cafe created"}, 201
+
+    except Exception as e:
+        # be careful not to leak sensitive DB info in production
+        return {"error": str(e)}, 500
+
+
 def update_cafe_by_nomor_helper(nomor, data):
     if not isinstance(data, dict) or not data:
         return {"error": "Payload harus berformat JSON dan berisi field untuk diupdate"}, 400
@@ -859,6 +924,14 @@ def api_cafe(nomor):
     if request.method == 'DELETE':
         result, status = delete_cafe_by_nomor_helper(nomor)
         return jsonify(result), status
+
+# POST /api/cafe  (create new cafe)
+@app.route('/api/cafe', methods=['POST'])
+def api_create_cafe():
+    data = request.get_json(silent=True) or {}
+    result, status = create_cafe_helper(data)
+    return jsonify(result), status
+
 
 # Upload image for a cafe
 @app.route('/api/cafe/<int:nomor>/upload_image', methods=['POST'])

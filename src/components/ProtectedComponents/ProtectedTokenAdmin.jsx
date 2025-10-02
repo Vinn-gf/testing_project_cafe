@@ -10,7 +10,7 @@ function ProtectedTokenAdmin({ children }) {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        const tokenCheck = CookieStorage.get(CookieKeys.AuthToken);
+        const tokenCheck = CookieStorage.get(CookieKeys.AdminAuthToken);
         const adminId = CookieStorage.get(CookieKeys.AdminToken);
         if (!tokenCheck || !adminId) {
           navigate("/admin", { replace: true });

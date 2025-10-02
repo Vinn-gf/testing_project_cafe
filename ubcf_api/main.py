@@ -1,5 +1,5 @@
 # main.py
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
 import pandas as pd
@@ -24,15 +24,29 @@ session.headers.update({"ngrok-skip-browser-warning": "true"})
 DEFAULT_TIMEOUT = 6  # seconds
 
 # -------------------- caching (simple in-memory TTL caches) --------------------
-CACHE_TTL = 300  # seconds for cafes/users caches (adjustable)
+# Reduced CACHE_TTL so that updates propagate quickly (avoid needing to restart app)
+CACHE_TTL = 2  # seconds for cafes/users caches (very small to pick up new interactions quickly)
 
 _cafes_cache = {"ts": 0, "data": None}
 _users_cache = {"ts": 0, "data": None}
 _sentiment_cache = {}  # cid -> (ts, value)
+# keep sentiment cache longer (optional) — change if you need more frequent sentiment refresh
 _SENT_CACHE_TTL = 60 * 60  # 1 hour for sentiment
 
 def now_ts():
     return time.time()
+
+def invalidate_caches(clear_sentiment=False):
+    """
+    Clear the cafes/users caches. Optionally clear sentiment cache too.
+    Can be called after writes to backend (create/update/delete) or via API.
+    """
+    _cafes_cache["data"] = None
+    _cafes_cache["ts"] = 0
+    _users_cache["data"] = None
+    _users_cache["ts"] = 0
+    if clear_sentiment:
+        _sentiment_cache.clear()
 
 def safe_get(url, timeout=DEFAULT_TIMEOUT):
     try:
@@ -102,7 +116,7 @@ def fetch_cafe(cid):
                     return c
             except:
                 continue
-    # fallback single fetch
+    # fallback single fetch (force direct)
     data = safe_get(f"{BASE}/api/cafe/{cid}")
     return data or {}
 
@@ -122,10 +136,6 @@ def fetch_user(uid):
     return data or {}
 
 def fetch_visited(uid):
-    """
-    Prefer reading visited cafes from the cached user object (user.cafe_telah_dikunjungi).
-    Return a list like [{"id_cafe": ...}, ...]
-    """
     u = fetch_user(uid)
     if not u:
         return []
@@ -496,6 +506,25 @@ def api_recommend(uid):
     top6 = dfc.sort_values("score", ascending=False).head(6)
     return jsonify({"recommendations": top6.to_dict("records")})
 
+# -------------------- cache control endpoint --------------------
+@app.route("/api/refresh_caches", methods=["POST"])
+def api_refresh_caches():
+    """
+    POST /api/refresh_caches
+    Optional JSON body: {"clear_sentiment": true}
+    Use this to force invalidation of cafes/users caches (and optionally sentiment).
+    Frontend can call this immediately after creating/updating/deleting data in backend
+    so that recommendations reflect the change without restarting this service.
+    """
+    body = {}
+    try:
+        body = request.get_json() or {}
+    except Exception:
+        body = {}
+    clear_sent = bool(body.get("clear_sentiment", False))
+    invalidate_caches(clear_sentiment=clear_sent)
+    return jsonify({"message": "caches invalidated", "clear_sentiment": clear_sent}), 200
+
 # -------------------- health / evaluate endpoints (RMSE & MAE only) --------------------
 @app.route("/api/evaluate")
 def api_evaluate():
@@ -595,8 +624,8 @@ def api_evaluate():
     rmse_k = math.sqrt(mean_mse) if mean_mse >= 0 else 0.0
 
     return jsonify({
-        "RMSE": round(rmse_k, 6),
-        "MAE": round(mean_mae, 6)
+        "RMSE": round(rmse_k, 4),
+        "MAE": round(mean_mae, 4)
     })
 
 if __name__ == "__main__":

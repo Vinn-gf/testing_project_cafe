@@ -8,10 +8,7 @@ import axios from "axios";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { API_ENDPOINTS } from "../utils/api_endpoints";
 
-const baseUrl = (process.env.REACT_APP_RECOMMENDATION_URL || "").replace(
-  /\/$/,
-  ""
-);
+const baseUrl = "http://127.0.0.1:5000";
 
 // Haversine helper: returns meters between two coords
 const haversineMeters = (lat1, lon1, lat2, lon2) => {

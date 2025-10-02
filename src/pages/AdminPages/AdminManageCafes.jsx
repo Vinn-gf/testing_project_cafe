@@ -50,7 +50,7 @@ const AdminManageCafes = () => {
   const cafesPerPage = 5;
 
   const navigate = useNavigate();
-  // const ADMIN_COOKIE_KEY = CookieKeys?.AdminToken ?? "AdminToken";
+  const ADMIN_COOKIE_KEY = CookieKeys?.AdminToken ?? "AdminToken";
 
   const baseUrl = (process.env.REACT_APP_URL_SERVER || "").replace(/\/$/, "");
 
@@ -150,9 +150,8 @@ const AdminManageCafes = () => {
 
   const handleLogout = () => {
     try {
-      // CookieStorage.remove(ADMIN_COOKIE_KEY);
-      CookieStorage.remove(CookieKeys.AuthToken ?? "DataToken");
-      // CookieStorage.remove(CookieKeys.UserToken ?? "UserToken");
+      CookieStorage.remove(ADMIN_COOKIE_KEY);
+      CookieStorage.remove(CookieKeys.AdminAuthToken ?? "AdminAuthToken");
     } catch (e) {
       console.warn("Error clearing cookies:", e);
     }
@@ -528,7 +527,7 @@ const AdminManageCafes = () => {
                                     onClick={() => openUploadModal(c)}
                                     className="flex items-center gap-2 px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] border border-[#2d2f2f]"
                                   >
-                                    <FaUpload /> Upload Image
+                                    <FaUpload />
                                   </button>
 
                                   <button
@@ -941,10 +940,6 @@ const AdminManageCafes = () => {
                   }
                   className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
                 />
-                <div className="text-xs text-[#8f8f88] mt-1">
-                  Jika Anda ingin upload file, setelah membuat data kafe,
-                  gunakan tombol "Upload Image" pada baris kafe.
-                </div>
               </div>
             </div>
 

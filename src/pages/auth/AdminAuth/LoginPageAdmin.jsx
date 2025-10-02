@@ -29,7 +29,7 @@ const LoginPageAdmin = () => {
       const data = response.data;
       setSuccess("Login Admin successful!");
       console.log(data, "data");
-      CookieStorage.set(CookieKeys.AuthToken, "Token Autentikasi");
+      CookieStorage.set(CookieKeys.AdminAuthToken, "AdminAuthToken");
       CookieStorage.set(CookieKeys.AdminToken, data.admin_id);
       setTimeout(() => {
         navigate(`/dashboard`);

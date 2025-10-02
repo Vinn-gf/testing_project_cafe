@@ -5,6 +5,7 @@ const cookies = new Cookies();
 export const CookieKeys = {
   AuthToken: "DataToken",
   UserToken: "UserToken",
+  AdminAuthToken: "AdminAuthToken",
   AdminToken: "AdminToken",
 };
 

@@ -109,8 +109,7 @@ const AdminManageUsers = () => {
   const handleLogout = () => {
     try {
       CookieStorage.remove(ADMIN_COOKIE_KEY);
-      CookieStorage.remove(CookieKeys.AuthToken ?? "DataToken");
-      CookieStorage.remove(CookieKeys.UserToken ?? "UserToken");
+      CookieStorage.remove(CookieKeys.AdminAuthToken ?? "AdminAuthToken");
     } catch (e) {
       console.warn("Error clearing cookies:", e);
     }

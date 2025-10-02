@@ -54,10 +54,7 @@ const formatDistanceText = (meters) => {
 };
 
 // read recommendation API base from env, trim trailing slash for consistency
-const RECOMMEND_API = (process.env.REACT_APP_RECOMMENDATION_URL || "").replace(
-  /\/$/,
-  ""
-);
+const RECOMMEND_API = "http://127.0.0.1:5000";
 
 const HomePage = () => {
   const [cafes, setCafes] = useState([]);

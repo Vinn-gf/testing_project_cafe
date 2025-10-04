@@ -12,6 +12,7 @@ import {
   FaEye,
   FaPlus,
   FaTrashAlt,
+  FaEdit,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
@@ -44,6 +45,11 @@ const AdminManageCafes = () => {
     gambar_kafe: "",
   });
   const [creating, setCreating] = useState(false);
+
+  // Edit modal (UPDATE)
+  const [editOpen, setEditOpen] = useState(false);
+  const [editCafe, setEditCafe] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -232,7 +238,6 @@ const AdminManageCafes = () => {
           if (ep.endsWith("/")) {
             delUrl = `${baseUrl}${ep}${nomor}`;
           } else {
-            // if ep equals '/api/cafe' or '/api/cafe/' handle both
             // if ep seems to be a full path and does not include id, append nomor
             delUrl = `${baseUrl}${ep}${ep.endsWith("/") ? "" : "/"}${nomor}`;
           }
@@ -337,6 +342,118 @@ const AdminManageCafes = () => {
       alert("Create failed: " + (err?.response?.data?.error || err?.message));
     } finally {
       setCreating(false);
+    }
+  };
+
+  // --- EDIT / UPDATE cafe ---
+  const openEditModal = async (cafe) => {
+    // try fetch fresh detail if GET_DETAIL_CAFE available
+    try {
+      if (API_ENDPOINTS.GET_DETAIL_CAFE) {
+        let detailUrl = `${baseUrl}${API_ENDPOINTS.GET_DETAIL_CAFE}`;
+        if (API_ENDPOINTS.GET_DETAIL_CAFE.includes(":id")) {
+          detailUrl = `${baseUrl}${API_ENDPOINTS.GET_DETAIL_CAFE.replace(
+            ":id",
+            cafe.nomor ?? cafe.id ?? ""
+          )}`;
+        } else {
+          if (!detailUrl.endsWith("/")) detailUrl = detailUrl + "/";
+          detailUrl = detailUrl + (cafe.nomor ?? cafe.id ?? "");
+        }
+        const resp = await axios.get(detailUrl, {
+          headers: { "ngrok-skip-browser-warning": true },
+        });
+        setEditCafe(resp.data || cafe);
+        setEditOpen(true);
+        return;
+      }
+    } catch (err) {
+      console.warn("Failed to fetch detail for edit, using row object", err);
+    }
+    // fallback to row object
+    setEditCafe(cafe);
+    setEditOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditCafe(null);
+    setEditOpen(false);
+    setUpdating(false);
+  };
+
+  const updateCafe = async () => {
+    if (!editCafe || !(editCafe.nomor || editCafe.id)) {
+      alert("Cannot update: invalid cafe id");
+      return;
+    }
+
+    // basic validation (ensure name and address present)
+    if (!editCafe.nama_kafe || !editCafe.alamat) {
+      alert("Nama kafe dan alamat wajib diisi");
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      // build update URL using API_ENDPOINTS.UPDATE_CAFE if available
+      let updateUrl = `${baseUrl}/api/cafe/${editCafe.nomor ?? editCafe.id}`;
+      if (API_ENDPOINTS.UPDATE_CAFE) {
+        const ep = API_ENDPOINTS.UPDATE_CAFE;
+        if (ep.includes(":id")) {
+          updateUrl = `${baseUrl}${ep.replace(
+            ":id",
+            String(editCafe.nomor ?? editCafe.id)
+          )}`;
+        } else {
+          if (ep.endsWith("/")) {
+            updateUrl = `${baseUrl}${ep}${editCafe.nomor ?? editCafe.id}`;
+          } else {
+            updateUrl = `${baseUrl}${ep}${ep.endsWith("/") ? "" : "/"}${
+              editCafe.nomor ?? editCafe.id
+            }`;
+          }
+        }
+      }
+
+      // Build payload with editable fields
+      const payload = {
+        // do not force nomor change unless provided by admin in edit form
+        nomor: editCafe.nomor,
+        nama_kafe: editCafe.nama_kafe,
+        alamat: editCafe.alamat,
+        fasilitas: editCafe.fasilitas,
+        rating:
+          editCafe.rating !== "" && editCafe.rating !== null
+            ? Number(editCafe.rating)
+            : undefined,
+        latitude:
+          editCafe.latitude !== "" && editCafe.latitude !== null
+            ? Number(editCafe.latitude)
+            : undefined,
+        longitude:
+          editCafe.longitude !== "" && editCafe.longitude !== null
+            ? Number(editCafe.longitude)
+            : undefined,
+        gambar_kafe: editCafe.gambar_kafe,
+      };
+
+      // remove undefined props
+      Object.keys(payload).forEach((k) =>
+        payload[k] === undefined ? delete payload[k] : null
+      );
+
+      await axios.put(updateUrl, payload, {
+        headers: { "ngrok-skip-browser-warning": true },
+      });
+
+      alert("Cafe updated");
+      await fetchCafes();
+      closeEditModal();
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Update failed: " + (err?.response?.data?.error || err?.message));
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -536,6 +653,14 @@ const AdminManageCafes = () => {
                                     className="px-2 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] border border-[#2d2f2f]"
                                   >
                                     <FaEye />
+                                  </button>
+
+                                  <button
+                                    title="Edit cafe"
+                                    onClick={() => openEditModal(c)}
+                                    className="px-2 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] border border-[#2d2f2f]"
+                                  >
+                                    <FaEdit />
                                   </button>
 
                                   <button
@@ -819,6 +944,135 @@ const AdminManageCafes = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT Modal */}
+      {editOpen && editCafe && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+          <div className="w-full max-w-2xl bg-[#111314] rounded-xl shadow-lg overflow-auto max-h-[90vh]">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#2d2f2f]">
+              <h4 className="text-lg font-semibold text-[#E3DCC2]">
+                Edit Cafe - {editCafe.nama_kafe || editCafe.nomor}
+              </h4>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={closeEditModal}
+                  className="text-[#cfc9b0] px-2 py-1 rounded hover:bg-[#2d3738]"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[#cfc9b0]">
+              <div>
+                <label className="block text-xs text-[#cfc9b0]">Nomor</label>
+                <input
+                  value={editCafe.nomor ?? ""}
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, nomor: e.target.value }))
+                  }
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-[#cfc9b0]">
+                  Nama Kafe
+                </label>
+                <input
+                  value={editCafe.nama_kafe ?? ""}
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, nama_kafe: e.target.value }))
+                  }
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs text-[#cfc9b0]">Alamat</label>
+                <textarea
+                  value={editCafe.alamat ?? ""}
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, alamat: e.target.value }))
+                  }
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-[#cfc9b0]">
+                  Fasilitas
+                </label>
+                <input
+                  value={editCafe.fasilitas ?? ""}
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, fasilitas: e.target.value }))
+                  }
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-[#cfc9b0]">Rating</label>
+                <input
+                  value={editCafe.rating ?? ""}
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, rating: e.target.value }))
+                  }
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-[#cfc9b0]">Latitude</label>
+                <input
+                  value={editCafe.latitude ?? editCafe.lat ?? ""}
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, latitude: e.target.value }))
+                  }
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-[#cfc9b0]">
+                  Longitude
+                </label>
+                <input
+                  value={
+                    editCafe.longitude ?? editCafe.lon ?? editCafe.lng ?? ""
+                  }
+                  onChange={(e) =>
+                    setEditCafe((p) => ({ ...p, longitude: e.target.value }))
+                  }
+                  className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
+                />
+              </div>
+            </div>
+
+            <div className="p-4 flex justify-end gap-2 border-t border-[#2d2f2f]">
+              <button
+                onClick={closeEditModal}
+                className="px-3 py-1 rounded bg-[#1B2021] hover:bg-[#2d3738] text-[#E3DCC2] border border-[#2d2f2f]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={updateCafe}
+                disabled={updating}
+                className="px-3 py-1 rounded bg-[#2d3738] hover:bg-[#3b4444] text-[#E3DCC2]"
+              >
+                {updating ? "Updating..." : "Save Changes"}
+              </button>
             </div>
           </div>
         </div>

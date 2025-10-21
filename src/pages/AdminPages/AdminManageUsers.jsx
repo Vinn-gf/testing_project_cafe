@@ -305,8 +305,8 @@ const AdminManageUsers = () => {
                         <th className="px-4 py-2">Min Dist</th>
                         <th className="px-4 py-2">Max Dist</th>
                         <th className="px-4 py-2">Facilities Pref</th>
-                        <th className="px-4 py-2">Visited Cafes</th>
-                        <th className="px-4 py-2">Favorite Menus</th>
+                        {/* <th className="px-4 py-2">Visited Cafes</th> */}
+                        {/* <th className="px-4 py-2">Favorite Menus</th> */}
                         <th className="px-4 py-2">Actions</th>
                       </tr>
                     </thead>
@@ -356,22 +356,22 @@ const AdminManageUsers = () => {
                             u.preferensi_fasilitas ??
                             u.facilities_preference ??
                             "";
-                          const visited =
-                            u.cafe_telah_dikunjungi ??
-                            u.cafe_telah_dikunjungi_list ??
-                            "";
-                          const favMenus = u.menu_yang_disukai ?? "";
+                          // const visited =
+                          //   u.cafe_telah_dikunjungi ??
+                          //   u.cafe_telah_dikunjungi_list ??
+                          //   "";
+                          // const favMenus = u.menu_yang_disukai ?? "";
 
                           // format possibly long JSON strings for table
-                          const prettyVisited =
-                            typeof visited === "string" && visited.length > 60
-                              ? visited.slice(0, 60) + "..."
-                              : JSON.stringify(visited);
+                          // const prettyVisited =
+                          //   typeof visited === "string" && visited.length > 60
+                          //     ? visited.slice(0, 60) + "..."
+                          //     : JSON.stringify(visited);
 
-                          const prettyFavMenus =
-                            typeof favMenus === "string" && favMenus.length > 60
-                              ? favMenus.slice(0, 60) + "..."
-                              : JSON.stringify(favMenus);
+                          // const prettyFavMenus =
+                          //   typeof favMenus === "string" && favMenus.length > 60
+                          //     ? favMenus.slice(0, 60) + "..."
+                          //     : JSON.stringify(favMenus);
 
                           return (
                             <tr
@@ -383,7 +383,7 @@ const AdminManageUsers = () => {
                               <td className="px-4 py-3">{minDist ?? "—"}</td>
                               <td className="px-4 py-3">{maxDist ?? "—"}</td>
                               <td className="px-4 py-3">{facPref ?? "—"}</td>
-                              <td className="px-4 py-3">
+                              {/* <td className="px-4 py-3">
                                 <div className="max-w-xs truncate">
                                   {prettyVisited}
                                 </div>
@@ -392,7 +392,7 @@ const AdminManageUsers = () => {
                                 <div className="max-w-xs truncate">
                                   {prettyFavMenus}
                                 </div>
-                              </td>
+                              </td> */}
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
                                   {/* view/details opens modal */}

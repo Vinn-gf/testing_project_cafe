@@ -18,9 +18,10 @@ const UserPreferences = () => {
     "Toilet",
     "AC",
     "Buku",
+    "Photobooth",
     "Carwash",
-    "Billiard",
-    "Kucing",
+    "Bar",
+    "Playground",
     "Live Music",
   ];
 

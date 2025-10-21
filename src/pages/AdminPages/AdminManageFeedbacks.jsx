@@ -9,7 +9,6 @@ import {
   FaCommentDots,
   FaSignOutAlt,
   FaTrashAlt,
-  FaEye,
 } from "react-icons/fa";
 import axios from "axios";
 import { CookieKeys, CookieStorage } from "../../utils/cookies";
@@ -22,8 +21,8 @@ const AdminManageFeedbacks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalFeedback, setModalFeedback] = useState(null);
+  // const [modalOpen, setModalOpen] = useState(false);
+  // const [modalFeedback, setModalFeedback] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const feedbacksPerPage = 5;
@@ -152,17 +151,17 @@ const AdminManageFeedbacks = () => {
     }
   };
 
-  const openModal = (fb) => {
-    setModalFeedback(fb);
-    setModalOpen(true);
-    document.body.style.overflow = "hidden";
-  };
+  // const openModal = (fb) => {
+  //   setModalFeedback(fb);
+  //   setModalOpen(true);
+  //   document.body.style.overflow = "hidden";
+  // };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setModalFeedback(null);
-    document.body.style.overflow = "";
-  };
+  // const closeModal = () => {
+  //   setModalOpen(false);
+  //   setModalFeedback(null);
+  //   document.body.style.overflow = "";
+  // };
 
   const handleLogout = () => {
     try {
@@ -381,13 +380,13 @@ const AdminManageFeedbacks = () => {
                                 </td>
                                 <td className="px-4 py-3">
                                   <div className="flex items-center gap-2">
-                                    <button
+                                    {/* <button
                                       title="View"
                                       onClick={() => openModal(f)}
                                       className="p-2 rounded hover:bg-[#2d3738] transition-colors"
                                     >
                                       <FaEye />
-                                    </button>
+                                    </button> */}
                                     <button
                                       title="Delete"
                                       onClick={() =>
@@ -411,11 +410,6 @@ const AdminManageFeedbacks = () => {
 
               {/* Pagination controls */}
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="text-sm text-[#cfc9b0]">
-                  Showing <strong>{displayedFeedbacks.length}</strong> of{" "}
-                  <strong>{totalFeedbacks}</strong> feedbacks.
-                </div>
-
                 <div className="flex items-center gap-2">
                   <button
                     onClick={prevPage}
@@ -522,7 +516,7 @@ const AdminManageFeedbacks = () => {
       </div>
 
       {/* Modal for feedback details */}
-      {modalOpen && modalFeedback && (
+      {/* {modalOpen && modalFeedback && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
           onClick={closeModal}
@@ -589,7 +583,7 @@ const AdminManageFeedbacks = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

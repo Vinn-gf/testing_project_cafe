@@ -9,7 +9,7 @@ def api_evaluate():
         if len(seq) < 2: continue
         test, hist = seq[-1], seq[:-1]
 
-        cf_raw = rec_menu_scores(uid, mat, sim, knn)
+        cf_raw = rec_ubcf_scores(uid, mat, sim, knn)
         vf_raw = rec_visited_freq(uid)
         co_raw = rec_menu_cooccur(uid)
 

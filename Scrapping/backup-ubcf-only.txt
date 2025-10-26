@@ -2,7 +2,7 @@
 @app.route("/api/recommend_ubcf/<int:uid>")
 def api_recommend_ubcf(uid):
     mat, sim, knn = build_cf_model()
-    cf_raw = rec_menu_scores(uid, mat, sim, knn)
+    cf_raw = rec_ubcf_scores(uid, mat, sim, knn)
     if not cf_raw:
         return jsonify({"recommendations": []})
 

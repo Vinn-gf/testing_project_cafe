@@ -1,0 +1,36 @@
+mat, sim, knn = build_cf_model()
+
+INITIALIZE precision_sums = {k: 0.0 FOR k IN [1, 3, 5, 10]}
+eval_user_count = 0
+
+FOR uid IN all_eligible_users DO
+    seq = get_visited_cafes(uid)
+    IF length(seq) < M+1 THEN CONTINUE
+
+    relevant_set = set(seq.last_M_items())
+    seen_hist = set(seq.items_before_last_M())
+
+    cf_raw = get_cf_scores(uid, mat, sim, knn)
+    vf_raw = rec_visited_freq(uid)
+    co_raw = rec_menu_cooccur(uid)
+    scores = calculate_combined_scores(cf_raw, vf_raw, co_raw, seen_hist)
+
+    ranked_list = get_ranked_recommendations(scores, seen_hist)
+
+    FOR k IN [1, 3, 5, 10] DO
+        top_k = ranked_list.head(k)
+        
+        precision_k = calculate_precision(top_k, relevant_set, k)
+        recall_k = calculate_recall(top_k, relevant_set)
+        f1_k = calculate_f1_score(precision_k, recall_k)
+        ndcg_k = calculate_ndcg(top_k, relevant_set, k)
+
+        precision_sums[k] += precision_k
+    END FOR
+    
+    eval_user_count += 1
+END FOR
+
+avg_precision = {k: precision_sums[k] / eval_user_count FOR k IN precision_sums}
+
+RETURN avg_precision, avg_recall, avg_f1, avg_ndcg

@@ -1,4 +1,3 @@
-# main.py
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
@@ -11,7 +10,7 @@ import time
 import math
 from urllib.parse import urlparse, urlunparse
 import os
-import random  # added for deterministic CV splits
+import random 
 
 app = Flask(__name__)
 CORS(app)
@@ -21,8 +20,7 @@ BASE = BASE.rstrip("/")
 
 session = requests.Session()
 session.headers.update({"ngrok-skip-browser-warning": "true"})
-DEFAULT_TIMEOUT = 6  # seconds
-
+DEFAULT_TIMEOUT = 6  
 CACHE_TTL = 2
 
 _cafes_cache = {"ts": 0, "data": None}
@@ -240,7 +238,7 @@ def build_cf_model():
     knn.fit(dist.values)
     return mat, sim, knn
 
-def rec_menu_scores(uid, mat, sim, knn):
+def rec_ubcf_scores(uid, mat, sim, knn):
     if knn is None or uid not in sim.index:
         return {}
     _, idxs = knn.kneighbors((1-sim).loc[[uid]].values, n_neighbors=min(len(sim), 10))
@@ -404,16 +402,14 @@ def build_candidate_pool_from_signals(cf_raw, vf_raw, co_raw, top_n_each=50):
     pool.update(sorted(co_raw.keys(), key=lambda k: -len(co_raw.get(k, [])))[:top_n_each])
     return list(pool)
 
-# -------------------- API recommend --------------------
 @app.route("/api/recommend/<int:uid>")
 def api_recommend(uid):
     visited_list = fetch_visited(uid)
     if not visited_list:
         return jsonify({"recommendations": []})
 
-    # build CF model from cached users
     mat, sim, knn = build_cf_model()
-    cf_raw = rec_menu_scores(uid, mat, sim, knn)
+    cf_raw = rec_ubcf_scores(uid, mat, sim, knn)
 
     vf_raw = rec_visited_freq(uid)
     co_raw = rec_menu_cooccur(uid)
@@ -446,7 +442,6 @@ def api_recommend(uid):
     if len(pool) > MAX_POOL:
         pool = pool[:MAX_POOL]
 
-    # remove already visited cafe
     seen = {int(v["id_cafe"]) for v in visited_list if isinstance(v, dict)}
     pool = [c for c in pool if c not in seen]
     if not pool:
@@ -460,7 +455,6 @@ def api_recommend(uid):
     w_cf = 0.5; w_vf = 0.2; w_co =0.2; w_sent_and_rate = 0.1
 
     rows = []
-    # iterate pool
     for cid in pool:
         info = fetch_cafe(cid) or {}
         cf_s = cf_norm.get(cid, 0.0); vf_s = vf_norm.get(cid, 0.0); co_s = co_norm.get(cid, 0.0)
@@ -491,14 +485,13 @@ def api_recommend(uid):
     top6 = dfc.sort_values("score", ascending=False).head(6)
     return jsonify({"recommendations": top6.to_dict("records")})
 
-# evaluate section (now includes 5-fold CV for RMSE/MAE)
+# api evaluasi akurasi (RMSE dan MAE dengan skema 5-fold cross validation)
 @app.route("/api/evaluate")
 def api_evaluate():
     users = fetch_all_users()
     if not users:
         return jsonify({"error": "No users found"}), 400
 
-    # M = number of last items considered relevant per user for ranking metrics
     try:
         M = int(request.args.get("m", 3))
     except:
@@ -506,7 +499,6 @@ def api_evaluate():
     if M < 1:
         M = 1
 
-    # folds param for CV (used to compute RMSE/MAE via CV)
     try:
         folds = int(request.args.get("folds", 5))
     except:
@@ -514,7 +506,6 @@ def api_evaluate():
     if folds < 2:
         folds = 2
 
-    # --- Ranking metrics & non-CV evaluation (kept as before) ---
     mat, sim, knn = build_cf_model()
     vf_by_user = {}
     co_by_user = {}
@@ -531,7 +522,6 @@ def api_evaluate():
         except Exception:
             co_by_user[int(uid)] = {}
 
-    # all_vf kept (not used in current scoring for ranking eval)
     all_vf = {}
     for u, vfmap in vf_by_user.items():
         for k, v in vfmap.items():
@@ -557,7 +547,7 @@ def api_evaluate():
         relevant_set = set(seq[-M:])
         seen_hist = set(seq[:-M])
 
-        cf_raw = rec_menu_scores(uid, mat, sim, knn)
+        cf_raw = rec_ubcf_scores(uid, mat, sim, knn)
         vf_raw = vf_by_user.get(uid, {}) or {}
         co_raw = co_by_user.get(uid, {}) or {}
 
@@ -570,8 +560,7 @@ def api_evaluate():
 
         if not pool:
             continue
-
-        # normalisasi sinyal
+            
         max_cf = max(cf_raw.values()) if cf_raw else 1.0
         max_vf = max(vf_raw.values()) if vf_raw else 1.0
         max_co = max((len(v) for v in co_raw.values()), default=1)
@@ -602,7 +591,6 @@ def api_evaluate():
             mse_list.append(mse_u)
             mae_list.append(mae_u)
 
-            # Ranking metrics
             ranked = sorted(pool_all, key=lambda c: -scores.get(c, 0.0))
             R = len(relevant_set)
 
@@ -641,7 +629,6 @@ def api_evaluate():
     f1_at_k = {f"f1-score@{k}": round((f1_sums[k] / eval_user_count) if eval_user_count else 0.0, 4) for k in ks}
     ndcg_at_k = {f"ndcg@{k}": round((ndcg_sums[k] / eval_user_count) if eval_user_count else 0.0, 4) for k in ks}
 
-    # Prepare response skeleton (ranking metrics included)
     response = {
         "ranking_metrics": {
             "precision" : { **precision_at_k },
@@ -651,8 +638,6 @@ def api_evaluate():
         }
     }
 
-    # --- Now run k-fold cross validation over users to compute CV RMSE/MAE ---
-    # deterministic fold split
     user_folds = k_fold_split_users(users, k=folds, seed=42)
 
     mse_list_all = []
@@ -661,7 +646,6 @@ def api_evaluate():
     per_fold_results = {}
 
     for i in range(folds):
-        # training users = all except fold i
         train_users = []
         test_users = user_folds[i]
         for j in range(folds):
@@ -669,7 +653,6 @@ def api_evaluate():
                 continue
             train_users.extend(user_folds[j])
 
-        # build CF model from training users only
         mat_t, sim_t, knn_t = build_cf_model_from_users(train_users)
 
         mse_list_fold = []
@@ -688,10 +671,9 @@ def api_evaluate():
             test_cafe = seq[-1]
             seen_hist = set(seq[:-1])
 
-            # compute signals using training users only:
             cf_raw = {}
             if not mat_t.empty and uid in mat_t.index:
-                cf_raw = rec_menu_scores(uid, mat_t, sim_t, knn_t)
+                cf_raw = rec_ubcf_scores(uid, mat_t, sim_t, knn_t)
 
             vf_raw = compute_vf_from_users_for_uid(uid, train_users)
             co_raw = compute_cooccur_from_users_for_uid(uid, train_users)
@@ -704,7 +686,6 @@ def api_evaluate():
             if not pool:
                 continue
 
-            # normalize signals
             max_cf = max(cf_raw.values()) if cf_raw else 1.0
             max_vf = max(vf_raw.values()) if vf_raw else 1.0
             max_co = max((len(v) for v in co_raw.values()), default=1)
@@ -754,15 +735,12 @@ def api_evaluate():
         per_fold_results[f"fold-{i+1}"] = {
             "RMSE": round(rmse_fold, 4) if rmse_fold is not None else None,
             "MAE": round(mae_fold, 4) if mae_fold is not None else None,
-            # "user_evaluated": eval_count_fold
         }
 
-    # overall aggregated metrics across all folds
     mean_mse_cv = float(np.mean(mse_list_all)) if mse_list_all else 0.0
     mean_mae_cv = float(np.mean(mae_list_all)) if mae_list_all else 0.0
     rmse_cv = math.sqrt(mean_mse_cv) if mean_mse_cv >= 0 else 0.0
 
-    # attach CV results to response
     response["5-fold-cross-validation"] = {
         "evaluated_users_total": eval_count_cv,
         "per_fold": per_fold_results,

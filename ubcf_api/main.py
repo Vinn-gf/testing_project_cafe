@@ -226,7 +226,7 @@ def build_cf_model():
     df = pd.DataFrame(records)
     if df.empty:
         return pd.DataFrame(), pd.DataFrame(), None
-    mat = df.pivot_table(index="user_id", columns="cafe_id", values="harga", fill_value=0)
+    mat = df.pivot_table(index="user_id", columns="cafe_id", values="harga", fill_value=0,)
     X = mat.sub(mat.mean(axis=1), axis=0)
     num  = X.dot(X.T)
     norm = np.sqrt((X**2).sum(axis=1))
@@ -234,7 +234,7 @@ def build_cf_model():
     sim_vals = np.divide(num.values, den, out=np.zeros_like(num.values), where=den>0)
     sim  = pd.DataFrame(np.clip(sim_vals, -1,1), index=mat.index, columns=mat.index)
     dist = 1 - sim
-    knn  = NearestNeighbors(metric="precomputed", n_neighbors=min(5, len(sim)))
+    knn  = NearestNeighbors(metric="precomputed", n_neighbors=min(7, len(sim)))
     knn.fit(dist.values)
     return mat, sim, knn
 
@@ -775,7 +775,7 @@ def build_cf_model_from_users(users_list):
     df = pd.DataFrame(records)
     if df.empty:
         return pd.DataFrame(), pd.DataFrame(), None
-    mat = df.pivot_table(index="user_id", columns="cafe_id", values="harga", fill_value=0)
+    mat = df.pivot_table(index="user_id", columns="cafe_id", values="harga", fill_value=0,)
     X = mat.sub(mat.mean(axis=1), axis=0)
     num  = X.dot(X.T)
     norm = np.sqrt((X**2).sum(axis=1))
@@ -783,7 +783,7 @@ def build_cf_model_from_users(users_list):
     sim_vals = np.divide(num.values, den, out=np.zeros_like(num.values), where=den>0)
     sim  = pd.DataFrame(np.clip(sim_vals, -1,1), index=mat.index, columns=mat.index)
     dist = 1 - sim
-    knn  = NearestNeighbors(metric="precomputed", n_neighbors=min(5, len(sim))) if len(sim) > 0 else None
+    knn  = NearestNeighbors(metric="precomputed", n_neighbors=min(7, len(sim))) if len(sim) > 0 else None
     if knn is not None:
         knn.fit(dist.values)
     return mat, sim, knn

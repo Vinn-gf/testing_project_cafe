@@ -2,15 +2,15 @@
 @app.route("/api/recommend_ubcf/<int:uid>")
 def api_recommend_ubcf(uid):
     mat, sim, knn = build_cf_model()
-    cf_raw = rec_ubcf_scores(uid, mat, sim, knn)
-    if not cf_raw:
+    ubcf_raw = rec_ubcf_scores(uid, mat, sim, knn)
+    if not ubcf_raw:
         return jsonify({"recommendations": []})
 
-    max_cf = max(cf_raw.values())
+    max_cf = max(ubcf_raw.values())
     seen   = {v["id_cafe"] for v in fetch_visited(uid) if isinstance(v, dict)}
 
     rows = []
-    for cid, score in cf_raw.items():
+    for cid, score in ubcf_raw.items():
         if cid in seen: continue
         info = fetch_cafe(cid)
         rows.append({

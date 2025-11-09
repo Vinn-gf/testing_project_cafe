@@ -4,18 +4,18 @@ import time
 try:
     from main import build_cf_model, invalidate_caches
 except ImportError:
-    print("Error: Pastikan file 'main.py' berada di direktori yang sama.")
+    print("Function tak ditemukan")
     exit()
 
 mat, sim, knn = build_cf_model()
 
 if mat.empty or sim.empty or knn is None:
-    print("Error: Gagal membangun model CF. Periksa koneksi backend atau data.")
+    print("Koneksi ke database gagal")
     exit()
 
 user = sim.index.tolist()
 if not user:
-    print("Error: Tidak ada ID pengguna ditemukan dalam matriks similarity.")
+    print("Tidak ada ID pengguna ditemukan dalam matriks similarity.")
     exit()
 
 user_id = user[4]
@@ -45,5 +45,3 @@ if neighbor_data:
     print(df_neighbors_sorted.to_string(index=False, float_format='{:.2f}'.format))
 else:
     print("\nTidak ada tetangga yang ditemukan untuk pengguna ini.")
-
-print("Proses selesai.")

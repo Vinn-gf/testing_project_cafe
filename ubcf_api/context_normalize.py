@@ -14,19 +14,17 @@ try:
         BASE
     )
 except ImportError as e:
-    print(f"Error: Gagal mengimpor fungsi dari 'main.py'. Pastikan file ada di direktori yang sama.")
-    print(f"Detail error: {e}")
     exit()
 
 mat, _, _ = build_cf_model()
 
 if mat.empty:
-    print("Error: Gagal membangun model. Tidak ada data?")
+    print("Data tidak ditemukan")
     exit()
 
 id = mat.columns.tolist()
 if not id:
-    print("Error: Tidak ada ID kafe ditemukan dalam matriks.")
+    print("Tidak ada ID kafe ditemukan dalam matriks.")
     exit()
 
 cafe_id = id[2] 
@@ -88,9 +86,9 @@ if reviews and isinstance(reviews, list):
     if raw_sentiment_scores:
         raw_mean_sentiment = np.mean(raw_sentiment_scores)
     else:
-        print("Tidak ada ulasan valid ditemukan untuk menghitung sentimen mentah.")
+        print("Tidak ada ulasan ditemukan (skor mentah)")
 else:
-    print("Tidak ada data ulasan ditemukan.")
+    print("Tidak ada data ulasan ditemukan (skor normalisasi)")
 
 
 print(f"  - Rating Asli (belum dinormalisasi)               : {rating_val}")

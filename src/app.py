@@ -13,7 +13,7 @@ import uuid
 app = Flask(__name__)
 CORS(app)
 
-# ---------------- Upload configuration ----------------
+# konfigurasi untuk upload gambar kafe
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads", "cafes")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -28,7 +28,7 @@ def allowed_file(filename):
     ext = filename.rsplit(".", 1)[1].lower()
     return ext in ALLOWED_EXTENSIONS
 
-# ---------------- Database helpers (use your DB config) ----------------
+# konfigurasi koneksi database
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
@@ -39,8 +39,7 @@ DB_CONFIG = {
 def get_db_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
-# ---------------- Existing functions (kept/merged) ----------------
-
+# API CAFE
 def get_data(search_term=None):
     db = get_db_connection()
     cursor = db.cursor()
@@ -90,6 +89,28 @@ def get_menu(search_term=None):
         results.append(od)
     return results
 
+def get_data_by_id(nomor):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("SHOW COLUMNS FROM cafe_tables")
+    columns = [col[0] for col in cursor.fetchall()]
+
+    query = "SELECT * FROM cafe_tables WHERE nomor = %s"
+    cursor.execute(query, (nomor,))
+    data = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if data:
+        od = OrderedDict()
+        for idx, col in enumerate(columns):
+            od[col] = data[idx]
+        return od
+    else:
+        return None
+
+# API MENU
 def get_menu_by_id(id_cafe):
     db = get_db_connection()
     cursor = db.cursor()
@@ -115,27 +136,7 @@ def get_menu_by_id(id_cafe):
 
     return menus
 
-def get_data_by_id(nomor):
-    db = get_db_connection()
-    cursor = db.cursor()
-
-    cursor.execute("SHOW COLUMNS FROM cafe_tables")
-    columns = [col[0] for col in cursor.fetchall()]
-
-    query = "SELECT * FROM cafe_tables WHERE nomor = %s"
-    cursor.execute(query, (nomor,))
-    data = cursor.fetchone()
-    cursor.close()
-    db.close()
-
-    if data:
-        od = OrderedDict()
-        for idx, col in enumerate(columns):
-            od[col] = data[idx]
-        return od
-    else:
-        return None
-
+# API REVIEWS
 def get_reviews(id_kafe=None):
     db = None
     cursor = None
@@ -159,7 +160,6 @@ def get_reviews(id_kafe=None):
                 od[col] = row[idx]
             results.append(od)
 
-        # deduplicate preserving order
         seen = set()
         unique_results = []
         for item in results:
@@ -184,8 +184,7 @@ def get_reviews(id_kafe=None):
         except:
             pass
 
-# ---------------- User / auth functions ----------------
-
+# API AUTHENTICATION
 def register_user_helper(data):
     username = data.get("username")
     password = data.get("password")
@@ -246,8 +245,7 @@ def login_user_helper(data):
     except Exception as e:
         return {"error": str(e)}, 500
 
-# --- Admin functions ---
-
+# API ADMIN
 def login_admin_helper(data):
     username = data.get("username")
     password = data.get("password")
@@ -298,13 +296,8 @@ def get_admin_by_id(id_admin):
     except Exception as e:
         return {"error": str(e)}
 
-# ---------------- User retrieval + update preferences ----------------
-
+# API USER
 def get_user_by_id(id_user):
-    """
-    Returns user record and attempts to parse cafe_telah_dikunjungi and menu_yang_disukai
-    so frontend receives arrays/objects when possible.
-    """
     try:
         db = get_db_connection()
         cursor = db.cursor()
@@ -395,8 +388,7 @@ def update_user_preferences_helper(data):
     except Exception as e:
         return {"error": str(e)}, 500
 
-# ---------------- Visited cafes + favorites + feedback ----------------
-
+# API VISITED
 def get_visited_cafe(id_user):
     try:
         db = get_db_connection()
@@ -449,6 +441,7 @@ def add_visited_cafe_helper(id_user, cafe_id):
     except Exception as e:
         return {"error": str(e)}, 500
 
+# API MENU FAVORITE
 def get_favorite_menu(id_user):
     try:
         db = get_db_connection()
@@ -514,6 +507,7 @@ def add_favorite_menu_helper(data):
     except Exception as e:
         return {"error": str(e)}, 500
 
+# API FEEDBACK
 def add_user_feedback_helper(data):
     id_user = data.get("id_user")
     user_feedback = data.get("user_feedback")
@@ -557,8 +551,7 @@ def get_all_feedbacks():
     except Exception as e:
         return {"error": str(e)}
 
-# ---------------- New helpers: delete user / cafe / feedback / update cafe ----------------
-
+# API DELETE 
 def delete_user_by_id_helper(id_user):
     try:
         db = get_db_connection()
@@ -603,14 +596,25 @@ def delete_cafe_by_nomor_helper(nomor):
             return {"error": "Cafe tidak ditemukan"}, 404
     except Exception as e:
         return {"error": str(e)}, 500
+    
+def delete_feedback_by_id_helper(id_feedback):
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM feedback_tables WHERE id_feedback = %s", (id_feedback,))
+        db.commit()
+        deleted = cursor.rowcount
+        cursor.close()
+        db.close()
+        if deleted:
+            return {"message": f"Feedback {id_feedback} berhasil dihapus"}, 200
+        else:
+            return {"error": "Feedback tidak ditemukan"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
 
-# --- Helper: create cafe ---
+# API POST/CREATE
 def create_cafe_helper(data):
-    """
-    Create a new cafe row in cafe_tables.
-    - data: dict (JSON payload)
-    Returns (result_dict, status_code)
-    """
     if not isinstance(data, dict) or not data:
         return {"error": "Payload harus berformat JSON dan tidak kosong"}, 400
 
@@ -618,11 +622,9 @@ def create_cafe_helper(data):
         db = get_db_connection()
         cursor = db.cursor()
 
-        # discover columns in table
         cursor.execute("SHOW COLUMNS FROM cafe_tables")
         columns = [col[0] for col in cursor.fetchall()]
 
-        # filter incoming payload to only known columns
         valid_cols = [c for c in columns if c in data]
 
         if not valid_cols:
@@ -630,7 +632,6 @@ def create_cafe_helper(data):
             db.close()
             return {"error": "Tidak ada field valid untuk disimpan"}, 400
 
-        # build insert query
         cols_sql = ", ".join(valid_cols)
         placeholders = ", ".join(["%s"] * len(valid_cols))
         params = [data[col] for col in valid_cols]
@@ -639,21 +640,17 @@ def create_cafe_helper(data):
         cursor.execute(query, tuple(params))
         db.commit()
 
-        # try to determine created primary key
         try:
             new_id = cursor.lastrowid if cursor.lastrowid else None
         except Exception:
             new_id = None
 
-        # if nomor was provided in payload, use it as identifier when fetching
         if not new_id and ("nomor" in data and data.get("nomor") is not None):
             new_id = data.get("nomor")
 
-        # close cursor/db
         cursor.close()
         db.close()
 
-        # fetch created row (if get_data_by_id exists)
         if new_id is not None:
             created = get_data_by_id(new_id)
             if created:
@@ -661,14 +658,12 @@ def create_cafe_helper(data):
             else:
                 return {"message": "Cafe created but failed to fetch created record", "id": new_id}, 201
 
-        # fallback response
         return {"message": "Cafe created"}, 201
 
     except Exception as e:
-        # be careful not to leak sensitive DB info in production
         return {"error": str(e)}, 500
 
-
+# API UPDATE
 def update_cafe_by_nomor_helper(nomor, data):
     if not isinstance(data, dict) or not data:
         return {"error": "Payload harus berformat JSON dan berisi field untuk diupdate"}, 400
@@ -678,7 +673,6 @@ def update_cafe_by_nomor_helper(nomor, data):
         cursor = db.cursor()
         cursor.execute("SHOW COLUMNS FROM cafe_tables")
         columns = [col[0] for col in cursor.fetchall()]
-        # exclude primary key 'nomor'
         valid_cols = [c for c in columns if c.lower() != "nomor" and c in data]
 
         if not valid_cols:
@@ -704,24 +698,7 @@ def update_cafe_by_nomor_helper(nomor, data):
     except Exception as e:
         return {"error": str(e)}, 500
 
-def delete_feedback_by_id_helper(id_feedback):
-    try:
-        db = get_db_connection()
-        cursor = db.cursor()
-        cursor.execute("DELETE FROM feedback_tables WHERE id_feedback = %s", (id_feedback,))
-        db.commit()
-        deleted = cursor.rowcount
-        cursor.close()
-        db.close()
-        if deleted:
-            return {"message": f"Feedback {id_feedback} berhasil dihapus"}, 200
-        else:
-            return {"error": "Feedback tidak ditemukan"}, 404
-    except Exception as e:
-        return {"error": str(e)}, 500
-
-# ---------------- Upload image helpers ----------------
-
+# API UPLOAD CAFE IMAGE
 def get_existing_cafe_image(nomor):
     try:
         db = get_db_connection()
@@ -752,9 +729,7 @@ def update_cafe_image_path(nomor, image_path):
         print("Error updating gambar_kafe:", e)
         return False
 
-# ---------------- Routes (endpoints) ----------------
-
-# Feedback endpoints
+# endpoint feedback
 @app.route('/api/feedback', methods=['POST'])
 def api_add_feedback():
     data = request.get_json() or {}
@@ -773,7 +748,7 @@ def api_delete_feedback(id_feedback):
     result, status = delete_feedback_by_id_helper(id_feedback)
     return jsonify(result), status
 
-# Menu
+# endpoint menu
 @app.route('/api/favorite_menu/<int:id_user>', methods=['GET'])
 def api_get_favorite_menu(id_user):
     result = get_favorite_menu(id_user)
@@ -789,7 +764,7 @@ def api_add_favorite_menu():
     result, status = add_favorite_menu_helper(data)
     return jsonify(result), status
 
-# Visited Cafes
+# endpoint visited cafe
 @app.route('/api/visited/<int:id_user>', methods=['GET'])
 def api_get_visited_cafe(id_user):
     result = get_visited_cafe(id_user)
@@ -808,13 +783,14 @@ def api_add_visited_cafe(id_user):
     result, status = add_visited_cafe_helper(id_user, cafe_id)
     return jsonify(result), status
 
+# endpoint demographic preferences
 @app.route('/api/user/preferences', methods=['POST'])
 def api_update_user_preferences():
     data = request.get_json() or {}
     result, status = update_user_preferences_helper(data)
     return jsonify(result), status
 
-# Users
+# endpoint users
 def get_all_users():
     try:
         db = get_db_connection()
@@ -856,7 +832,7 @@ def api_user_by_id(id_user):
         result, status = delete_user_by_id_helper(id_user)
         return jsonify(result), status
 
-# Admin endpoints
+# endpoitn admin
 @app.route('/api/login_admin', methods=['POST'])
 def api_login_admin():
     data = request.get_json() or {}
@@ -873,7 +849,7 @@ def api_get_admin(id_admin):
     else:
         return jsonify({"error": "Admin not found"}), 404
 
-# Sentiment
+# api sentiment
 @app.route('/api/sentiment/<int:id_kafe>', methods=['GET'])
 def api_sentiment(id_kafe):
     reviews = get_reviews(id_kafe)
@@ -886,11 +862,16 @@ def api_sentiment(id_kafe):
 
     return jsonify(analyzed), 200
 
-# Data endpoints (cafes / menus)
+# api cafes
 @app.route('/api/data', methods=['GET'])
 def api_data():
     return jsonify(get_data()), 200
 
+@app.route('/api/search/<keyword>', methods=['GET'])
+def api_search(keyword):
+    return jsonify(get_data(keyword)), 200
+
+# api menu
 @app.route('/api/menus', methods=['GET'])
 def api_menu():
     return jsonify(get_menu()), 200
@@ -902,11 +883,8 @@ def api_menu_by_id_route(id_cafe):
         return jsonify([]), 200
     return jsonify(menus), 200
 
-@app.route('/api/search/<keyword>', methods=['GET'])
-def api_search(keyword):
-    return jsonify(get_data(keyword)), 200
 
-# GET / PUT / DELETE cafe by nomor + upload image
+# endpoint CRUD CAFE
 @app.route('/api/cafe/<int:nomor>', methods=['GET', 'PUT', 'DELETE'])
 def api_cafe(nomor):
     if request.method == 'GET':
@@ -925,15 +903,12 @@ def api_cafe(nomor):
         result, status = delete_cafe_by_nomor_helper(nomor)
         return jsonify(result), status
 
-# POST /api/cafe  (create new cafe)
 @app.route('/api/cafe', methods=['POST'])
 def api_create_cafe():
     data = request.get_json(silent=True) or {}
     result, status = create_cafe_helper(data)
     return jsonify(result), status
 
-
-# Upload image for a cafe
 @app.route('/api/cafe/<int:nomor>/upload_image', methods=['POST'])
 def api_upload_cafe_image(nomor):
     cafe = get_data_by_id(nomor)
@@ -954,7 +929,6 @@ def api_upload_cafe_image(nomor):
     save_path = os.path.join(UPLOAD_FOLDER, unique_name)
 
     try:
-        # attempt to remove previous image file if exists
         prev_path = get_existing_cafe_image(nomor)
         if prev_path and isinstance(prev_path, str) and prev_path.startswith("/uploads/cafes/"):
             prev_fname = os.path.basename(prev_path)
@@ -981,7 +955,6 @@ def api_upload_cafe_image(nomor):
         print("Error saving uploaded file:", e)
         return jsonify({"error": str(e)}), 500
 
-# Serve uploaded images
 @app.route('/uploads/cafes/<path:filename>', methods=['GET'])
 def serve_cafe_image(filename):
     try:
@@ -989,7 +962,7 @@ def serve_cafe_image(filename):
     except Exception:
         abort(404)
 
-# Registration / login endpoints
+# endpoitn auth
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json() or {}
@@ -1002,7 +975,7 @@ def api_login():
     result, status = login_user_helper(data)
     return jsonify(result), status
 
-# Reviews endpoint example
+# endpoint reviews
 @app.route('/api/reviews/<int:id_kafe>', methods=['GET'])
 def api_reviews(id_kafe):
     return jsonify(get_reviews(id_kafe)), 200

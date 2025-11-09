@@ -1183,7 +1183,7 @@ const AdminManageCafes = () => {
                 />
               </div>
 
-              <div className="md:col-span-2">
+              {/* <div className="md:col-span-2">
                 <label className="block text-xs text-[#cfc9b0]">
                   Gambar (URL/path)
                 </label>
@@ -1194,7 +1194,7 @@ const AdminManageCafes = () => {
                   }
                   className="w-full bg-[#1b2021] p-2 rounded text-[#E3DCC2]"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="p-4 flex justify-end gap-2 border-t border-[#2d2f2f]">

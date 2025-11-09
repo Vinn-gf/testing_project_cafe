@@ -35,9 +35,9 @@ const LoginPageAdmin = () => {
         navigate(`/dashboard`);
       }, 1500);
     } catch (err) {
-      setError(err.response.data.message);
+      setError(err.response.data.error);
       console.error(err);
-      console.log(err.response.data, "data");
+      // console.log(err.response.data, "data");
     }
   };
   return (

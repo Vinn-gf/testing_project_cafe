@@ -6,8 +6,6 @@ import time
 try:
     from main import fetch_all_users, safe_get, BASE 
 except ImportError:
-    print("Error: Pastikan file 'main.py' berada di direktori yang sama.")
-    print("       Atau pastikan fungsi fetch_all_users, safe_get, BASE ada di main.py.")
     exit()
 
 records = []
@@ -37,7 +35,7 @@ for u in users:
             except (ValueError, TypeError): pass
 
 if not records:
-    print("Error: Tidak ada data interaksi 'menu_yang_disukai' yang valid.")
+    print("Tidak ada data interaksi 'menu_yang_disukai' yang valid.")
     exit()
 
 df = pd.DataFrame(records)
@@ -45,11 +43,11 @@ try:
     mat = df.pivot_table(index="user_id", columns="cafe_id", values="harga",
                          fill_value=0, aggfunc='sum')
 except Exception as e:
-    print(f"Error saat membuat pivot table: {e}")
+    print(f"{e}")
     exit()
 
 if mat.empty:
-    print("Error: Gagal membangun matriks 'mat' awal. Periksa koneksi backend atau data.")
+    print("Koneksi ke database gagal atau tidak ada data tersedia.")
     exit()
 
 print("Matriks Pengguna X Kafe (Sebelum Mean-Centering):")
@@ -64,6 +62,3 @@ print("Matriks Pengguna X Kafe (Setelah Mean-Centering):")
 num_cols_to_show_X = min(5, X.shape[1])
 formatted_output_X = X.head().iloc[:, :num_cols_to_show_X].to_string(float_format='{:.2f}'.format)
 print(formatted_output_X)
-print("-" * 50)
-
-print("Proses selesai.")

@@ -10,18 +10,18 @@ try:
         invalidate_caches
     )
 except ImportError:
-    print("Error: Pastikan file 'main.py' berada di direktori yang sama.")
+    print("Function tak ditemukan")
     exit()
 
 mat, _, _ = build_cf_model()
 
 if mat.empty:
-    print("Error: Gagal membangun model. Tidak ada pengguna valid?")
+    print("Koneksi ke database gagal")
     exit()
 
 user = mat.index.tolist()
 if not user:
-    print("Error: Tidak ada ID pengguna ditemukan dalam matriks.")
+    print("Tidak ada ID pengguna ditemukan dalam matriks.")
     exit()
 
 user_id = user[4] 
@@ -53,6 +53,3 @@ if menu_counts:
     print(f"{menu_raw.get(top_co_cafe_id, ['N/A'])[:5]}...")
 else:
     print("Tidak ada skor CO ditemukan untuk pengguna ini.")
-
-print("-" * 50)
-print("Proses selesai.")

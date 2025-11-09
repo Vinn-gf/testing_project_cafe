@@ -1,9 +1,21 @@
-num = X.dot(X.Transpose)          
-norm = sqrt( (X**2).sum(axis=1) ) 
-den = outer_product(norm, norm) + 1e-8
-sim_vals = num / den              
-sim = clip(sim_vals, -1, 1)     
+distances, indices = knn.kneighbors( (1-sim).loc[[uid]] )
+neighbors = sim.index[indices[0]][1:]
 
-dist = 1 - sim                    
-knn = NearestNeighbors(metric="precomputed", n_neighbors=7) 
-knn.fit(dist.values)              
+INITIALIZE ubcf_raw = {}
+FOR cid IN mat.columns DO
+    IF mat.loc[uid, cid] == 0 THEN 
+        num_ = 0.0
+        den_ = 0.0
+        FOR v IN neighbors DO
+            num_ += sim.loc[uid, v] * mat.loc[v, cid]
+            den_ += abs(sim.loc[uid, v])
+        END FOR
+
+        IF den_ > 0 THEN
+            val = num_ / den_
+            if val > 0: ubcf_raw[cid] = val
+        END IF
+    END IF
+END FOR
+
+cf_norm = robust_normalize(ubcf_raw)

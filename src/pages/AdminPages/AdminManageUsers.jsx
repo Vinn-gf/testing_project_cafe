@@ -118,7 +118,7 @@ const AdminManageUsers = () => {
 
   const handleDeleteUser = async (id_user) => {
     const ok = window.confirm(
-      `Are you sure you want to delete user with id ${id_user}? This action cannot be undone.`
+      `Are you sure you want to delete user with id ${id_user}?`
     );
     if (!ok) return;
     try {
@@ -131,6 +131,9 @@ const AdminManageUsers = () => {
         { headers: { "ngrok-skip-browser-warning": true } }
       );
       console.info("Delete result:", resp.data);
+      window.alert("User deleted successfully.");
+      // refresh users list
+      setUsers((prev) => prev.filter((u) => u.id_user !== id_user));
     } catch (err) {
       console.error("Failed to delete user:", err?.message || err);
       alert("Failed to delete user: " + (err?.message || "unknown error"));

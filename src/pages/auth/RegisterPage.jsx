@@ -38,7 +38,7 @@ const RegisterPage = () => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      setSuccess("Registration successful! You can now login.");
+      setSuccess("Registration successful!");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       if (err.response && err.response.data) {

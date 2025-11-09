@@ -12,23 +12,23 @@ try:
     )
     try:
         from main import rec_ubcf_scores as get_cf_scores
-    except ImportError:
-        from main import rec_menu_scores as get_cf_scores
+    except ImportError as e:
+        exit()
 
 except ImportError as e:
-    print(f"Error: Gagal mengimpor fungsi dari 'main.py'. Pastikan file ada di direktori yang sama.")
-    print(f"Detail error: {e}")
+    print(f"Function tak ditemukan")
+    print(f"{e}")
     exit()
 
 mat, sim, knn = build_cf_model()
 
 if mat.empty or sim.empty or knn is None:
-    print("Error: Gagal membangun model CF awal. Periksa koneksi backend atau data.")
+    print("Koneksi ke database gagal")
     exit()
 
 user = mat.index.tolist()
 if not user:
-    print("Error: Tidak ada ID pengguna ditemukan dalam matriks model.")
+    print("Tidak ada ID pengguna ditemukan dalam matriks model.")
     exit()
 
 user_id = user[4]
@@ -59,6 +59,3 @@ if co_norm:
     print(df_co_norm_sorted.head().to_string(index=False, float_format='{:.2f}'.format))
 else:
     print("Tidak ada skor Menu Yang Disukai ditemukan untuk pengguna ini.")
-
-print("-" * 50)
-print("Proses selesai.")

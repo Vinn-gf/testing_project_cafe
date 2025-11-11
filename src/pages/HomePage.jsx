@@ -53,7 +53,6 @@ const formatDistanceText = (meters) => {
   return `${(meters / 1000).toFixed(2)} km`;
 };
 
-// read recommendation API base from env, trim trailing slash for consistency
 const RECOMMEND_API = "http://127.0.0.1:5000";
 
 const HomePage = () => {

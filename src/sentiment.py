@@ -1,4 +1,3 @@
-# scripts/sentiment_svm_loader.py
 import joblib, os
 from preprocessing import normalize_text
 

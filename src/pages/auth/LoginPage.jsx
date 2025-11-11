@@ -115,12 +115,21 @@ const LoginPage = () => {
             Login
           </button>
         </form>
-        <p className="text-center text-sm mt-4">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-[#a6a867] hover:underline">
-            Register
-          </Link>
-        </p>
+        <div className="flex justify-between mt-4">
+          <p className="text-center text-[0.75rem]">
+            Back to{" "}
+            <Link to="/homepage" className="text-[#a6a867] hover:underline">
+              Homepage
+            </Link>
+          </p>
+
+          <p className="text-center text-[0.75rem]">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-[#a6a867] hover:underline">
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

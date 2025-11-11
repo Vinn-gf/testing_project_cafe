@@ -1,4 +1,3 @@
-# select_uncertain.py
 from pathlib import Path
 import joblib, numpy as np
 from csv_utils import robust_read_csv, write_csv_semicolon

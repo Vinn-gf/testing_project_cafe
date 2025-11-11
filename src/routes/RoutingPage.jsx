@@ -20,6 +20,7 @@ import AdminWelcomePage from "../pages/AdminPages/AdminWelcomePage";
 import AdminManageUsers from "../pages/AdminPages/AdminManageUsers";
 import AdminManageCafes from "../pages/AdminPages/AdminManageCafes";
 import AdminManageFeedbacks from "../pages/AdminPages/AdminManageFeedbacks";
+import HomepageNoLogin from "../pages/HomepageNoLogin";
 
 const RoutingPage = () => {
   return (
@@ -28,6 +29,8 @@ const RoutingPage = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<LoginPageAdmin />} />
+        <Route path="/homepage" element={<HomepageNoLogin />} />
+        <Route path="/allcafes" element={<AllCafes />} />
         <Route
           path="/dashboard"
           element={
@@ -81,14 +84,6 @@ const RoutingPage = () => {
           element={
             <ProtectedTokenUser>
               <HomePage />
-            </ProtectedTokenUser>
-          }
-        />
-        <Route
-          path="/allcafes"
-          element={
-            <ProtectedTokenUser>
-              <AllCafes />
             </ProtectedTokenUser>
           }
         />

@@ -110,12 +110,21 @@ const RegisterPage = () => {
             Register
           </button>
         </form>
-        <p className="text-center text-sm mt-4">
-          Already have an account?{" "}
-          <Link to="/login" className="text-[#A6A867] hover:underline">
-            Login
-          </Link>
-        </p>
+        <div className="flex justify-between mt-4">
+          <p className="text-center text-[0.75rem]">
+            Back to{" "}
+            <Link to="/homepage" className="text-[#a6a867] hover:underline">
+              Homepage
+            </Link>
+          </p>
+
+          <p className="text-center text-[0.75rem]">
+            Already have an account?{" "}
+            <Link to="/login" className="text-[#a6a867] hover:underline">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -8,7 +8,6 @@ def normalize_text(s: Optional[str]) -> str:
     t = t.replace("\r", " ").replace("\n", " ")
     t = t.lower()
     t = re.sub(r"http\S+", " ", t)
-    # hapus karakter non-alphanumeric (termasuk emoticon), sisakan kata/angka/spasi
     t = re.sub(r"[^\w\s]", " ", t, flags=re.UNICODE)
     t = re.sub(r"\s+", " ", t).strip()
     return t

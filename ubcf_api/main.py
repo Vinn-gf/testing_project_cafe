@@ -350,14 +350,14 @@ def compute_sentiment_for_cafe(cid):
             if arr:
                 reviews = arr
 
-    if reviews is None:
-        raw = safe_get(f"{BASE}/api/reviews/{cid}")
-        if isinstance(raw, list):
-            reviews = raw
-        elif isinstance(raw, dict) and "reviews" in raw and isinstance(raw["reviews"], list):
-            reviews = raw["reviews"]
-        else:
-            reviews = None
+    # if reviews is None:
+    #     raw = safe_get(f"{BASE}/api/reviews/{cid}")
+    #     if isinstance(raw, list):
+    #         reviews = raw
+    #     elif isinstance(raw, dict) and "reviews" in raw and isinstance(raw["reviews"], list):
+    #         reviews = raw["reviews"]
+    #     else:
+    #         reviews = None
 
     score = compute_sentiment_score_from_reviews(reviews) if reviews is not None else None
     _sent_cache_set(cid, score) 
@@ -450,12 +450,6 @@ def build_candidate_pool_from_signals(ubcf_raw, vf_raw, co_raw, top_n_each=50):
     pool.update(sorted(vf_raw.keys(), key=lambda k: -vf_raw.get(k, 0))[:top_n_each])
     pool.update(sorted(co_raw.keys(), key=lambda k: -len(co_raw.get(k, [])))[:top_n_each])
     return list(pool)
-
-# ============================================================
-# (3) MEMBERIKAN REKOMENDASI
-# - Endpoint /api/recommend/<uid>
-# - Gabungkan semua sinyal -> skor akhir -> ambil Top-6
-# ============================================================
 
 # api rekomendasi
 @app.route("/api/recommend/<int:uid>")
@@ -688,7 +682,6 @@ def api_evaluate():
 
     response = {
         "ranking_metrics": {
-            "evaluated_users": eval_user_count,
             "precision": {**precision_at_k},
             "recall": {**recall_at_k},
             "f1-score": {**f1_at_k},
@@ -804,7 +797,6 @@ def api_evaluate():
     rmse_cv = math.sqrt(mean_mse_cv) if mean_mse_cv >= 0 else 0.0
 
     response["5-fold-cross-validation"] = {
-        "evaluated_users_total": eval_count_cv,
         "per_fold": per_fold_results,
         "RMSE": round(rmse_cv, 4),
         "MAE": round(mean_mae_cv, 4),
